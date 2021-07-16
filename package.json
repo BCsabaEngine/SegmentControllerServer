@@ -12,6 +12,13 @@
   "engines": {
     "node": ">=16.0.0"
   },
+  "nodemonConfig": {
+    "exec": "node index.js -d",
+    "ignore": [
+      "assets/*"
+    ],
+    "delay": 1000
+  },
   "author": "Balázs Csaba (@bcsabaengine)",
   "license": "MIT",
   "dependencies": {
