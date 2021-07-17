@@ -1,32 +1,35 @@
-const fs = require('fs')
 const glob = require('glob')
 const path = require('path')
-//const favicon = require('serve-favicon')
+const fastifystatic = require('fastify-static')
 
 const http404 = 404
 const http500 = 500
 
-module.exports = (app) => {
-  // app.use(express.static('public', { index: false, maxAge: '1h', redirect: false }))
-  // app.use('/dist', express.static('./node_modules/admin-lte/dist', { index: false, maxAge: '1h', redirect: false }))
-  // app.use('/plugins', express.static('./node_modules/admin-lte/plugins', { index: false, maxAge: '1h', redirect: false }))
-  // app.use('/bootstrap-icons/font', express.static('./node_modules/bootstrap-icons/font', { index: false, maxAge: '1h', redirect: false }))
-  // app.use('/sweetalert2', express.static('./node_modules/sweetalert2/dist', { index: false, maxAge: '1h', redirect: false }))
-  // app.use('/mousetrap', express.static('./node_modules/mousetrap', { index: false, maxAge: '1h', redirect: false }))
-  // app.use('/clipboard', express.static('./node_modules/clipboard/dist', { index: false, maxAge: '1h', redirect: false }))
-  // app.use('/vis-network/standalone', express.static('./node_modules/vis-network/standalone', { index: false, maxAge: '1h', redirect: false }))
-  // app.use(favicon(path.resolve('./public/favicon.ico')))
+module.exports = (fastify) => {
 
+  const staticroutes = {
+    '/public/': path.join(__dirname, '../public'),
+    '/assets/bootstrap/': path.join(__dirname, '../node_modules/bootstrap/dist'),
+    '/assets/jquery/': path.join(__dirname, '../node_modules/jquery/dist'),
+    '/assets/popper/': path.join(__dirname, '../node_modules/popper.js/dist'),
+  }
+  let isfirst = true
+  for (const [key, value] of Object.entries(staticroutes)) {
+    fastify.register(fastifystatic, {
+      prefix: key,
+      root: value,
+      decorateReply: isfirst
+    })
+    isfirst = false
+  }
+  logger.debug(`${Object.keys(staticroutes).length} HTTP static routes initialized`)
+
+  fastify.register(require('fastify-favicon'), { path: path.join(__dirname, '../public/favicon'), name: 'favicon.ico' })
+  logger.debug(`Favicon routes initialized`)
 
   for (const file of glob.sync('./routes/*.js'))
-    if (!file.endsWith('index.js'))
-      require(path.resolve(file))(app)
-
-  // app.Page404 = function (req, res, next) {
-  //   IpBan.add404(req)
-  //   res.status(http404).render('page404', { title: 'Oops 404!' })
-  // }
-  // app.re404 = () => { app.remove(app.Page404); app.use(app.Page404) }
-  // app.re404()
-
+    if (!file.endsWith('index.js')) {
+      require(path.resolve(file))(fastify)
+      logger.debug(`Routes in ${file} initialized`)
+    }
 }
