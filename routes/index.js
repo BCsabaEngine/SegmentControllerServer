@@ -9,9 +9,10 @@ module.exports = (fastify) => {
 
   const staticroutes = {
     '/public/': path.join(__dirname, '../public'),
-    '/assets/bootstrap/': path.join(__dirname, '../node_modules/bootstrap/dist'),
     '/assets/jquery/': path.join(__dirname, '../node_modules/jquery/dist'),
     '/assets/popper/': path.join(__dirname, '../node_modules/popper.js/dist'),
+    '/assets/bootstrap/': path.join(__dirname, '../node_modules/bootstrap/dist'),
+    '/assets/bootstrap-icons/': path.join(__dirname, '../node_modules/bootstrap-icons/font'),
   }
   let isfirst = true
   for (const [key, value] of Object.entries(staticroutes)) {

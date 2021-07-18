@@ -8,7 +8,8 @@ require('./lib/dayjsLoader')()
 global.cmdline = require('./lib/cmdline')
 global.config = require('./lib/config')
 global.logger = require('./lib/logger')
-const http = global.http = require('./lib/http')
+global.rf24node = require('./lib/rf24')
+global.http = require('./lib/http')
 
 logger.info('Server starting...');
-http()
+
