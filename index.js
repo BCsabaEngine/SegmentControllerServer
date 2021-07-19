@@ -14,12 +14,30 @@ global.http = require('./lib/http')
 
 logger.info('Server starting...');
 
+let state = 0
 setInterval(() => {
   for (const id of segments.GetSegmentIds()) {
     const seg = segments.GetSegmentById(id)
     if (seg.IsValid()) {
-      console.log(`Segment #${id} `)
-      console.log(seg.toString())
+      //console.log(`Segment #${id} `)
+      //console.log(seg.turnout1)
+      //console.log(seg.keypad)
+      //seg.ambientlight1.SetLight(5, state)
+      seg.ambientlight1.SetEffect(0, 2)
+      //console.log(seg.ambientlight1.effects)
+
+      state = !state
     }
   }
-}, 2500)
+}, 2000)
+
+let state2 = 0
+setInterval(() => {
+  for (const id of segments.GetSegmentIds()) {
+    const seg = segments.GetSegmentById(id)
+    if (seg.IsValid()) {
+      seg.turnout1.SetTurnout(0, 2)
+    }
+  }
+  state2 = !state2
+}, 5000)
