@@ -1,6 +1,9 @@
 # APP config
 *.ini
 
+# package-lock
+package-lock.json
+
 ###################
 # General options #
 ###################
