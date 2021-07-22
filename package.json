@@ -15,7 +15,7 @@
   "nodemonConfig": {
     "exec": "node index.js -d",
     "ignore": [
-      "assets/*"
+      "public/*"
     ],
     "delay": 1000
   },
@@ -32,6 +32,7 @@
     "fastify-favicon": "^3.1.0",
     "fastify-helmet": "^5.3.2",
     "fastify-static": "^4.2.2",
+    "fastify-websocket": "^3.2.0",
     "glob": "^7.1.7",
     "ini": "^2.0.0",
     "jquery": "^3.6.0",
