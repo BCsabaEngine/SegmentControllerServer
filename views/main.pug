@@ -2,3 +2,18 @@ extends _base
 
 block content
   | a
+  | b
+  |
+  br
+  i.pull-right.ws-indicator.bi-lightning-fill
+  | a
+  | b
+  | c
+
+  script(type='text/javascript').
+    ws_channels =
+    {
+      b: function(data) {
+        console.log(data);
+      }
+    }

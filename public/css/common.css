@@ -1,0 +1,7 @@
+.ws-indicator {
+  color: red;
+}
+
+.ws-indicator.online {
+  color: yellowgreen;
+}

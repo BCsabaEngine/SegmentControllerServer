@@ -9,41 +9,36 @@ function socket_open() {
 
     socket.onopen = function (event) {
       setTimeout(function () { socket.send('hello') }, 75);
+      if (window.jQuery)
+        $('.ws-indicator').addClass('online');
 
-      if (typeof subscribes !== 'undefined')
+      if (typeof ws_channels !== 'undefined')
         setTimeout(function () {
-          for (const [key, value] of Object.entries(subscribes))
+          for (const key of Object.keys(ws_channels))
             socket.send(JSON.stringify({ command: 'subscribe', channel: key }));
         }, 150);
     };
 
-    socket.onclose = function (event) { setTimeout(function () { socket_open(); }, 5000); };
+    socket.onclose = function (event) {
+      if (window.jQuery)
+        $('.ws-indicator').removeClass('online');
+      setTimeout(function () { socket_open(); }, 5000);
+    };
 
     var timeout = null;
     socket.onmessage = function (event) {
       try {
-        //json = JSON.parse(event.data);
-        console.log(event.data);
-        return
-
-        if (typeof dismisssubscribes !== 'undefined')
-          if (dismisssubscribes)
-            return;
-
-        json = JSON.parse(event.data);
-        if (typeof subscribes !== 'undefined')
-          for (const [key, value] of Object.entries(subscribes))
-            if (key == json.channel)
-              if (typeof value === 'function') {
-                delete json.channel;
-                setTimeout(function () { value(json); }, 1);
-              }
-              else {
-                clearTimeout(timeout);
-                timeout = setTimeout(function () { divreload(value); }, 250);
-              }
+        json = JSON.tryParse(event.data);
+        if (json)
+          if (typeof ws_channels !== 'undefined')
+            for (const [key, value] of Object.entries(ws_channels))
+              if (key == json.channel)
+                if (typeof value === 'function') {
+                  delete json.channel;
+                  setTimeout(function () { value(json); }, 1);
+                }
       }
-      catch (ex) { console.log(ex); }
+      catch (ex) { }
     };
   }
   catch (ex) { }

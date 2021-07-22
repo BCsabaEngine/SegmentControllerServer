@@ -6,4 +6,12 @@ module.exports = (fastify) => {
     return reply.view('main', { text: 'text' })
   })
 
+  fastify.get('/a', async (req, reply) => {
+    return reply.view('main', { text: 'text' })
+  })
+
+  fastify.get('/b', async (req, reply) => {
+    return reply.view('main', { text: 'text' })
+  })
+
 }
