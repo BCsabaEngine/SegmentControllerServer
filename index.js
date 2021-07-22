@@ -10,6 +10,7 @@ global.config = require('./lib/config')
 global.logger = require('./lib/logger')
 global.rf24 = require('./lib/rf24')
 global.segments = require('./lib/segments')(global.rf24)
+global.ws = require('./lib/webSocketHandler')
 global.http = require('./lib/http')
 
 logger.info('Server starting...');
@@ -31,21 +32,21 @@ logger.info('Server starting...');
 //   }
 // }, 1000)
 
-let state2 = 0
-setInterval(() => {
-  for (const id of segments.GetSegmentIds()) {
-    const seg = segments.GetSegmentById(id)
-    if (seg.IsValid()) {
-      // const state = {
-      //   bulb_a: state2 ? 3 : 0,
-      //   bulb_b: state2 ? 0 : 2,
-      //   bulb_c: state2 ? 0 : 3,
-      //   bulb_d: state2 ? 3 : 0,
-      // }
-      // seg.signal1.SetSignalPattern(0, state)
+// let state2 = 0
+// setInterval(() => {
+//   for (const id of segments.GetSegmentIds()) {
+//     const seg = segments.GetSegmentById(id)
+//     if (seg.IsValid()) {
+//       // const state = {
+//       //   bulb_a: state2 ? 3 : 0,
+//       //   bulb_b: state2 ? 0 : 2,
+//       //   bulb_c: state2 ? 0 : 3,
+//       //   bulb_d: state2 ? 3 : 0,
+//       // }
+//       // seg.signal1.SetSignalPattern(0, state)
 
-      seg.ambientlight1.ToggleEffect(0)
-    }
-  }
-  state2 = !state2
-}, 1500)
+//       seg.ambientlight1.ToggleEffect(0)
+//     }
+//   }
+//   state2 = !state2
+// }, 1500)
