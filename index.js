@@ -14,30 +14,38 @@ global.http = require('./lib/http')
 
 logger.info('Server starting...');
 
-let state = 0
-setInterval(() => {
-  for (const id of segments.GetSegmentIds()) {
-    const seg = segments.GetSegmentById(id)
-    if (seg.IsValid()) {
-      //console.log(`Segment #${id} `)
-      //console.log(seg.turnout1)
-      //console.log(seg.keypad)
-      //seg.ambientlight1.SetLight(5, state)
-      seg.ambientlight1.SetEffect(0, 2)
-      //console.log(seg.ambientlight1.effects)
+// let state = 0
+// setInterval(() => {
+//   for (const id of segments.GetSegmentIds()) {
+//     const seg = segments.GetSegmentById(id)
+//     if (seg.IsValid()) {
+//       //console.log(`Segment #${id} `)
+//       console.log(seg.turnout1.turnoutStates)
+//       //console.log(seg.keypad)
+//       //seg.ambientlight1.SetLight(5, state)
+//       //seg.ambientlight1.SetEffect(0, 2)
+//       //console.log(seg.ambientlight1.effects)
 
-      state = !state
-    }
-  }
-}, 2000)
+//       state = !state
+//     }
+//   }
+// }, 1000)
 
 let state2 = 0
 setInterval(() => {
   for (const id of segments.GetSegmentIds()) {
     const seg = segments.GetSegmentById(id)
     if (seg.IsValid()) {
-      seg.turnout1.SetTurnout(0, 2)
+      // const state = {
+      //   bulb_a: state2 ? 3 : 0,
+      //   bulb_b: state2 ? 0 : 2,
+      //   bulb_c: state2 ? 0 : 3,
+      //   bulb_d: state2 ? 3 : 0,
+      // }
+      // seg.signal1.SetSignalPattern(0, state)
+
+      seg.ambientlight1.ToggleEffect(0)
     }
   }
   state2 = !state2
-}, 5000)
+}, 1500)
