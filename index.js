@@ -1,11 +1,15 @@
+require('./lib/nodeExt')
+
 global.APPNAME = "SegmentControllerServer"
 global.APPVERSION = require('./package.json').version
-global.IsProduction = (process.env.NODE_ENV === 'production')
 
 console.log(`${APPNAME} (v${APPVERSION})`);
 
 require('./lib/dayjsLoader')()
 global.cmdline = require('./lib/cmdline')
+if (!global.cmdline.debug)
+  process.env.NODE_ENV = 'production'
+
 global.config = require('./lib/config')
 global.logger = require('./lib/logger')
 global.rf24 = require('./lib/rf24')
@@ -13,7 +17,7 @@ global.segments = require('./lib/segments')(global.rf24)
 global.ws = require('./lib/webSocketHandler')
 global.http = require('./lib/http')
 
-logger.info('Server starting...');
+logger.info('Application started');
 
 // let state = 0
 // setInterval(() => {

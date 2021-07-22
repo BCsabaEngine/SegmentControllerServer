@@ -1,12 +1,6 @@
-var starttime = new Date().getTime();
-function logdebug(...data) {
-  var log = [(new Date().getTime() - starttime) / 1000];
-  for (const d of data)
-    if (typeof d === 'object')
-      log = log.concat(Object.values(d));
-    else
-      log = log.concat(d);
-  console.log(log);
+JSON.tryParse = function (string, reviver) {
+  try { return JSON.parse(string, reviver) }
+  catch { return undefined }
 }
 
 function pagereload(latencyms) {

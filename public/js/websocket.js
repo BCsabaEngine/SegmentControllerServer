@@ -62,8 +62,3 @@ function socket_send(msg) {
 }
 
 $(function () { if ("WebSocket" in window) socket_open(); });
-
-// setInterval(function () {
-//   if (!socket_send('hello'))
-//     console.log("Cannot send")
-// }, 1000);
