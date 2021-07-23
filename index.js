@@ -54,3 +54,13 @@ logger.info('Application started');
 //   }
 //   state2 = !state2
 // }, 1500)
+
+// setTimeout(() => {
+//   for (const id of segments.GetSegmentIds()) {
+//     const seg = segments.GetSegmentById(id)
+//     if (seg.IsValid()) {
+//       console.log("Reset")
+//       seg.signal1.Reset()
+//     }
+//   }
+// }, 5000)
