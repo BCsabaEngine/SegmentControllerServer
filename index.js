@@ -3,7 +3,7 @@ require('./lib/nodeExt')
 global.APPNAME = "SegmentControllerServer"
 global.APPVERSION = require('./package.json').version
 
-console.log(`${APPNAME} (v${APPVERSION})`);
+console.log(`${APPNAME} (v${APPVERSION})`)
 
 require('./lib/dayjsLoader')()
 global.cmdline = require('./lib/cmdline')
@@ -17,7 +17,7 @@ global.segments = require('./lib/segments')(global.rf24)
 global.ws = require('./lib/webSocketHandler')
 global.http = require('./lib/http')
 
-logger.info('Application started');
+logger.info('Application started')
 
 // let state = 0
 // setInterval(() => {
@@ -55,12 +55,19 @@ logger.info('Application started');
 //   state2 = !state2
 // }, 1500)
 
-// setTimeout(() => {
+const sarud = segments.GetSegmentById(5)
+sarud.on('online', () => { console.log('Sarud: ONLINE') })
+sarud.signal.on('uptime', (uptime) => console.log(`Uptime: ${uptime}ms`))
+sarud.signal.on('version', (versioninfo) => console.log(`Version: ${versioninfo}`))
+sarud.signal.on('change', (index, state) => console.log(`${index} changed: ${require('util').inspect(state, false, 0, false)}`))
+sarud.keypad.on('switchchange', (index, state) => console.log(`${index} switch changed: ${require('util').inspect(state, false, 0, false)}`))
+sarud.keypad.on('buttonpress', (index, islong) => console.log(`${index} button pressed: ${islong}`))
+sarud.keypad.on('buttonshortpress', (index) => console.log(`${index} button short pressed`))
+sarud.keypad.on('buttonlongpress', (index) => console.log(`${index} button long pressed`))
+
+// setInterval(() => {
 //   for (const id of segments.GetSegmentIds()) {
 //     const seg = segments.GetSegmentById(id)
-//     if (seg.IsValid()) {
-//       console.log("Reset")
-//       seg.signal1.Reset()
-//     }
+//     console.log(seg.signal1.signalStates[0])
 //   }
-// }, 5000)
+// }, 10 * 1000)
