@@ -1,11 +1,23 @@
 const glob = require('glob')
 const path = require('path')
 const fastifystatic = require('fastify-static')
+const fastifysession = require('@mgcrea/fastify-session')
 
 const http404 = 404
 const http500 = 500
 
+const SESSION_SECRET = 'This is a secret sentence for SESSION transactions';
+const SESSION_TTL = 86400; // 1 day in seconds
+
 module.exports = (fastify) => {
+
+  fastify.register(require('fastify-formbody'))
+
+  fastify.register(require('fastify-cookie'))
+  fastify.register(fastifysession, {
+    secret: SESSION_SECRET,
+    cookie: { maxAge: SESSION_TTL },
+  })
 
   const staticroutes = {
     '/public/': path.join(__dirname, '../public'),
