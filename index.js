@@ -18,8 +18,6 @@ global.ws = require('./lib/webSocketHandler')
 global.layout = require('./lib/layout')
 global.http = require('./lib/http')
 
-logger.info('Application ready')
-
 // let state = 0
 // setInterval(() => {
 //   for (const id of segments.GetSegmentIds()) {
