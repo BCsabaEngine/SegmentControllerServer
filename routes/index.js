@@ -35,14 +35,14 @@ module.exports = (fastify) => {
     })
     isfirst = false
   }
-  logger.debug(`${Object.keys(staticroutes).length} HTTP static routes initialized`)
+  logger.debug(`[HTTP] ${Object.keys(staticroutes).length} HTTP static routes initialized`)
 
   fastify.register(require('fastify-favicon'), { path: path.join(__dirname, '../public/favicon'), name: 'favicon.ico' })
-  logger.debug(`Favicon routes initialized`)
+  logger.debug(`[HTTP] Favicon routes initialized`)
 
   for (const file of glob.sync('./routes/*.js'))
     if (!file.endsWith('index.js')) {
       require(path.resolve(file))(fastify)
-      logger.debug(`Routes in ${file} initialized`)
+      logger.debug(`[HTTP] Routes in ${file} initialized`)
     }
 }

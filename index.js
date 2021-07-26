@@ -15,9 +15,10 @@ global.logger = require('./lib/logger')
 global.rf24 = require('./lib/rf24')
 global.segments = require('./lib/segments')(global.rf24)
 global.ws = require('./lib/webSocketHandler')
+global.layout = require('./lib/layout')
 global.http = require('./lib/http')
 
-logger.info('Application started')
+logger.info('Application ready')
 
 // let state = 0
 // setInterval(() => {

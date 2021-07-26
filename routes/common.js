@@ -1,6 +1,3 @@
-const dayjs = require('dayjs')
-const Router = require('fastify-route-group').Router
-
 module.exports = (fastify) => {
 
   fastify.get('/', async (req, reply) => {
@@ -13,19 +10,5 @@ module.exports = (fastify) => {
 
     return reply.view('main', { text: 'text' })
   })
-
-  const router = new Router(fastify);
-  router.namespace('methods', () => {
-    router.prefix('posts.', () => {
-      router.get('get', (_, reply) => {
-        return reply.view('main', { text: 'text' })
-      });
-    });
-    router.prefix('photos.', () => {
-      router.get('get', (_, reply) => {
-        return reply.view('main', { text: 'text' })
-      });
-    });
-  });
 
 }
