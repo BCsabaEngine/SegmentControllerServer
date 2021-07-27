@@ -2,7 +2,10 @@
   "name": "segmentcontrollerserver",
   "version": "1.0.0",
   "description": "",
+  "author": "Balázs Csaba (@bcsabaengine)",
+  "license": "MIT",
   "main": "index.js",
+  "bin": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -19,8 +22,17 @@
     ],
     "delay": 1000
   },
-  "author": "Balázs Csaba (@bcsabaengine)",
-  "license": "MIT",
+  "pkg": {
+    "scripts": "*.js",
+    "assets": [
+      "views/**/*",
+      "public/**/*"
+    ],
+    "targets": [
+      "latest-win-x64"
+    ],
+    "outputPath": "dist"
+  },
   "dependencies": {
     "@mgcrea/fastify-session": "^0.14.1",
     "bitset": "^5.1.1",

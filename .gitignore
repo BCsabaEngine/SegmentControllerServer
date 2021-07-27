@@ -1,8 +1,8 @@
 # APP config
 *.ini
 
-# package-lock
-package-lock.json
+# Dist folder
+dist/*
 
 ###################
 # General options #

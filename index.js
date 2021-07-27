@@ -5,7 +5,7 @@ global.APPVERSION = require('./package.json').version
 
 console.log(`${APPNAME} (v${APPVERSION})`)
 
-require('./lib/dayjsLoader')()
+require('./lib/dayjsLoader')
 global.cmdline = require('./lib/cmdline')
 if (!global.cmdline.debug)
   process.env.NODE_ENV = 'production'

@@ -40,9 +40,8 @@ module.exports = (fastify) => {
   fastify.register(require('fastify-favicon'), { path: path.join(__dirname, '../public/favicon'), name: 'favicon.ico' })
   logger.debug(`[HTTP] Favicon routes initialized`)
 
-  for (const file of glob.sync('./routes/*.js'))
-    if (!file.endsWith('index.js')) {
-      require(path.resolve(file))(fastify)
-      logger.debug(`[HTTP] Routes in ${file} initialized`)
-    }
+  require('./common.js')(fastify)
+  require('./websocket.js')(fastify)
+
+  require('./layout.js')(fastify)
 }
