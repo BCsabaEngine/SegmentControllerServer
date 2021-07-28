@@ -7,7 +7,9 @@
   "main": "index.js",
   "bin": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "pkg": "pkg .",
+    "pkgzip": "pkg . --compress GZip",
+    "pkgbro": "pkg . --compress Brotli"
   },
   "keywords": [
     "SegmentController"
