@@ -1,6 +1,6 @@
 require('./lib/nodeExt')
 
-global.APPNAME = "SegmentControllerServer"
+global.APPNAME = 'SegmentControllerServer'
 global.APPVERSION = require('./package.json').version
 
 console.log(`${global.APPNAME} (v${global.APPVERSION})`)
@@ -18,7 +18,7 @@ global.ws = require('./lib/webSocketHandler')
 global.layout = require('./lib/layout')
 global.http = require('./lib/http')
 
-gracefullyClose = async function (signal) {
+const gracefullyClose = async function gfClose(signal) {
   console.log(`[Process] Bye (${signal})...`)
 
   const forceClose = setTimeout(() => process.exit(1), 1500)
@@ -31,9 +31,9 @@ gracefullyClose = async function (signal) {
         process.exit(0)
       })
 }
-process.on('SIGTERM', gracefullyClose);
-process.on('SIGINT', gracefullyClose);
-process.on('SIGUSR2', gracefullyClose);
+process.on('SIGTERM', gracefullyClose)
+process.on('SIGINT', gracefullyClose)
+process.on('SIGUSR2', gracefullyClose)
 
 
 // let state = 0

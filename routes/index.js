@@ -2,8 +2,8 @@ const path = require('path')
 const fastifystatic = require('fastify-static')
 const fastifysession = require('@mgcrea/fastify-session')
 
-const SESSION_SECRET = 'This is a secret sentence for SESSION transactions';
-const SESSION_TTL = 86400; // 1 day in seconds
+const SESSION_SECRET = 'This is a secret sentence for SESSION transactions'
+const SESSION_TTL = 86400 // 1 day in seconds
 
 module.exports = (fastify) => {
 
@@ -34,7 +34,7 @@ module.exports = (fastify) => {
   logger.debug(`[HTTP] ${Object.keys(staticroutes).length} HTTP static routes initialized`)
 
   fastify.register(require('fastify-favicon'), { path: path.join(__dirname, '../public/favicon'), name: 'favicon.ico' })
-  logger.debug(`[HTTP] Favicon routes initialized`)
+  logger.debug('[HTTP] Favicon routes initialized')
 
   require('./common.js')(fastify)
   require('./websocket.js')(fastify)
