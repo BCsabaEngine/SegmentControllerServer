@@ -18,6 +18,24 @@ global.ws = require('./lib/webSocketHandler')
 global.layout = require('./lib/layout')
 global.http = require('./lib/http')
 
+gracefullyClose = async function (signal) {
+  console.log(`[Process] Bye (${signal})...`)
+
+  const forceClose = setTimeout(() => process.exit(1), 1500)
+
+  if (http)
+    http.close()
+      .then(() => {
+        console.log('[HTTP] Server closed')
+        clearTimeout(forceClose)
+        process.exit(0)
+      })
+}
+process.on('SIGTERM', gracefullyClose);
+process.on('SIGINT', gracefullyClose);
+process.on('SIGUSR2', gracefullyClose);
+
+
 // let state = 0
 // setInterval(() => {
 //   for (const id of segments.GetSegmentIds()) {
