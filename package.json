@@ -7,6 +7,7 @@
   "main": "index.js",
   "bin": "index.js",
   "scripts": {
+    "lint": "node_modules\\.bin\\eslint ./**/*.js",
     "pkg": "pkg .",
     "pkgzip": "pkg . --compress GZip",
     "pkgbro": "pkg . --compress Brotli"
@@ -17,6 +18,68 @@
   "engines": {
     "node": ">=16.0.0"
   },
+  "eslintConfig": {
+    "env": {
+      "browser": true,
+      "commonjs": true,
+      "es2021": true
+    },
+    "extends": [
+      "eslint:recommended"
+    ],
+    "parser": "@babel/eslint-parser",
+    "plugins": [],
+    "parserOptions": {
+      "requireConfigFile": false,
+      "ecmaVersion": "latest"
+    },
+    "globals": {
+      "__dirname": "readonly",
+      "__filename": "readonly",
+      "setImmediate": "readonly",
+      "Buffer": "readonly",
+      "cmdline": "readonly",
+      "config": "readonly",
+      "logger": "readonly",
+      "rf24": "readonly",
+      "segments": "readonly",
+      "ws": "readonly",
+      "layout": "readonly",
+      "http": "readonly",
+      "process": "readonly"
+    },
+    "rules": {
+      "semi": [
+        "warn",
+        "never"
+      ],
+      "quotes": [
+        "warn",
+        "single"
+      ],
+      "no-extra-parens": "off",
+      "no-unreachable-loop": "error",
+      "no-case-declarations": "off",
+      "block-scoped-var": "error",
+      "class-methods-use-this": "error",
+      "consistent-return": "error",
+      "default-param-last": "error",
+      "eqeqeq": "warn",
+      "no-empty-function": "warn",
+      "no-extra-bind": "warn",
+      "no-new": "warn",
+      "no-new-func": "warn",
+      "no-new-wrappers": "warn",
+      "no-self-compare": "warn",
+      "radix": "warn",
+      "camelcase": "warn",
+      "no-new-object": "warn"
+    }
+  },
+  "eslintIgnore": [
+    "public",
+    "views"
+  ],
   "nodemonConfig": {
     "exec": "node index.js -d",
     "ignore": [
@@ -65,5 +128,10 @@
     "rf24meshserialnode": "^0.9.3",
     "winston": "^3.3.3",
     "yargs": "^17.0.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.14.8",
+    "@babel/eslint-parser": "^7.14.7",
+    "eslint": "^7.31.0"
   }
 }
