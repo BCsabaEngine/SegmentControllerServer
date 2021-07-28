@@ -3,11 +3,11 @@ require('./lib/nodeExt')
 global.APPNAME = "SegmentControllerServer"
 global.APPVERSION = require('./package.json').version
 
-console.log(`${APPNAME} (v${APPVERSION})`)
+console.log(`${global.APPNAME} (v${global.APPVERSION})`)
 
 require('./lib/dayjsLoader')
 global.cmdline = require('./lib/cmdline')
-if (!global.cmdline.debug)
+if (!cmdline.debug)
   process.env.NODE_ENV = 'production'
 
 global.config = require('./lib/config')
