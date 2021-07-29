@@ -25,10 +25,20 @@
       "es2021": true
     },
     "extends": [
-      "eslint:recommended"
+      "eslint:recommended",
+      "plugin:node/recommended",
+      "plugin:promise/recommended",
+      "plugin:sonarjs/recommended",
+      "plugin:unicorn/recommended"
     ],
     "parser": "@babel/eslint-parser",
-    "plugins": [],
+    "plugins": [
+      "promise",
+      "deprecate",
+      "const-case",
+      "sonarjs",
+      "unicorn"
+    ],
     "parserOptions": {
       "requireConfigFile": false,
       "ecmaVersion": "latest"
@@ -37,6 +47,7 @@
       "__dirname": "readonly",
       "__filename": "readonly",
       "setImmediate": "readonly",
+      "process": "readonly",
       "Buffer": "readonly",
       "cmdline": "readonly",
       "config": "readonly",
@@ -45,8 +56,7 @@
       "segments": "readonly",
       "ws": "readonly",
       "layout": "readonly",
-      "http": "readonly",
-      "process": "readonly"
+      "http": "readonly"
     },
     "rules": {
       "semi": [
@@ -73,7 +83,16 @@
       "no-self-compare": "warn",
       "radix": "warn",
       "camelcase": "warn",
-      "no-new-object": "warn"
+      "no-new-object": "warn",
+      "no-process-exit": "off",
+      "node/shebang": "off",
+      "deprecate/function": "error",
+      "deprecate/member-expression": "error",
+      "deprecate/import": "error",
+      "const-case/uppercase": "error",
+      "unicorn/prefer-module": "off",
+      "unicorn/empty-brace-spaces": "off",
+      "unicorn/filename-case": "off"
     }
   },
   "eslintIgnore": [
@@ -132,6 +151,12 @@
   "devDependencies": {
     "@babel/core": "^7.14.8",
     "@babel/eslint-parser": "^7.14.7",
-    "eslint": "^7.31.0"
+    "eslint": "^7.31.0",
+    "eslint-plugin-const-case": "^1.2.2",
+    "eslint-plugin-deprecate": "^0.7.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^5.1.0",
+    "eslint-plugin-sonarjs": "^0.9.1",
+    "eslint-plugin-unicorn": "^34.0.1"
   }
 }
