@@ -28,7 +28,11 @@ const gracefullyClose = async function gfClose(signal) {
       .then(() => {
         console.log('[HTTP] Server closed')
         clearTimeout(forceClose)
-        process.exit(0)
+        return process.exit(0)
+      })
+      .catch((error) => {
+        console.log(`[HTTP] Server close error: ${error}`)
+        return process.exit(1)
       })
 }
 process.on('SIGTERM', gracefullyClose)
