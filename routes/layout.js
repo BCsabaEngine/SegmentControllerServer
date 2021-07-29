@@ -4,29 +4,29 @@ module.exports = (fastify) => {
 
   const router = new Router(fastify)
   router.namespace('layout', () => {
-    router.get('box', async (req, reply) => {
+    router.get('box', async (request, reply) => {
       const { createCanvas } = require('canvas')
 
       const canvas = createCanvas(200, 200)
-      const ctx = canvas.getContext('2d')
+      const context = canvas.getContext('2d')
 
-      ctx.fillStyle = '#707070'
-      ctx.fillRect(0, 0, 200, 200)
+      context.fillStyle = '#707070'
+      context.fillRect(0, 0, 200, 200)
 
-      ctx.fillStyle = '#A0A0A0'
-      ctx.fillRect(10, 10, 180, 180)
+      context.fillStyle = '#A0A0A0'
+      context.fillRect(10, 10, 180, 180)
 
-      ctx.font = '30px Impact'
-      ctx.rotate(0.1)
-      ctx.fillStyle = '#FF0000'
-      ctx.fillText('Awesome!', 50, 100)
+      context.font = '30px Impact'
+      context.rotate(0.1)
+      context.fillStyle = '#FF0000'
+      context.fillText('Awesome!', 50, 100)
 
-      var text = ctx.measureText('Awesome!')
-      ctx.strokeStyle = 'rgba(100,200,100,0.9)'
-      ctx.beginPath()
-      ctx.lineTo(50, 102)
-      ctx.lineTo(50 + text.width, 102)
-      ctx.stroke()
+      var text = context.measureText('Awesome!')
+      context.strokeStyle = 'rgba(100,200,100,0.9)'
+      context.beginPath()
+      context.lineTo(50, 102)
+      context.lineTo(50 + text.width, 102)
+      context.stroke()
 
       //const buf = canvas.toBuffer('image/jpeg', { quality: 0.9 })
       const buf = canvas.toBuffer('image/png', { compressionLevel: 3, filters: canvas.PNG_FILTER_NONE })
@@ -35,19 +35,19 @@ module.exports = (fastify) => {
       return buf
     })
 
-    router.get('circle', async (req, reply) => {
+    router.get('circle', async (request, reply) => {
       const { createCanvas } = require('canvas')
 
       const canvas = createCanvas(32, 32)
-      const ctx = canvas.getContext('2d')
+      const context = canvas.getContext('2d')
 
       //ctx.clearRect(0, 0, 32, 32)
 
-      ctx.arc(16, 16, 16, 0, Math.PI * 2)
+      context.arc(16, 16, 16, 0, Math.PI * 2)
 
       //ctx.strokeStyle = 'rgba(100,200,100,0.9)'
-      ctx.fillStyle = '#F00000'
-      ctx.fill()
+      context.fillStyle = '#F00000'
+      context.fill()
 
       const buf = canvas.toBuffer('image/png', { compressionLevel: 3, filters: canvas.PNG_FILTER_NONE })
 

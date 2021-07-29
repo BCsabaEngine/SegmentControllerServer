@@ -1,4 +1,4 @@
-require('./lib/nodeExt')
+require('./lib/nodeExtension')
 
 global.APPNAME = 'SegmentControllerServer'
 global.APPVERSION = require('./package.json').version

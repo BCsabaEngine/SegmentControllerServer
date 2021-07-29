@@ -3,7 +3,7 @@ const fastifystatic = require('fastify-static')
 const fastifysession = require('@mgcrea/fastify-session')
 
 const SESSION_SECRET = 'This is a secret sentence for SESSION transactions'
-const SESSION_TTL = 86400 // 1 day in seconds
+const SESSION_TTL = 86_400 // 1 day in seconds
 
 module.exports = (fastify) => {
 

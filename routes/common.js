@@ -1,12 +1,12 @@
 module.exports = (fastify) => {
 
-  fastify.get('/', async (req, reply) => {
-    let counter = req.session.get('counter')
-    if (isNaN(counter))
+  fastify.get('/', async (request, reply) => {
+    let counter = request.session.get('counter')
+    if (Number.isNaN(counter))
       counter = 0
     counter++
-    req.session.set('counter', counter)
-    console.log(counter)
+    request.session.set('counter', counter)
+    //console.log(counter)
 
     return reply.view('main', { text: 'text' })
   })
