@@ -82,7 +82,7 @@ sarud.signal.on('uptime', (uptime) => console.log(`Uptime: ${uptime}ms`))
 sarud.signal.on('version', (versioninfo) => console.log(`Version: ${versioninfo}`))
 sarud.signal.on('change', (index, state) => console.log(`${index} changed: ${require('util').inspect(state, false, 0, false)}`))
 sarud.keypad.on('switchchange', (index, state) => console.log(`${index} switch changed: ${require('util').inspect(state, false, 0, false)}`))
-sarud.keypad.on('buttonpress', (index, islong) => console.log(`${index} button pressed: ${islong}`))
+sarud.keypad.on('buttonpress', (index, islong) => console.log(`${index} button pressed: ${islong ? 'long' : 'short'}`))
 sarud.keypad.on('buttonshortpress', (index) => console.log(`${index} button short pressed`))
 sarud.keypad.on('buttonlongpress', (index) => console.log(`${index} button long pressed`))
 
