@@ -76,15 +76,20 @@ process.on('SIGUSR2', gracefullyClose)
 //   state2 = !state2
 // }, 1500)
 
-const sarud = segments.GetSegmentById(5)
-sarud.on('online', () => { console.log('Sarud: ONLINE') })
-sarud.signal.on('uptime', (uptime) => console.log(`Uptime: ${uptime}ms`))
-sarud.signal.on('version', (versioninfo) => console.log(`Version: ${versioninfo}`))
-sarud.signal.on('change', (index, state) => console.log(`${index} changed: ${require('util').inspect(state, false, 0, false)}`))
-sarud.keypad.on('switchchange', (index, state) => console.log(`${index} switch changed: ${require('util').inspect(state, false, 0, false)}`))
-sarud.keypad.on('buttonpress', (index, islong) => console.log(`${index} button pressed: ${islong ? 'long' : 'short'}`))
-sarud.keypad.on('buttonshortpress', (index) => console.log(`${index} button short pressed`))
-sarud.keypad.on('buttonlongpress', (index) => console.log(`${index} button long pressed`))
+//const sarud = segments.GetSegmentById(5)
+// sarud.on('online', () => { console.log('Sarud: ONLINE') })
+// sarud.signal.on('uptime', (uptime) => console.log(`Uptime: ${uptime}ms`))
+// sarud.signal.on('version', (versioninfo) => console.log(`Version: ${versioninfo}`))
+// sarud.signal.on('change', (index, state) => console.log(`${index} changed: ${require('util').inspect(state, false, 0, false)}`))
+// sarud.keypad.on('switchchange', (index, state) => console.log(`${index} switch changed: ${require('util').inspect(state, false, 0, false)}`))
+// sarud.keypad.on('buttonpress', (index, islong) => console.log(`${index} button pressed: ${islong ? 'long' : 'short'}`))
+// sarud.keypad.on('buttonshortpress', (index) => console.log(`${index} button short pressed`))
+// sarud.keypad.on('buttonlongpress', (index) => console.log(`${index} button long pressed`))
+
+
+//sarud.on('event', (...arguments_) => { console.log(arguments_) })
+
+segments.on('event', (...arguments_) => { console.log(arguments_) })
 
 // setInterval(() => {
 //   for (const id of segments.GetSegmentIds()) {
