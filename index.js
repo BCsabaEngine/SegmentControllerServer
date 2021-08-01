@@ -97,3 +97,10 @@ segments.on('event', (...arguments_) => { console.log(arguments_) })
 //     console.log(seg.signal1.signalStates[0])
 //   }
 // }, 10 * 1000)
+
+// setInterval(() => {
+//   console.log('Rec: ' + rf24.getStat().receiveCount)
+//   console.log('Rec size: ' + rf24.getStat().receiveSize)
+//   console.log('Rec/min: ' + rf24.getStat().receiveCountPerMin())
+//   console.log('Rec size/min: ' + rf24.getStat().receiveSizePerMin())
+// }, 1 * 1000)
