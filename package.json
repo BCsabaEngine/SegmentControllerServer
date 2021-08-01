@@ -93,7 +93,8 @@
       "unicorn/prefer-module": "off",
       "unicorn/empty-brace-spaces": "off",
       "unicorn/filename-case": "off",
-      "unicorn/no-process-exit": "off"
+      "unicorn/no-process-exit": "off",
+      "unicorn/no-null": "off"
     }
   },
   "eslintIgnore": [

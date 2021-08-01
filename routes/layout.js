@@ -4,6 +4,30 @@ module.exports = (fastify) => {
 
   const router = new Router(fastify)
   router.namespace('layout', () => {
+
+    router.get('track/:x/:y', async (request, reply) => {
+      const x = Number(request.params.x) || 0
+      const y = Number(request.params.y) || 0
+
+      console.log([x, y])
+
+      const track = layout.getLayout().segments[0].findTrack(x, y)
+      console.log(track)
+      if (track) {
+        const { createCanvas } = require('canvas')
+
+        const canvas = createCanvas(32, 32)
+        const context = canvas.getContext('2d')
+
+        track.draw(context)
+
+        const buf = canvas.toBuffer('image/png', { compressionLevel: 3, filters: canvas.PNG_FILTER_NONE })
+        reply.type('image/png')
+        return buf
+      }
+      return reply.send(new Error('Track not found'))
+    })
+
     router.get('box', async (request, reply) => {
       const { createCanvas } = require('canvas')
 

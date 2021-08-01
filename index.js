@@ -15,7 +15,7 @@ global.logger = require('./lib/logger')
 global.rf24 = require('./lib/rf24')
 global.segments = require('./lib/segments')(global.rf24)
 global.ws = require('./lib/webSocketHandler')
-global.layout = require('./lib/layout')
+global.layoutManager = require('./lib/layoutManager')
 global.http = require('./lib/http')
 
 const gracefullyClose = async function gfClose(signal) {
