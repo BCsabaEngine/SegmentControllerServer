@@ -104,3 +104,14 @@ segments.on('event', (...arguments_) => { console.log(arguments_) })
 //   console.log('Rec/min: ' + rf24.getStat().receiveCountPerMin())
 //   console.log('Rec size/min: ' + rf24.getStat().receiveSizePerMin())
 // }, 1 * 1000)
+
+// function measureLag(iteration) {
+//   const start = Date.now()
+//   setTimeout(() => {
+//     const lag = Date.now() - start
+//     if (lag > 50)
+//       console.log(`Loop ${iteration} took\t${lag} ms`)
+//     measureLag(iteration + 1)
+//   })
+// }
+// measureLag(1)

@@ -1,9 +1,25 @@
 const Router = require('fastify-route-group').Router
+const { createCanvas } = require('canvas')
 
 module.exports = (fastify) => {
 
   const router = new Router(fastify)
   router.namespace('layout', () => {
+
+    router.get('background', async (request, reply) => {
+      const layout = layoutManager.getLayout()
+      const imageSize = layout.getImageSize()
+
+      const canvas = createCanvas(imageSize.width, imageSize.height)
+      const context = canvas.getContext('2d')
+
+      layout.draw(context)
+
+      const buf = canvas.toBuffer('image/png', { compressionLevel: 3, filters: canvas.PNG_FILTER_NONE })
+      //const buf = canvas.toBuffer('image/jpeg', { quality: 0.9, progressive: false, chromaSubsampling: true })
+      reply.type('image/png')
+      return buf
+    })
 
     router.get('track/:x/:y', async (request, reply) => {
       const x = Number(request.params.x) || 0
@@ -11,7 +27,7 @@ module.exports = (fastify) => {
 
       console.log([x, y])
 
-      const track = layout.getLayout().segments[0].findTrack(x, y)
+      const track = layoutManager.getLayout().segments[0].findTrack(x, y)
       console.log(track)
       if (track) {
         const { createCanvas } = require('canvas')

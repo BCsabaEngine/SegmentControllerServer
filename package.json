@@ -55,7 +55,7 @@
       "rf24": "readonly",
       "segments": "readonly",
       "ws": "readonly",
-      "layout": "readonly",
+      "layoutManager": "readonly",
       "http": "readonly"
     },
     "rules": {
@@ -128,6 +128,7 @@
     "bootstrap": "^5.0.2",
     "bootstrap-icons": "^1.5.0",
     "canvas": "^2.8.0",
+    "color": "^4.0.0",
     "dayjs": "^1.10.6",
     "fastify": "^3.19.1",
     "fastify-compress": "^3.6.0",
