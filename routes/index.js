@@ -40,4 +40,5 @@ module.exports = (fastify) => {
   require('./websocket.js')(fastify)
 
   require('./layout.js')(fastify)
+  require('./editor.js')(fastify)
 }

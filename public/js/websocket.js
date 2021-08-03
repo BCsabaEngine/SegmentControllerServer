@@ -66,4 +66,8 @@ function socket_send(msg) {
 }
 
 if (window.jQuery)
-  $(function () { if ("WebSocket" in window) socket_open(); });
+  $(function () {
+    if ("WebSocket" in window)
+      if (typeof ws_channels !== 'undefined')
+        socket_open();
+  });

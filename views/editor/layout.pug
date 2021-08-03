@@ -1,0 +1,19 @@
+extends ../_base
+
+block content
+
+  each segment in segments
+    div(id=segment.id)
+      img(src="/layout/segment/"+segment.id style=`position: absolute; left: ${segment.x * gridSize}px; top: ${segment.y * gridSize}px`)
+
+  script(type='text/javascript').
+    ws_channelsX =
+    {
+      b: function(data) {
+        console.log(data);
+      }
+    }
+
+    function ws_onreceive(data) {
+      console.log(data);
+    }
