@@ -2,11 +2,47 @@ extends ../_base
 
 block content
 
-  each segment in segments
-    div(id=segment.id)
-      img(src="/layout/segment/"+segment.id style=`position: absolute; left: ${segment.x * gridSize}px; top: ${segment.y * gridSize}px`)
+  nav.navbar.navbar-expand-lg.navbar-light.bg-light(style="height:64px")
+    .container-fluid
+      a.navbar-brand(href='#')
+        img(src='/public/favicon/favicon-32x32.png')
+        | | Layout editor
+      .collapse.navbar-collapse#navbarSupportedContent
+        ul.navbar-nav.me-auto.mb-2.mb-lg-0
+          li.nav-item
+            a.nav-link.active(aria-current='page' href='/')
+              | Dashboard
+          li.nav-item
+            a.nav-link(href='#') Link
+          li.nav-item.dropdown
+            a.nav-link.dropdown-toggle#navbarDropdown(href='#' role='button' data-bs-toggle='dropdown' aria-expanded='false').
+              Dropdown
+            ul.dropdown-menu(aria-labelledby='navbarDropdown')
+              li
+                a.dropdown-item(href='#') Action
+              li
+                a.dropdown-item(href='#') Another action
+              li
+                hr.dropdown-divider
+              li
+                a.dropdown-item(href='#') Something else here
+          li.nav-item
+            a.nav-link.disabled(href='#' tabindex='-1' aria-disabled='true') Disabled
+        ul.navbar-nav.ms-auto.mb-2.mb-lg-0
+          li.nav-item
+            a.nav-linkX.btn.btn-warning(aria-current='page' href='#' onclick='save()')
+              | Save layout
+
+
+  div
+    each segment in segments
+      div(id='div' + segment.id style=`position: absolute; left: ${segment.x * gridSize}px; top: ${segment.y * gridSize + topMargin}px; width: ${segment.getSize().width * gridSize}px; height: ${segment.getSize().height * gridSize}px`)
+        img(src="/layout/segment/"+segment.id)
 
   script(type='text/javascript').
+    const topMargin = #{topMargin}
+    const gridSize = #{gridSize}
+    const segments = []
     ws_channelsX =
     {
       b: function(data) {
@@ -17,3 +53,58 @@ block content
     function ws_onreceive(data) {
       console.log(data);
     }
+
+  script(src='https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js')
+  each segment in segments
+    script(type='text/javascript').
+      if (window.jQuery)
+        $(function () {
+          const position = { x: 0, y: 0 }
+          const element = document.getElementById('div#{segment.id}')
+          const jelement = $('#div#{segment.id}')
+          segments.push({id: #{segment.id}, jelement})
+
+          interact(element).draggable({
+            listeners: {
+              start (event) {
+                console.log(event.type, event.target)
+              },
+              end (event) {
+                console.log(event.type, event.target)
+                console.log(jelement.offset().top - topMargin, jelement.offset().left)
+                console.log((jelement.offset().top - topMargin) / gridSize, jelement.offset().left / gridSize)
+              },
+              move (event) {
+                position.x += event.dx
+                position.y += event.dy
+
+                event.target.style.transform =
+                  `translate(${position.x}px, ${position.y}px)`
+              },
+            },
+            modifiers: [
+              interact.modifiers.snap({
+                targets: [
+                  interact.snappers.grid({ x: 32, y: 32 })
+                ],
+                relativePoints: [ { x: 0, y: 0 } ]
+              }),
+              interact.modifiers.restrictRect({
+                restriction: { x: 0, y: topMargin, width: 10000, height: 10000 },
+                endOnly: false
+              })
+            ]
+          })
+      });
+
+    script(type='text/javascript').
+      function save()
+      {
+        for(const segment of segments)
+        {
+          const id = segment.id
+          const x = segment.jelement.offset().left / gridSize
+          const y = (segment.jelement.offset().top - topMargin) / gridSize
+          console.log([id, x, y])
+        }
+      }

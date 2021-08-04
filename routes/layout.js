@@ -35,7 +35,7 @@ module.exports = (fastify) => {
 
       segment.drawTerrains(context, layout, 0, 0)
 
-      const buf = canvas.toBuffer('image/jpeg', { quality: 0.9, progressive: false, chromaSubsampling: true })
+      const buf = canvas.toBuffer('image/png', { compressionLevel: 3, filters: canvas.PNG_FILTER_NONE })
       reply.type('image/png')
       return buf
     })
