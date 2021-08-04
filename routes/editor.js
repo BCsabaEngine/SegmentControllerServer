@@ -9,9 +9,10 @@ module.exports = (fastify) => {
       const gridSize = layout.blockSize
       const segments = layout.getAllSegments()
 
-      return reply.view('editor/layout',
+      return reply.noCache().view('editor/layout',
         {
           title: 'Layout editor',
+          topMargin: 64,
           gridSize,
           segments,
         })
