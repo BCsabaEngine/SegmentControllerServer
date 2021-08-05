@@ -2,7 +2,7 @@ extends ../_base
 
 block content
 
-  nav.navbar.navbar-expand-lg.navbar-light.bg-light(style="height:64px")
+  nav.navbar.navbar-expand-lg.navbar-light.bg-light
     .container-fluid
       a.navbar-brand(href='#')
         img(src='/public/favicon/favicon-32x32.png')
@@ -31,9 +31,8 @@ block content
 
         ul#panelsave.navbar-nav.ms-auto.mb-2.mb-lg-0.hidden
           li.nav-item
-            a#buttonsave.btn.btn-warning(aria-current='page' href='#' onclick='save(true)')
+            a#buttonsave.btn.btn-warning(aria-current='page' href='#' onclick='saveSegmentLocations(true)' title='CTRL+S')
               | Save layout
-
 
   div
     each segment in segments
@@ -44,6 +43,7 @@ block content
     const topMargin = #{topMargin}
     const gridSize = #{gridSize}
     const segments = []
+
     ws_channelsX =
     {
       b: function(data) {
@@ -54,6 +54,14 @@ block content
     function ws_onreceive(data) {
       console.log(data);
     }
+    if (window.jQuery)
+      $(function () {
+        hotkeys('ctrl+s, command+s', function(event)
+        {
+          event.preventDefault()
+          saveSegmentLocations(true)
+        });
+      })
 
   script(src='/assets/interactjs/interact.min.js?' + APPVERSION)
   each segment in segments
@@ -110,12 +118,14 @@ block content
     function startSavetimer()
     {
       stopSavetimer()
-      saveTimer = setTimeout(() => { save() }, 3000)
+      saveTimer = setTimeout(() => { saveSegmentLocations() }, 3000)
     }
 
-    function save(displaytoast)
+    function saveSegmentLocations(displaytoast)
     {
       stopSavetimer()
+
+      if(!$("#panelsave").is(":visible")) return
 
       const locations = {}
       for(const segment of segments)
