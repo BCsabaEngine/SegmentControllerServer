@@ -21,6 +21,8 @@ module.exports = (fastify) => {
     '/assets/popper/': path.join(__dirname, '../node_modules/@popperjs/core/dist'),
     '/assets/bootstrap/': path.join(__dirname, '../node_modules/bootstrap/dist'),
     '/assets/bootstrap-icons/': path.join(__dirname, '../node_modules/bootstrap-icons/font'),
+    '/assets/interactjs/': path.join(__dirname, '../node_modules/interactjs/dist'),
+    '/assets/sweetalert2/': path.join(__dirname, '../node_modules/sweetalert2/dist'),
   }
   let isfirst = true
   for (const [key, value] of Object.entries(staticroutes)) {

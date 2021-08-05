@@ -55,3 +55,22 @@ function closeFullscreen() {
     document.msExitFullscreen();
   }
 }
+
+const Toast = Swal.mixin({
+  toast: true,
+  position: 'top-end',
+  showConfirmButton: false,
+  timer: 3000,
+  timerProgressBar: true,
+  didOpen: (toast) => {
+    toast.addEventListener('mouseenter', Swal.stopTimer)
+    toast.addEventListener('mouseleave', Swal.resumeTimer)
+  }
+})
+const ToastSuccess = Toast.mixin({
+  icon: 'success',
+  timer: 1500,
+})
+const ToastError = Toast.mixin({ icon: 'error' })
+const ToastWarning = Toast.mixin({ icon: 'warning' })
+const ToastInfo = Toast.mixin({ icon: 'info' })
