@@ -44,16 +44,47 @@ block content
     const gridSize = #{gridSize}
     const segments = []
 
-    ws_channelsX =
+    let timerAutosave = null
+    let downcountSuccessSave = 1
+    function stopAutosaveTimer() { clearTimeout(timerAutosave) }
+    function startAutosaveTimer()
     {
-      b: function(data) {
-        console.log(data);
+      stopAutosaveTimer()
+      timerAutosave = setTimeout(() => { saveSegmentLocations() }, 3000)
+    }
+    function saveSegmentLocations(displaytoast)
+    {
+      stopAutosaveTimer()
+
+      if(!$("#panelsave").is(":visible")) return
+
+      const locations = {}
+      for(const segment of segments)
+      {
+        const id = segment.id
+        const x = segment.jelement.offset().left / gridSize
+        const y = (segment.jelement.offset().top - topMargin) / gridSize
+        locations[id] = {x, y}
       }
+      $.post('/editor/layout/set/segmentlocations', { locations: JSON.stringify(locations) })
+        .done(function() { 
+          if (displaytoast && downcountSuccessSave)
+          {
+            ToastSuccess.fire({ html: 'Saved successfully<br/><small>(Will not appear next time)</small>' })
+            downcountSuccessSave--
+          }
+          $('#buttonsave').removeClass('btn-danger').addClass('btn-warning')
+          $('#panelsave').hide()
+        })
+        .fail(function(xhr, status, error) {
+          if (displaytoast)
+            ToastError.fire({ html: `<b>Error</b><br/>${xhr.responseText}` })
+          else
+            $('#buttonsave').removeClass('btn-warning').addClass('btn-danger')
+          downcountSuccessSave = 1
+        })
     }
 
-    function ws_onreceive(data) {
-      console.log(data);
-    }
     if (window.jQuery)
       $(function () {
         hotkeys('ctrl+s, command+s', function(event)
@@ -76,7 +107,7 @@ block content
           interact(element).draggable({
             listeners: {
               start (event) {
-                stopSavetimer()
+                stopAutosaveTimer()
                 //console.log(event.type, event.target)
               },
               end (event) {
@@ -84,7 +115,7 @@ block content
                 //console.log(jelement.offset().top - topMargin, jelement.offset().left)
                 //console.log((jelement.offset().top - topMargin) / gridSize, jelement.offset().left / gridSize)
                 $('#panelsave').show()
-                startSavetimer()
+                startAutosaveTimer()
               },
               move (event) {
                 position.x += event.dx
@@ -106,46 +137,3 @@ block content
             ]
           })
       });
-
-  script(type='text/javascript').
-    let saveTimer = null
-
-    function stopSavetimer()
-    {
-      clearTimeout(saveTimer)
-    }
-
-    function startSavetimer()
-    {
-      stopSavetimer()
-      saveTimer = setTimeout(() => { saveSegmentLocations() }, 3000)
-    }
-
-    function saveSegmentLocations(displaytoast)
-    {
-      stopSavetimer()
-
-      if(!$("#panelsave").is(":visible")) return
-
-      const locations = {}
-      for(const segment of segments)
-      {
-        const id = segment.id
-        const x = segment.jelement.offset().left / gridSize
-        const y = (segment.jelement.offset().top - topMargin) / gridSize
-        locations[id] = {x, y}
-      }
-      $.post('/editor/layout/set/segmentlocations', { locations: JSON.stringify(locations) })
-        .done(function() { 
-          if (displaytoast)
-            ToastSuccess.fire({ title: 'Saved successfully' })
-          $('#buttonsave').removeClass('btn-danger').addClass('btn-warning')
-          $('#panelsave').hide()
-        })
-        .fail(function(xhr, status, error) {
-          if (displaytoast)
-            ToastError.fire({ title: `Error: ${xhr.responseText}` })
-          else
-            $('#buttonsave').removeClass('btn-warning').addClass('btn-danger')
-        })
-    }
