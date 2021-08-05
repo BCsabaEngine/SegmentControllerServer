@@ -2,41 +2,67 @@ extends ../_base
 
 block content
 
-  nav.navbar.navbar-expand-lg.navbar-light.bg-light
+  nav.navbar.navbar-expand-lg.navbar-light.bg-light(style=`height: ${topMargin}px`)
     .container-fluid
-      a.navbar-brand(href='#')
+      .navbar-brand
         img(src='/public/favicon/favicon-32x32.png')
         | | Layout editor
       .collapse.navbar-collapse#navbarSupportedContent
         ul.navbar-nav.me-auto.mb-2.mb-lg-0
           li.nav-item
-            a.nav-link.active(aria-current='page' href='/')
-              | Dashboard
-          li.nav-item
-            a.nav-link(href='#') Link
+            a.btn.btn-secondary.active(href='/') Main screen
+          li.nav-item.dropdown.ms-5
+            a.nav-link.dropdown-toggle#navbarDropdown(href='#' role='button' data-bs-toggle='dropdown').
+              Segments
+            ul.dropdown-menu
+              li
+                a.dropdown-item(href='#') New...
+              li
+                hr.dropdown-divider
+              each segment in segments
+                li
+                  a.dropdown-item(href='#')
+                    = segment.name
+                    |
+                    | (#
+                    = segment.id
+                    | )
+
           li.nav-item.dropdown
-            a.nav-link.dropdown-toggle#navbarDropdown(href='#' role='button' data-bs-toggle='dropdown' aria-expanded='false').
-              Dropdown
-            ul.dropdown-menu(aria-labelledby='navbarDropdown')
+            a.nav-link.dropdown-toggle#navbarDropdown(href='#' role='button' data-bs-toggle='dropdown').
+              Layout settings
+            ul.dropdown-menu
               li
-                a.dropdown-item(href='#') Action
+                a.dropdown-item(href='#' onclick="setBlockSize()")
+                  | Block size
+                  | (
+                  = blockSize
+                  | x
+                  = blockSize
+                  | )
               li
-                a.dropdown-item(href='#') Another action
+                a.dropdown-item(href='#' onclick="setWorldColor()")
+                  | World color
+                  | (
+                  = worldColor
+                  | )
               li
                 hr.dropdown-divider
               li
-                a.dropdown-item(href='#') Something else here
-          li.nav-item
-            a.nav-link.disabled(href='#' tabindex='-1' aria-disabled='true') Disabled
+                a.dropdown-item(href='#' onclick="setTerrainMargin()")
+                  | Terrain margin
+                  | (
+                  = terrainMargin
+                  | px)
 
         ul#panelsave.navbar-nav.ms-auto.mb-2.mb-lg-0.hidden
           li.nav-item
-            a#buttonsave.btn.btn-warning(aria-current='page' href='#' onclick='saveSegmentLocations(true)' title='CTRL+S')
+            a#buttonsave.btn.btn-warning(href='#' onclick='saveSegmentLocations(true)' title='CTRL+S')
               | Save layout
 
   div
     each segment in segments
-      .segment(id='div' + segment.id style=`position: absolute; left: ${segment.x * gridSize}px; top: ${segment.y * gridSize + topMargin}px`)
+      .segment(id='div' + segment.id style=`position: absolute; left: ${segment.x * blockSize}px; top: ${segment.y * blockSize + topMargin}px`)
         img(src="/layout/segment/"+segment.id)
         ul.dropdown-menu.context-menu
           li
@@ -56,7 +82,7 @@ block content
     });
 
     const topMargin = #{topMargin}
-    const gridSize = #{gridSize}
+    const blockSize = #{blockSize}
     const segments = []
 
     let timerAutosave = null
@@ -77,8 +103,8 @@ block content
       for(const segment of segments)
       {
         const id = segment.id
-        const x = segment.jelement.offset().left / gridSize
-        const y = (segment.jelement.offset().top - topMargin) / gridSize
+        const x = segment.jelement.offset().left / blockSize
+        const y = (segment.jelement.offset().top - topMargin) / blockSize
         locations[id] = {x, y}
       }
       $.post('/editor/layout/set/segmentlocations', { locations: JSON.stringify(locations) })
@@ -100,6 +126,75 @@ block content
         })
     }
 
+    async function setBlockSize()
+    {
+      const { value: blockSize } = await Swal.fire({
+        title: 'Block size of layout',
+        input: 'select',
+        inputOptions: {
+          16: 'Micro (16x16)',
+          24: 'Small (24x24)',
+          32: 'Normal (32x32)',
+          48: 'Large (48x48)',
+        },
+        inputValue: #{blockSize},
+        showCancelButton: true,
+      })
+
+      if (blockSize)
+        $.post('/editor/layout/set/blocksize', { blockSize: blockSize })
+          .done(function() { 
+            pagereload()
+          })
+          .fail(function(xhr, status, error) {
+            ToastError.fire({ html: `<b>Error</b><br/>${xhr.responseText}` })
+          })
+    }
+
+    async function setWorldColor()
+    {
+      const { value: worldColor } = await Swal.fire({
+        title: 'Color of world (background)',
+        showCancelButton: true,
+        preConfirm: () => { return document.getElementById('html5colorpicker').value },
+        html: '<input type="color" id="html5colorpicker" value="#{worldColor}" style="width:50%">' 
+    })
+
+    if (worldColor)
+      $.post('/editor/layout/set/worldcolor', { worldColor: worldColor })
+        .done(function() { 
+          pagereload()
+        })
+        .fail(function(xhr, status, error) {
+          ToastError.fire({ html: `<b>Error</b><br/>${xhr.responseText}` })
+        })
+    }
+
+    async function setTerrainMargin()
+    {
+      const { value: terrainMargin } = await Swal.fire({
+        title: 'Margin of terrain elements',
+        input: 'range',
+        inputLabel: 'Margin in pixels (max. 1/4th of block size)',
+        inputAttributes: {
+          min: 0,
+          max: #{blockSize / 4},
+          step: 1
+        },
+        inputValue: #{terrainMargin},
+        showCancelButton: true,
+      })
+
+      if (terrainMargin)
+        $.post('/editor/layout/set/terrainmargin', { terrainMargin: terrainMargin })
+          .done(function() { 
+            pagereload()
+          })
+          .fail(function(xhr, status, error) {
+            ToastError.fire({ html: `<b>Error</b><br/>${xhr.responseText}` })
+          })
+    }
+
   script(src='/assets/interactjs/interact.min.js?' + APPVERSION)
   each segment in segments
     script(type='text/javascript').
@@ -119,7 +214,7 @@ block content
               end (event) {
                 //console.log(event.type, event.target)
                 //console.log(jelement.offset().top - topMargin, jelement.offset().left)
-                //console.log((jelement.offset().top - topMargin) / gridSize, jelement.offset().left / gridSize)
+                //console.log((jelement.offset().top - topMargin) / blockSize, jelement.offset().left / blockSize)
                 $('#panelsave').show()
                 startAutosaveTimer()
               },
@@ -132,7 +227,7 @@ block content
             modifiers: [
               interact.modifiers.snap({
                 targets: [
-                  interact.snappers.grid({ x: gridSize, y: gridSize })
+                  interact.snappers.grid({ x: blockSize, y: blockSize })
                 ],
                 relativePoints: [ { x: 0, y: 0 } ]
               }),

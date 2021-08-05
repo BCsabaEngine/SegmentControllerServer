@@ -6,26 +6,34 @@ module.exports = (fastify) => {
   router.namespace('editor', () => {
     router.get('layout', async (request, reply) => {
       const layout = layoutManager.getLayout()
-      const gridSize = layout.blockSize
-      const segments = layout.getAllSegments()
-
       return reply.noCache().view('editor/layout',
         {
           title: 'Layout editor',
           topMargin: 64,
-          gridSize,
-          segments,
+          blockSize: layout.blockSize,
+          worldColor: layout.worldColor,
+          terrainMargin: layout.terrainMargin,
+          segments: layout.getAllSegments(),
         })
     })
     router.namespace('layout', () => {
       router.namespace('set', () => {
-        router.post('worldcolor', async (request, reply) => {
+        router.post('blocksize', async (request) => {
+          layoutManager.getLayout().setBlockSize(Number(request.body.blockSize))
+          layoutManager.saveToFile()
+          return JSON.empty
         })
-        router.post('blocksize', async (request, reply) => {
+        router.post('worldcolor', async (request) => {
+          layoutManager.getLayout().setWorldColor(request.body.worldColor)
+          layoutManager.saveToFile()
+          return JSON.empty
         })
-        router.post('terrainmargin', async (request, reply) => {
+        router.post('terrainmargin', async (request) => {
+          layoutManager.getLayout().setTerrainMargin(Number(request.body.terrainMargin))
+          layoutManager.saveToFile()
+          return JSON.empty
         })
-        router.post('segmentlocations', async (request, reply) => {
+        router.post('segmentlocations', async (request) => {
           layoutManager.getLayout().setSegmentLocations(JSON.tryParse(request.body.locations))
           layoutManager.saveToFile()
           return JSON.empty
