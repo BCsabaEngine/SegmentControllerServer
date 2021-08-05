@@ -36,10 +36,25 @@ block content
 
   div
     each segment in segments
-      div(id='div' + segment.id style=`position: absolute; left: ${segment.x * gridSize}px; top: ${segment.y * gridSize + topMargin}px; width: ${segment.getSize().width * gridSize}px; height: ${segment.getSize().height * gridSize}px`)
+      .segment(id='div' + segment.id style=`position: absolute; left: ${segment.x * gridSize}px; top: ${segment.y * gridSize + topMargin}px`)
         img(src="/layout/segment/"+segment.id)
+        ul.dropdown-menu.context-menu
+          li
+            a.dropdown-item(href='#')
+              = segment.id
+          li
+            a.dropdown-item(href='#') Másik
 
   script(type='text/javascript').
+
+    initContextMenus('.segment')
+
+    hotkeys('ctrl+s, command+s', function(event)
+    {
+      event.preventDefault()
+      saveSegmentLocations(true)
+    });
+
     const topMargin = #{topMargin}
     const gridSize = #{gridSize}
     const segments = []
@@ -84,15 +99,6 @@ block content
           downcountSuccessSave = 1
         })
     }
-
-    if (window.jQuery)
-      $(function () {
-        hotkeys('ctrl+s, command+s', function(event)
-        {
-          event.preventDefault()
-          saveSegmentLocations(true)
-        });
-      })
 
   script(src='/assets/interactjs/interact.min.js?' + APPVERSION)
   each segment in segments

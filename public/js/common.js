@@ -74,3 +74,33 @@ const ToastSuccess = Toast.mixin({
 const ToastError = Toast.mixin({ icon: 'error' })
 const ToastWarning = Toast.mixin({ icon: 'warning' })
 const ToastInfo = Toast.mixin({ icon: 'info' })
+
+function initContextMenus(selector) {
+  $(function () {
+    $('body').on('contextmenu', selector, function (e) {
+      $('.context-menu').hide();
+
+      const menu = $(e.currentTarget).find('.context-menu')
+      if (menu.length) {
+        $(menu[0]).css({
+          display: "block",
+          left: e.offsetX,
+          top: e.offsetY
+        });
+      }
+      return false
+    });
+  })
+}
+
+if (window.jQuery)
+  $(function () {
+    $('html').click(function () {
+      $('.context-menu').hide();
+    });
+
+    $('html').contextmenu(function () {
+      $('.context-menu').hide();
+      return false
+    });
+  })
