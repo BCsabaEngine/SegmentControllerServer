@@ -1,3 +1,7 @@
+.hidden {
+  display: none
+}
+
 .ws-indicator {
   color: red;
 }

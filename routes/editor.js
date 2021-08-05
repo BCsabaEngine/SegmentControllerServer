@@ -17,6 +17,23 @@ module.exports = (fastify) => {
           segments,
         })
     })
+    router.namespace('layout', () => {
+      router.namespace('set', () => {
+        router.post('worldcolor', async (request, reply) => {
+        })
+        router.post('blocksize', async (request, reply) => {
+        })
+        router.post('terrainmargin', async (request, reply) => {
+        })
+        router.post('segmentlocations', async (request, reply) => {
+          layoutManager.getLayout().setSegmentLocations(JSON.tryParse(request.body.locations))
+          layoutManager.saveToFile()
+          return JSON.empty
+        })
+      })
+    })
+
+    //router.post('layout/')
 
   })
 }

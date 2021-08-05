@@ -28,9 +28,10 @@ block content
                 a.dropdown-item(href='#') Something else here
           li.nav-item
             a.nav-link.disabled(href='#' tabindex='-1' aria-disabled='true') Disabled
-        ul.navbar-nav.ms-auto.mb-2.mb-lg-0
+
+        ul#panelsave.navbar-nav.ms-auto.mb-2.mb-lg-0.hidden
           li.nav-item
-            a.nav-linkX.btn.btn-warning(aria-current='page' href='#' onclick='save()')
+            a#buttonsave.btn.btn-warning(aria-current='page' href='#' onclick='save(true)')
               | Save layout
 
 
@@ -54,7 +55,7 @@ block content
       console.log(data);
     }
 
-  script(src='https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js')
+  script(src='/assets/interactjs/interact.min.js?' + APPVERSION)
   each segment in segments
     script(type='text/javascript').
       if (window.jQuery)
@@ -67,25 +68,26 @@ block content
           interact(element).draggable({
             listeners: {
               start (event) {
-                console.log(event.type, event.target)
+                stopSavetimer()
+                //console.log(event.type, event.target)
               },
               end (event) {
-                console.log(event.type, event.target)
-                console.log(jelement.offset().top - topMargin, jelement.offset().left)
-                console.log((jelement.offset().top - topMargin) / gridSize, jelement.offset().left / gridSize)
+                //console.log(event.type, event.target)
+                //console.log(jelement.offset().top - topMargin, jelement.offset().left)
+                //console.log((jelement.offset().top - topMargin) / gridSize, jelement.offset().left / gridSize)
+                $('#panelsave').show()
+                startSavetimer()
               },
               move (event) {
                 position.x += event.dx
                 position.y += event.dy
-
-                event.target.style.transform =
-                  `translate(${position.x}px, ${position.y}px)`
+                event.target.style.transform = `translate(${position.x}px, ${position.y}px)`
               },
             },
             modifiers: [
               interact.modifiers.snap({
                 targets: [
-                  interact.snappers.grid({ x: 32, y: 32 })
+                  interact.snappers.grid({ x: gridSize, y: gridSize })
                 ],
                 relativePoints: [ { x: 0, y: 0 } ]
               }),
@@ -97,14 +99,43 @@ block content
           })
       });
 
-    script(type='text/javascript').
-      function save()
+  script(type='text/javascript').
+    let saveTimer = null
+
+    function stopSavetimer()
+    {
+      clearTimeout(saveTimer)
+    }
+
+    function startSavetimer()
+    {
+      stopSavetimer()
+      saveTimer = setTimeout(() => { save() }, 3000)
+    }
+
+    function save(displaytoast)
+    {
+      stopSavetimer()
+
+      const locations = {}
+      for(const segment of segments)
       {
-        for(const segment of segments)
-        {
-          const id = segment.id
-          const x = segment.jelement.offset().left / gridSize
-          const y = (segment.jelement.offset().top - topMargin) / gridSize
-          console.log([id, x, y])
-        }
+        const id = segment.id
+        const x = segment.jelement.offset().left / gridSize
+        const y = (segment.jelement.offset().top - topMargin) / gridSize
+        locations[id] = {x, y}
       }
+      $.post('/editor/layout/set/segmentlocations', { locations: JSON.stringify(locations) })
+        .done(function() { 
+          if (displaytoast)
+            ToastSuccess.fire({ title: 'Saved successfully' })
+          $('#buttonsave').removeClass('btn-danger').addClass('btn-warning')
+          $('#panelsave').hide()
+        })
+        .fail(function(xhr, status, error) {
+          if (displaytoast)
+            ToastError.fire({ title: `Error: ${xhr.responseText}` })
+          else
+            $('#buttonsave').removeClass('btn-warning').addClass('btn-danger')
+        })
+    }
