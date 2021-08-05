@@ -6,23 +6,26 @@ block content
     .container-fluid
       .navbar-brand
         img(src='/public/favicon/favicon-32x32.png')
-        | Layout editor
+        | Segment editor
+        |
+        b
+          = segment.name
+        |
+        | #
+        = segment.id
+
       .collapse.navbar-collapse#navbarSupportedContent
         ul.navbar-nav.me-auto.mb-2.mb-lg-0
           li.nav-item
-            a.btn.btn-secondary.active(href='/') Go to main screen
+            a.btn.btn-secondary.active(href='/editor/layout') Back to layout editor
           li.nav-item.dropdown.ms-5
             a.nav-link.dropdown-toggle#navbarDropdown(href='#' role='button' data-bs-toggle='dropdown').
               Segments
             ul.dropdown-menu
               li
-                a.dropdown-item(href='#') Create new...
-              if segments.length
-                li
-                  hr.dropdown-divider
-                li
-                  h6.dropdown-header
-                    | Open in editor
+                a.dropdown-item(href='#') New...
+              li
+                hr.dropdown-divider
               each segment in segments
                 li
                   a.dropdown-item(href='/editor/segment/' + segment.id)
@@ -32,31 +35,6 @@ block content
                     = segment.id
                     | )
 
-          li.nav-item.dropdown
-            a.nav-link.dropdown-toggle#navbarDropdown(href='#' role='button' data-bs-toggle='dropdown').
-              Layout settings
-            ul.dropdown-menu
-              li
-                a.dropdown-item(href='#' onclick="setBlockSize()")
-                  | Block size
-                  | (
-                  = blockSize
-                  | x
-                  = blockSize
-                  | )
-              li
-                a.dropdown-item(href='#' onclick="setWorldColor()")
-                  | World color
-                  | (
-                  = worldColor
-                  | )
-              li
-                a.dropdown-item(href='#' onclick="setTerrainMargin()")
-                  | Terrain margin
-                  | (
-                  = terrainMargin
-                  | px)
-
         ul#panelsave.navbar-nav.ms-auto.mb-2.mb-lg-0.hidden
           li.nav-item
             a#buttonsave.btn.btn-warning(href='#' onclick='saveSegmentLocations(true)' title='CTRL+S')
@@ -64,24 +42,14 @@ block content
 
   div
     each segment in segments
-      .segment(id='div' + segment.id style=`position: absolute; left: ${segment.x * blockSize}px; top: ${segment.y * blockSize + topMargin}px`, ondblclick='window.location.href="/editor/segment/' + segment.id + '"')
+      .segment(id='div' + segment.id style=`position: absolute; left: ${segment.x * blockSize}px; top: ${segment.y * blockSize + topMargin}px`)
         img(src="/layout/segment/"+segment.id)
         ul.dropdown-menu.context-menu
           li
-            h6.dropdown-header
-              b
-                = segment.name
-              |
-              | (#
+            a.dropdown-item(href='#')
               = segment.id
-              | )
-              | segment
           li
-            a.dropdown-item(href='/editor/segment/' + segment.id)
-              | Open in editor
-          li
-            a.dropdown-item(href='#' onclick='deleteSegment(' + segment.id + ', "' + segment.name + '")')
-              | Delete
+            a.dropdown-item(href='#') Másik
 
   script(type='text/javascript').
 
@@ -205,26 +173,6 @@ block content
           .fail(function(xhr, status, error) {
             ToastError.fire({ html: `<b>Error</b><br/>${xhr.responseText}` })
           })
-    }
-
-    function deleteSegment(id, name)
-    {
-      Swal.fire({
-        title: `Do you want to delete ${name} (#${id}) segment?`,
-        text: 'We recommend that you back up the entire layout before deleting the segment so that the data can be restored if necessary.',
-        showCancelButton: true,
-        confirmButtonText: 'Delete',
-        confirmButtonColor: 'red',
-      }).then((result) => {
-        if (result.isConfirmed)
-          $.post('/editor/layout/delete/segment/' + id)
-            .done(function() { 
-              pagereload()
-            })
-            .fail(function(xhr, status, error) {
-              ToastError.fire({ html: `<b>Error</b><br/>${xhr.responseText}` })
-            })
-      })      
     }
 
   script(src='/assets/interactjs/interact.min.js?' + APPVERSION)

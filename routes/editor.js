@@ -3,6 +3,8 @@ const Router = require('fastify-route-group').Router
 module.exports = (fastify) => {
   const router = new Router(fastify)
 
+  router.get('editor', async (request, reply) => { reply.redirect('/editor/layout') })
+
   router.namespace('editor', () => {
     router.get('layout', async (request, reply) => {
       const layout = layoutManager.getLayout()
@@ -39,9 +41,44 @@ module.exports = (fastify) => {
           return JSON.empty
         })
       })
+      router.namespace('delete', () => {
+        router.post('segment/:id(^\\d{1,3}$)', async (request) => {
+          layoutManager.getLayout().deleteSegmentById(Number(request.params.id))
+          layoutManager.saveToFile()
+          return JSON.empty
+        })
+      })
     })
 
-    //router.post('layout/')
+    router.get('segment/:id(^\\d{1,3}$)', async (request, reply) => {
+      const layout = layoutManager.getLayout()
+      const segment = layoutManager.getLayout().getSegmentById(request.params.id)
+      if (!segment) throw new Error(`Segment ${request.params.id} not found`)
+      return reply.noCache().view('editor/segment',
+        {
+          title: 'Segment editor',
+          segment: segment,
+          topMargin: 64,
+          blockSize: layout.blockSize,
+          worldColor: segment.baseColor,
+          terrainMargin: layout.terrainMargin,
+          segments: layout.getAllSegments(),
+        })
+    })
+    router.namespace('segment/:id(^\\d{1,3}$)', () => {
+      router.namespace('set', () => {
+        router.post('baseColor', async (request) => {
+          const segment = layoutManager.getLayout().getSegmentById(request.params.id)
+          if (!segment) throw new Error(`Segment ${request.params.id} not found`)
+          // layoutManager.getLayout().setWorldColor(request.body.worldColor)
+          // layoutManager.saveToFile()
+          return JSON.empty
+        })
+        router.post('elementlocations', async (request) => {
+          return JSON.empty
+        })
+      })
+    })
 
   })
 }
