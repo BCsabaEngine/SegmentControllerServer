@@ -141,6 +141,7 @@
     "fastify-static": "^4.2.2",
     "fastify-websocket": "^3.2.0",
     "glob": "^7.1.7",
+    "hotkeys-js": "^3.8.7",
     "ini": "^2.0.0",
     "interactjs": "^1.10.11",
     "jquery": "^3.6.0",

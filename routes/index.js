@@ -23,6 +23,7 @@ module.exports = (fastify) => {
     '/assets/bootstrap-icons/': path.join(__dirname, '../node_modules/bootstrap-icons/font'),
     '/assets/interactjs/': path.join(__dirname, '../node_modules/interactjs/dist'),
     '/assets/sweetalert2/': path.join(__dirname, '../node_modules/sweetalert2/dist'),
+    '/assets/hotkeys-js/': path.join(__dirname, '../node_modules/hotkeys-js/dist'),
   }
   let isfirst = true
   for (const [key, value] of Object.entries(staticroutes)) {
