@@ -86,7 +86,18 @@ block content
             a.dropdown-item(href='/editor/segment/' + segment.id)
               | Open in editor
           li
-            a.dropdown-item(href='#' onclick='deleteSegment(' + segment.id + ', "' + segment.name + '")')
+            hr.dropdown-divider
+          li
+            a.dropdown-item(href='#' onclick='setSegmentName(' + segment.id + ', "' + segment.name + '")')
+              | Rename
+          li
+            a.dropdown-item(href='#' onclick='setSegmentId(' + segment.id + ', "' + segment.name + '")')
+              | Modify ID
+              | (#
+              = segment.id
+              | )
+          li
+            a.dropdown-item.text-danger(href='#' onclick='deleteSegment(' + segment.id + ', "' + segment.name + '")')
               | Delete
 
   .card#help.hidden(style=`position: absolute; width: 24rem; top: ${topMargin + 16}px; right: 16px`, onclick='hideHelp()')
@@ -99,35 +110,38 @@ block content
         small
           | Many commands are available with keyboard shortcuts.
         dl.row
-          dt.col-sm-4
+          dt.col-sm-5
             kbd
               | SHIFT + N
-          dd.col-sm-8
+          dd.col-sm-7
             | New segment
 
-          dt.col-sm-4
+          dt.col-sm-5
             kbd
-              | CTRL + S
-          dd.col-sm-8
+              | SHIFT + S
+          dd.col-sm-7
             | Save layout immediately
 
-          dt.col-sm-4
+          dt.col-sm-5
             kbd
-              | CTRL + 1..9
-          dd.col-sm-8
-            | Open segments (1-9 only)
+              | SHIFT + 1..9
+          dd.col-sm-7
+            | Open segment
+            small
+              |
+              | (1-9 only)
 
-          dt.col-sm-4
+          dt.col-sm-5
             kbd
               | H
-          dd.col-sm-8
+          dd.col-sm-7
             | Show/hide this help
 
   script(type='text/javascript').
 
     initContextMenus('.segment')
 
-    hotkeys('ctrl+s, command+s', function(event)
+    hotkeys('shift+s', function(event)
     {
       event.preventDefault()
       saveSegmentLocations(true)
@@ -215,7 +229,7 @@ block content
             name: document.getElementById('newname').value
           }
         },
-        html: '#Id: <input type="number" id="newid" name="newid" min="10" max="100" value="3" style="width:15%"> Name: <input type="text" id="newname" name="newname" maxlength="30" value="New segment" style="width:60%">' 
+        html: '#Id: <input type="number" id="newid" name="newid" min="10" max="100" value="#{nextId}" style="width:15%"> Name: <input type="text" id="newname" name="newname" maxlength="30" value="New segment" style="width:60%">' 
       })
 
       if (newsegment && newsegment.id && newsegment.name)
@@ -297,6 +311,44 @@ block content
           })
     }
 
+    async function setSegmentName(id, name)
+    {
+      const { value: segmentName } = await Swal.fire({
+        title: 'New name of segment',
+        input: 'text',
+        inputValue: name,
+        showCancelButton: true,
+      })
+
+      if (segmentName)
+        $.post('/editor/layout/set/segmentname', { id, name: segmentName })
+          .done(function() { 
+            pagereload()
+          })
+          .fail(function(xhr, status, error) {
+            ToastError.fire({ html: `<b>Error</b><br/>${xhr.responseText}` })
+          })
+    }
+
+    async function setSegmentId(id, name)
+    {
+      const { value: newId } = await Swal.fire({
+        title: 'New ID of segment',
+        showCancelButton: true,
+        preConfirm: () => { return document.getElementById('newid').value },
+        html: '#Id: <input type="number" id="newid" name="newid" min="10" max="100" value="' + id + '" style="width:70%">' 
+      })
+
+      if (newId)
+        $.post('/editor/layout/set/segmentid', { id, newid: newId })
+          .done(function() { 
+            pagereload()
+          })
+          .fail(function(xhr, status, error) {
+            ToastError.fire({ html: `<b>Error</b><br/>${xhr.responseText}` })
+          })
+    }
+
     function deleteSegment(id, name)
     {
       Swal.fire({
@@ -307,7 +359,7 @@ block content
         confirmButtonColor: 'red',
       }).then((result) => {
         if (result.isConfirmed)
-          $.post('/editor/layout/delete/segment/' + id)
+          $.post('/editor/layout/delete/segment', { id })
             .done(function() { 
               pagereload()
             })
@@ -320,7 +372,7 @@ block content
   script(src='/assets/interactjs/interact.min.js?' + APPVERSION)
   each segment in segments
     script(type='text/javascript').
-      if (#{segment.id} > 0 && #{segment.id} < 10) hotkeys('ctrl+#{segment.id}', function(event){ window.location.href = '/editor/segment/#{segment.id}' });
+      if (#{segment.id} > 0 && #{segment.id} < 10) hotkeys('shift+#{segment.id}', function(event){ window.location.href = '/editor/segment/#{segment.id}' });
 
       if (window.jQuery)
         $(function () {

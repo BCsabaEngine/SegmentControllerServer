@@ -18,6 +18,7 @@ module.exports = (fastify) => {
           worldColor: layout.worldColor,
           terrainMargin: layout.terrainMargin,
           segments: layout.getAllSegments(),
+          nextId: layout.getNextAvailableId(),
         })
     })
     router.namespace('layout', () => {
@@ -49,10 +50,20 @@ module.exports = (fastify) => {
           layoutManager.saveToFile()
           return JSON.empty
         })
+        router.post('segmentname', async (request) => {
+          layoutManager.getLayout().setSegmentName(Number(request.body.id), request.body.name)
+          layoutManager.saveToFile()
+          return JSON.empty
+        })
+        router.post('segmentid', async (request) => {
+          layoutManager.getLayout().setSegmentId(Number(request.body.id), Number(request.body.newid))
+          layoutManager.saveToFile()
+          return JSON.empty
+        })
       })
       router.namespace('delete', () => {
-        router.post(URL_SEGMENT_ID, async (request) => {
-          layoutManager.getLayout().deleteSegmentById(Number(request.params.id))
+        router.post('segment', async (request) => {
+          layoutManager.getLayout().deleteSegmentById(Number(request.body.id))
           layoutManager.saveToFile()
           return JSON.empty
         })
