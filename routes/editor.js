@@ -3,6 +3,8 @@ const Router = require('fastify-route-group').Router
 module.exports = (fastify) => {
   const router = new Router(fastify)
 
+  const URL_SEGMENT_ID = 'segment/:id(^\\d{1,3}$)'
+
   router.get('editor', async (request, reply) => { reply.redirect('/editor/layout') })
 
   router.namespace('editor', () => {
@@ -19,6 +21,13 @@ module.exports = (fastify) => {
         })
     })
     router.namespace('layout', () => {
+      router.namespace('add', () => {
+        router.post('segment', async (request) => {
+          layoutManager.getLayout().addNewSegment(Number(request.body.id), request.body.name)
+          layoutManager.saveToFile()
+          return JSON.empty
+        })
+      })
       router.namespace('set', () => {
         router.post('blocksize', async (request) => {
           layoutManager.getLayout().setBlockSize(Number(request.body.blockSize))
@@ -42,7 +51,7 @@ module.exports = (fastify) => {
         })
       })
       router.namespace('delete', () => {
-        router.post('segment/:id(^\\d{1,3}$)', async (request) => {
+        router.post(URL_SEGMENT_ID, async (request) => {
           layoutManager.getLayout().deleteSegmentById(Number(request.params.id))
           layoutManager.saveToFile()
           return JSON.empty
@@ -50,7 +59,7 @@ module.exports = (fastify) => {
       })
     })
 
-    router.get('segment/:id(^\\d{1,3}$)', async (request, reply) => {
+    router.get(URL_SEGMENT_ID, async (request, reply) => {
       const layout = layoutManager.getLayout()
       const segment = layoutManager.getLayout().getSegmentById(request.params.id)
       if (!segment) throw new Error(`Segment ${request.params.id} not found`)
@@ -65,7 +74,7 @@ module.exports = (fastify) => {
           segments: layout.getAllSegments(),
         })
     })
-    router.namespace('segment/:id(^\\d{1,3}$)', () => {
+    router.namespace(URL_SEGMENT_ID, () => {
       router.namespace('set', () => {
         router.post('baseColor', async (request) => {
           const segment = layoutManager.getLayout().getSegmentById(request.params.id)

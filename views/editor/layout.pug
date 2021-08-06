@@ -16,7 +16,8 @@ block content
               Segments
             ul.dropdown-menu
               li
-                a.dropdown-item(href='#') Create new...
+                a.dropdown-item(href='#' onclick='newSegment()')
+                  | Create new...
               if segments.length
                 li
                   hr.dropdown-divider
@@ -57,10 +58,15 @@ block content
                   = terrainMargin
                   | px)
 
+          li.nav-item
+            a.nav-link(href='#' onclick='toggleHelp()') Help
+
+
         ul#panelsave.navbar-nav.ms-auto.mb-2.mb-lg-0.hidden
           li.nav-item
             a#buttonsave.btn.btn-warning(href='#' onclick='saveSegmentLocations(true)' title='CTRL+S')
               | Save layout
+
 
   div
     each segment in segments
@@ -83,6 +89,40 @@ block content
             a.dropdown-item(href='#' onclick='deleteSegment(' + segment.id + ', "' + segment.name + '")')
               | Delete
 
+  .card#help.hidden(style=`position: absolute; width: 24rem; top: ${topMargin + 16}px; right: 16px`, onclick='hideHelp()')
+    .card-body
+      h6.card-title
+        i.bi.bi-keyboard
+        | 
+        | Shortcuts
+      p.card-text
+        small
+          | Many commands are available with keyboard shortcuts.
+        dl.row
+          dt.col-sm-4
+            kbd
+              | SHIFT + N
+          dd.col-sm-8
+            | New segment
+
+          dt.col-sm-4
+            kbd
+              | CTRL + S
+          dd.col-sm-8
+            | Save layout immediately
+
+          dt.col-sm-4
+            kbd
+              | CTRL + 1..9
+          dd.col-sm-8
+            | Open segments (1-9 only)
+
+          dt.col-sm-4
+            kbd
+              | H
+          dd.col-sm-8
+            | Show/hide this help
+
   script(type='text/javascript').
 
     initContextMenus('.segment')
@@ -91,7 +131,33 @@ block content
     {
       event.preventDefault()
       saveSegmentLocations(true)
-    });
+    })
+    hotkeys('shift+n', function(event){
+      event.preventDefault()
+      newSegment() 
+    })
+    hotkeys('h', function(event){ toggleHelp() })
+
+
+    function showHelp()
+    {
+      $("#help").fadeIn()
+      setTimeout(() => $("#help").fadeOut(), 30 * 1000)
+      localStorage.setItem('hideHelp', false)
+    }
+    function hideHelp()
+    {
+      $("#help").fadeOut()
+      localStorage.setItem('hideHelp', true)
+    }
+    function toggleHelp()
+    {
+      if($("#help").is(":visible"))
+        hideHelp()
+      else
+        showHelp()
+    }
+    if (localStorage.getItem('hideHelp') != 'true') showHelp()
 
     const topMargin = #{topMargin}
     const blockSize = #{blockSize}
@@ -127,7 +193,7 @@ block content
             downcountSuccessSave--
           }
           $('#buttonsave').removeClass('btn-danger').addClass('btn-warning')
-          $('#panelsave').hide()
+          $('#panelsave').fadeOut()
         })
         .fail(function(xhr, status, error) {
           if (displaytoast)
@@ -136,6 +202,30 @@ block content
             $('#buttonsave').removeClass('btn-warning').addClass('btn-danger')
           downcountSuccessSave = 1
         })
+    }
+
+    async function newSegment()
+    {
+      const { value: newsegment } = await Swal.fire({
+        title: 'Create new segment',
+        showCancelButton: true,
+        preConfirm: () => { 
+          return {
+            id: document.getElementById('newid').value,
+            name: document.getElementById('newname').value
+          }
+        },
+        html: '#Id: <input type="number" id="newid" name="newid" min="10" max="100" value="3" style="width:15%"> Name: <input type="text" id="newname" name="newname" maxlength="30" value="New segment" style="width:60%">' 
+      })
+
+      if (newsegment && newsegment.id && newsegment.name)
+        $.post('/editor/layout/add/segment', { id: newsegment.id, name: newsegment.name })
+          .done(function() { 
+            pagereload()
+          })
+          .fail(function(xhr, status, error) {
+            ToastError.fire({ html: `<b>Error</b><br/>${xhr.responseText}` })
+          })
     }
 
     async function setBlockSize()
@@ -170,16 +260,16 @@ block content
         showCancelButton: true,
         preConfirm: () => { return document.getElementById('html5colorpicker').value },
         html: '<input type="color" id="html5colorpicker" value="#{worldColor}" style="width:50%">' 
-    })
+      })
 
-    if (worldColor)
-      $.post('/editor/layout/set/worldcolor', { worldColor: worldColor })
-        .done(function() { 
-          pagereload()
-        })
-        .fail(function(xhr, status, error) {
-          ToastError.fire({ html: `<b>Error</b><br/>${xhr.responseText}` })
-        })
+      if (worldColor)
+        $.post('/editor/layout/set/worldcolor', { worldColor: worldColor })
+          .done(function() { 
+            pagereload()
+          })
+          .fail(function(xhr, status, error) {
+            ToastError.fire({ html: `<b>Error</b><br/>${xhr.responseText}` })
+          })
     }
 
     async function setTerrainMargin()
@@ -230,6 +320,8 @@ block content
   script(src='/assets/interactjs/interact.min.js?' + APPVERSION)
   each segment in segments
     script(type='text/javascript').
+      if (#{segment.id} > 0 && #{segment.id} < 10) hotkeys('ctrl+#{segment.id}', function(event){ window.location.href = '/editor/segment/#{segment.id}' });
+
       if (window.jQuery)
         $(function () {
           const position = { x: 0, y: 0 }
@@ -247,7 +339,7 @@ block content
                 //console.log(event.type, event.target)
                 //console.log(jelement.offset().top - topMargin, jelement.offset().left)
                 //console.log((jelement.offset().top - topMargin) / blockSize, jelement.offset().left / blockSize)
-                $('#panelsave').show()
+                $('#panelsave').fadeIn()
                 startAutosaveTimer()
               },
               move (event) {
