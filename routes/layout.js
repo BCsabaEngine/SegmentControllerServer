@@ -4,6 +4,8 @@ const { createCanvas } = require('canvas')
 module.exports = (fastify) => {
   const router = new Router(fastify)
 
+  const URL_SEGMENT_ID = 'segment/:id(^\\d{1,3}$)'
+
   router.namespace('layout', () => {
     router.get('background', async (request, reply) => {
       const layout = layoutManager.getLayout()
@@ -20,7 +22,7 @@ module.exports = (fastify) => {
       return buf
     })
 
-    router.get('segment/:id(^\\d{1,3}$)', async (request, reply) => {
+    router.get(URL_SEGMENT_ID, async (request, reply) => {
       const id = Number(request.params.id)
 
       const layout = layoutManager.getLayout()

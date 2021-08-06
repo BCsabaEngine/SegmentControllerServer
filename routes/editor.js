@@ -5,23 +5,22 @@ module.exports = (fastify) => {
 
   const URL_SEGMENT_ID = 'segment/:id(^\\d{1,3}$)'
 
-  router.get('editor', async (request, reply) => { reply.redirect('/editor/layout') })
-
   router.namespace('editor', () => {
-    router.get('layout', async (request, reply) => {
-      const layout = layoutManager.getLayout()
-      return reply.noCache().view('editor/layout',
-        {
-          title: 'Layout editor',
-          topMargin: 64,
-          blockSize: layout.blockSize,
-          worldColor: layout.worldColor,
-          terrainMargin: layout.terrainMargin,
-          segments: layout.getAllSegments(),
-          nextId: layout.getNextAvailableId(),
-        })
-    })
+    router.get('', async (request, reply) => { reply.redirect('/editor/layout') })
     router.namespace('layout', () => {
+      router.get('', async (request, reply) => {
+        const layout = layoutManager.getLayout()
+        return reply.noCache().view('editor/layout',
+          {
+            title: 'Layout editor',
+            topMargin: 64,
+            blockSize: layout.blockSize,
+            worldColor: layout.worldColor,
+            terrainMargin: layout.terrainMargin,
+            segments: layout.getAllSegments(),
+            nextId: layout.getNextAvailableId(),
+          })
+      })
       router.namespace('add', () => {
         router.post('segment', async (request) => {
           layoutManager.getLayout().addNewSegment(Number(request.body.id), request.body.name)
@@ -70,22 +69,22 @@ module.exports = (fastify) => {
       })
     })
 
-    router.get(URL_SEGMENT_ID, async (request, reply) => {
-      const layout = layoutManager.getLayout()
-      const segment = layoutManager.getLayout().getSegmentById(request.params.id)
-      if (!segment) throw new Error(`Segment ${request.params.id} not found`)
-      return reply.noCache().view('editor/segment',
-        {
-          title: 'Segment editor',
-          segment: segment,
-          topMargin: 64,
-          blockSize: layout.blockSize,
-          worldColor: segment.baseColor,
-          terrainMargin: layout.terrainMargin,
-          segments: layout.getAllSegments(),
-        })
-    })
     router.namespace(URL_SEGMENT_ID, () => {
+      router.get('', async (request, reply) => {
+        const layout = layoutManager.getLayout()
+        const segment = layoutManager.getLayout().getSegmentById(request.params.id)
+        if (!segment) throw new Error(`Segment ${request.params.id} not found`)
+        return reply.noCache().view('editor/segment',
+          {
+            title: 'Segment editor',
+            segment: segment,
+            topMargin: 64,
+            blockSize: layout.blockSize,
+            worldColor: segment.baseColor,
+            terrainMargin: layout.terrainMargin,
+            segments: layout.getAllSegments(),
+          })
+      })
       router.namespace('set', () => {
         router.post('baseColor', async (request) => {
           const segment = layoutManager.getLayout().getSegmentById(request.params.id)
