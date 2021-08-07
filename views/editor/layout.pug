@@ -8,15 +8,19 @@ block content
         img(src='/public/favicon/favicon-32x32.png')
         | Layout
 
+
       .collapse.navbar-collapse
         ul.navbar-nav.me-auto.mb-2.mb-lg-0
-          
-          li.nav-item
-            a.btn.btn-secondary.active(href='/') Go to main screen
 
-          li.nav-item.dropdown.ms-5
-            a.nav-link.dropdown-toggle#navbarDropdown(href='#' role='button' data-bs-toggle='dropdown').
-              Segments
+          li.nav-item
+            a.btn.btn-secondary.active(href='/')
+              i.bi.bi-arrow-left-circle
+              | 
+              | Main screen
+
+          li.nav-item.dropdown.ms-3
+            a.nav-link.dropdown-toggle#navbarDropdown(href='#' role='button' data-bs-toggle='dropdown')
+              | Segments
             ul.dropdown-menu
               li
                 a.dropdown-item(href='#' onclick='newSegment()')
@@ -36,9 +40,13 @@ block content
                     = segment.id
                     | )
 
-          li.nav-item.dropdown
-            a.nav-link.dropdown-toggle#navbarDropdown(href='#' role='button' data-bs-toggle='dropdown').
-              Layout settings
+        ul.navbar-nav.ms-auto.mb-2.mb-lg-0
+          li#panelsave.nav-item.hidden
+            a#buttonsave.btn.btn-warning(href='#' onclick='saveSegmentLocations(true)' title='CTRL+S')
+              | Save layout
+          li.nav-item.dropdown.dropstart
+            a.nav-link(href='#' role='button' data-bs-toggle='dropdown')
+              i.bi.bi-gear-fill
             ul.dropdown-menu
               li
                 a.dropdown-item(href='#' onclick="setBlockSize()")
@@ -62,12 +70,8 @@ block content
                   | px)
 
           li.nav-item
-            a.nav-link(href='#' onclick='toggleHelp()') Help
-
-        ul#panelsave.navbar-nav.ms-auto.mb-2.mb-lg-0.hidden
-          li.nav-item
-            a#buttonsave.btn.btn-warning(href='#' onclick='saveSegmentLocations(true)' title='CTRL+S')
-              | Save layout
+            a.nav-link(href='#' onclick='toggleHelp()')
+              i.bi.bi-question-circle-fill
 
   div
     each segment in segments

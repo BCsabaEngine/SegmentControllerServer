@@ -15,22 +15,6 @@ function divreload(element, onready, latencyms) {
     setTimeout(function () { divreload(element, onready, undefined); }, latencyms);
 }
 
-// function showconfirmdialog(message, operation, onclick) {
-//   Swal.fire({
-//     title: 'Are you sure?',
-//     text: message,
-//     icon: 'question',
-//     showCancelButton: true,
-//     confirmButtonColor: 'red',
-//     confirmButtonText: operation,
-//   })
-//     .then((result) => { if (result.value) onclick(result.value) });
-// }
-
-// function showconfirmdeletedialog(message, onclick) {
-//   showconfirmdialog(message, "Delete", onclick);
-// }
-
 var elem = document.documentElement;
 function openFullscreen() {
   if (elem.requestFullscreen) {
@@ -102,5 +86,14 @@ if (window.jQuery)
     $('html').contextmenu(function () {
       $('.context-menu').hide();
       return false
+    });
+
+    $(".dropdown-instant").on('mouseenter', function () {
+      const dropdownMenu = $(this).children(".dropdown-menu");
+      if (dropdownMenu) dropdownMenu.show();
+    });
+    $(".dropdown-instant").on('mouseleave', function () {
+      const dropdownMenu = $(this).children(".dropdown-menu");
+      if (dropdownMenu) dropdownMenu.hide();
     });
   })

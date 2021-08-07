@@ -18,11 +18,19 @@ block content
         ul.navbar-nav.me-auto.mb-2.mb-lg-0
 
           li.nav-item
-            a.btn.btn-secondary.active(href='/editor/layout') Back to layout
+            a.btn.btn-secondary.active(href='/editor/layout')
+              i.bi.bi-arrow-left-circle
+              | 
+              | Layout
 
-          li.nav-item.dropdown.ms-5
-            a.nav-link.dropdown-toggle#navbarDropdown(href='#' role='button' data-bs-toggle='dropdown').
-              Tracks
+          li.nav-item.ms-5
+            a.nav-link(href='#' style="transform: rotate(-90deg)")
+              i.bi.bi-cursor-fill
+
+          li.nav-item.dropdown.dropdown-instant.ms-2
+            a.nav-link.dropdown-toggleX(href='#' role='button' data-bs-toggle='dropdown')
+              img(src=tracks[0].url width='24px')
+              | Tracks
             ul.dropdown-menu
               each track in tracks
                 li
@@ -31,9 +39,14 @@ block content
                     | 
                     = track.name
 
-          li.nav-item.dropdown
-            a.nav-link.dropdown-toggle#navbarDropdown(href='#' role='button' data-bs-toggle='dropdown').
-              Segment settings
+        ul.navbar-nav.ms-auto.mb-2.mb-lg-0
+          li#panelsave.nav-item.hidden
+            a#buttonsave.btn.btn-warning(href='#' onclick='saveSegmentElements(true)' title='CTRL+S')
+              | Save segment
+
+          li.nav-item.dropdown.dropstart
+            a.nav-link(href='#' role='button' data-bs-toggle='dropdown')
+              i.bi.bi-gear-fill
             ul.dropdown-menu
               li
                 a.dropdown-item(href='#' onclick="setBaseColor()")
@@ -43,12 +56,8 @@ block content
                   | )
 
           li.nav-item
-            a.nav-link(href='#' onclick='toggleHelp()') Help
-
-        ul#panelsave.navbar-nav.ms-auto.mb-2.mb-lg-0.hidden
-          li.nav-item
-            a#buttonsave.btn.btn-warning(href='#' onclick='saveSegmentElements(true)' title='CTRL+S')
-              | Save segment
+            a.nav-link(href='#' onclick='toggleHelp()')
+              i.bi.bi-question-circle-fill
 
   .card#help.hidden(style=`position: absolute; width: 24rem; top: ${topMargin + 16}px; right: 16px`, onclick='hideHelp()')
     .card-body
@@ -88,6 +97,10 @@ block content
             | Show/hide this help
 
   script(type='text/javascript').
+
+    $(function() {
+      $('html').css('cursor', 'url("/glyph/track/vline"), auto');      
+    })
 
     hotkeys('ctrl+s, command+s', function(event)
     {
