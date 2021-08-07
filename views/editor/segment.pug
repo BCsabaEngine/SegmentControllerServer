@@ -6,7 +6,7 @@ block content
     .container-fluid
       .navbar-brand
         img(src='/public/favicon/favicon-32x32.png')
-        | Segment editor
+        | Segment
         |
         b
           = segment.name
@@ -14,52 +14,107 @@ block content
         | #
         = segment.id
 
-      .collapse.navbar-collapse#navbarSupportedContent
+      .collapse.navbar-collapse
         ul.navbar-nav.me-auto.mb-2.mb-lg-0
+
           li.nav-item
-            a.btn.btn-secondary.active(href='/editor/layout') Back to layout editor
+            a.btn.btn-secondary.active(href='/editor/layout') Back to layout
+
           li.nav-item.dropdown.ms-5
             a.nav-link.dropdown-toggle#navbarDropdown(href='#' role='button' data-bs-toggle='dropdown').
-              Segments
+              Tracks
+            ul.dropdown-menu
+              each track in tracks
+                li
+                  a.dropdown-item(href='#')
+                    img(src=track.url width='16px')
+                    | 
+                    = track.name
+
+          li.nav-item.dropdown
+            a.nav-link.dropdown-toggle#navbarDropdown(href='#' role='button' data-bs-toggle='dropdown').
+              Segment settings
             ul.dropdown-menu
               li
-                a.dropdown-item(href='#') New...
-              li
-                hr.dropdown-divider
-              each segment in segments
-                li
-                  a.dropdown-item(href='/editor/segment/' + segment.id)
-                    = segment.name
-                    |
-                    | (#
-                    = segment.id
-                    | )
+                a.dropdown-item(href='#' onclick="setBaseColor()")
+                  | Base color
+                  | (
+                  = segment.baseColor
+                  | )
+
+          li.nav-item
+            a.nav-link(href='#' onclick='toggleHelp()') Help
 
         ul#panelsave.navbar-nav.ms-auto.mb-2.mb-lg-0.hidden
           li.nav-item
-            a#buttonsave.btn.btn-warning(href='#' onclick='saveSegmentLocations(true)' title='CTRL+S')
-              | Save layout
+            a#buttonsave.btn.btn-warning(href='#' onclick='saveSegmentElements(true)' title='CTRL+S')
+              | Save segment
 
-  div
-    each segment in segments
-      .segment(id='div' + segment.id style=`position: absolute; left: ${segment.x * blockSize}px; top: ${segment.y * blockSize + topMargin}px`)
-        img(src="/layout/segment/"+segment.id)
-        ul.dropdown-menu.context-menu
-          li
-            a.dropdown-item(href='#')
-              = segment.id
-          li
-            a.dropdown-item(href='#') Másik
+  .card#help.hidden(style=`position: absolute; width: 24rem; top: ${topMargin + 16}px; right: 16px`, onclick='hideHelp()')
+    .card-body
+      h6.card-title
+        i.bi.bi-keyboard
+        | 
+        | Shortcuts
+      p.card-text
+        small
+          | Many commands are available with keyboard shortcuts.
+        dl.row
+          dt.col-sm-5
+            kbd
+              | SHIFT + N
+          dd.col-sm-7
+            | New segment
+
+          dt.col-sm-5
+            kbd
+              | SHIFT + S
+          dd.col-sm-7
+            | Save layout immediately
+
+          dt.col-sm-5
+            kbd
+              | SHIFT + 1..9
+          dd.col-sm-7
+            | Open segment
+            small
+              |
+              | (1-9 only)
+
+          dt.col-sm-5
+            kbd
+              | SHIFT + H
+          dd.col-sm-7
+            | Show/hide this help
 
   script(type='text/javascript').
-
-    initContextMenus('.segment')
 
     hotkeys('ctrl+s, command+s', function(event)
     {
       event.preventDefault()
-      saveSegmentLocations(true)
+      saveSegmentElements(true)
     });
+    hotkeys('shift+h', function(event){ toggleHelp() })
+
+    function showHelp()
+    {
+      $("#help").fadeIn()
+      setTimeout(() => $("#help").fadeOut(), 30 * 1000)
+      localStorage.setItem('hideSegmentHelp', false)
+    }
+    function hideHelp()
+    {
+      $("#help").fadeOut()
+      localStorage.setItem('hideSegmentHelp', true)
+    }
+    function toggleHelp()
+    {
+      if($("#help").is(":visible"))
+        hideHelp()
+      else
+        showHelp()
+    }
+    if (localStorage.getItem('hideSegmentHelp') != 'true') showHelp()
 
     const topMargin = #{topMargin}
     const blockSize = #{blockSize}
@@ -71,77 +126,52 @@ block content
     function startAutosaveTimer()
     {
       stopAutosaveTimer()
-      timerAutosave = setTimeout(() => { saveSegmentLocations() }, 3000)
+      timerAutosave = setTimeout(() => { saveSegmentElements() }, 3000)
     }
-    function saveSegmentLocations(displaytoast)
+    function saveSegmentElements(displaytoast)
     {
       stopAutosaveTimer()
 
       if(!$("#panelsave").is(":visible")) return
 
-      const locations = {}
-      for(const segment of segments)
-      {
-        const id = segment.id
-        const x = segment.jelement.offset().left / blockSize
-        const y = (segment.jelement.offset().top - topMargin) / blockSize
-        locations[id] = {x, y}
-      }
-      $.post('/editor/layout/set/segmentlocations', { locations: JSON.stringify(locations) })
-        .done(function() { 
-          if (displaytoast && downcountSuccessSave)
-          {
-            ToastSuccess.fire({ html: 'Saved successfully<br/><small>(Will not appear next time)</small>' })
-            downcountSuccessSave--
-          }
-          $('#buttonsave').removeClass('btn-danger').addClass('btn-warning')
-          $('#panelsave').hide()
-        })
-        .fail(function(xhr, status, error) {
-          if (displaytoast)
-            ToastError.fire({ html: `<b>Error</b><br/>${xhr.responseText}` })
-          else
-            $('#buttonsave').removeClass('btn-warning').addClass('btn-danger')
-          downcountSuccessSave = 1
-        })
+      //- const locations = {}
+      //- for(const segment of segments)
+      //- {
+      //-   const id = segment.id
+      //-   const x = segment.jelement.offset().left / blockSize
+      //-   const y = (segment.jelement.offset().top - topMargin) / blockSize
+      //-   locations[id] = {x, y}
+      //- }
+      //- $.post('/editor/layout/set/segmentlocations', { locations: JSON.stringify(locations) })
+      //-   .done(function() { 
+      //-     if (displaytoast && downcountSuccessSave)
+      //-     {
+      //-       ToastSuccess.fire({ html: 'Saved successfully<br/><small>(Will not appear next time)</small>' })
+      //-       downcountSuccessSave--
+      //-     }
+      //-     $('#buttonsave').removeClass('btn-danger').addClass('btn-warning')
+      //-     $('#panelsave').hide()
+      //-   })
+      //-   .fail(function(xhr, status, error) {
+      //-     if (displaytoast)
+      //-       ToastError.fire({ html: `<b>Error</b><br/>${xhr.responseText}` })
+      //-     else
+      //-       $('#buttonsave').removeClass('btn-warning').addClass('btn-danger')
+      //-     downcountSuccessSave = 1
+      //-   })
     }
 
-    async function setBlockSize()
+    async function setBaseColor()
     {
-      const { value: blockSize } = await Swal.fire({
-        title: 'Block size of layout',
-        input: 'select',
-        inputOptions: {
-          16: 'Micro (16x16)',
-          24: 'Small (24x24)',
-          32: 'Normal (32x32)',
-          48: 'Large (48x48)',
-        },
-        inputValue: #{blockSize},
-        showCancelButton: true,
-      })
-
-      if (blockSize)
-        $.post('/editor/layout/set/blocksize', { blockSize: blockSize })
-          .done(function() { 
-            pagereload()
-          })
-          .fail(function(xhr, status, error) {
-            ToastError.fire({ html: `<b>Error</b><br/>${xhr.responseText}` })
-          })
-    }
-
-    async function setWorldColor()
-    {
-      const { value: worldColor } = await Swal.fire({
-        title: 'Color of world (background)',
+      const { value: baseColor } = await Swal.fire({
+        title: 'Color of plate (background)',
         showCancelButton: true,
         preConfirm: () => { return document.getElementById('html5colorpicker').value },
-        html: '<input type="color" id="html5colorpicker" value="#{worldColor}" style="width:50%">' 
+        html: '<input type="color" id="html5colorpicker" value="#{segment.baseColor}" style="width:50%">' 
     })
 
-    if (worldColor)
-      $.post('/editor/layout/set/worldcolor', { worldColor: worldColor })
+    if (baseColor)
+      $.post('/editor/segment/#{segment.id}/set/baseColor', { baseColor: baseColor })
         .done(function() { 
           pagereload()
         })
@@ -150,71 +180,4 @@ block content
         })
     }
 
-    async function setTerrainMargin()
-    {
-      const { value: terrainMargin } = await Swal.fire({
-        title: 'Margin of terrain elements',
-        input: 'range',
-        inputLabel: 'Margin in pixels (max. 1/4th of block size)',
-        inputAttributes: {
-          min: 0,
-          max: #{blockSize / 4},
-          step: 1
-        },
-        inputValue: #{terrainMargin},
-        showCancelButton: true,
-      })
-
-      if (terrainMargin)
-        $.post('/editor/layout/set/terrainmargin', { terrainMargin: terrainMargin })
-          .done(function() { 
-            pagereload()
-          })
-          .fail(function(xhr, status, error) {
-            ToastError.fire({ html: `<b>Error</b><br/>${xhr.responseText}` })
-          })
-    }
-
   script(src='/assets/interactjs/interact.min.js?' + APPVERSION)
-  each segment in segments
-    script(type='text/javascript').
-      if (window.jQuery)
-        $(function () {
-          const position = { x: 0, y: 0 }
-          const element = document.getElementById('div#{segment.id}')
-          const jelement = $('#div#{segment.id}')
-          segments.push({id: #{segment.id}, jelement})
-
-          interact(element).draggable({
-            listeners: {
-              start (event) {
-                stopAutosaveTimer()
-                //console.log(event.type, event.target)
-              },
-              end (event) {
-                //console.log(event.type, event.target)
-                //console.log(jelement.offset().top - topMargin, jelement.offset().left)
-                //console.log((jelement.offset().top - topMargin) / blockSize, jelement.offset().left / blockSize)
-                $('#panelsave').show()
-                startAutosaveTimer()
-              },
-              move (event) {
-                position.x += event.dx
-                position.y += event.dy
-                event.target.style.transform = `translate(${position.x}px, ${position.y}px)`
-              },
-            },
-            modifiers: [
-              interact.modifiers.snap({
-                targets: [
-                  interact.snappers.grid({ x: blockSize, y: blockSize })
-                ],
-                relativePoints: [ { x: 0, y: 0 } ]
-              }),
-              interact.modifiers.restrictRect({
-                restriction: { x: 0, y: topMargin, width: 10000, height: 10000 },
-                endOnly: false
-              })
-            ]
-          })
-      });

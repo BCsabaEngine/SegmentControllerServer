@@ -6,11 +6,14 @@ block content
     .container-fluid
       .navbar-brand
         img(src='/public/favicon/favicon-32x32.png')
-        | Layout editor
-      .collapse.navbar-collapse#navbarSupportedContent
+        | Layout
+
+      .collapse.navbar-collapse
         ul.navbar-nav.me-auto.mb-2.mb-lg-0
+          
           li.nav-item
             a.btn.btn-secondary.active(href='/') Go to main screen
+
           li.nav-item.dropdown.ms-5
             a.nav-link.dropdown-toggle#navbarDropdown(href='#' role='button' data-bs-toggle='dropdown').
               Segments
@@ -61,12 +64,10 @@ block content
           li.nav-item
             a.nav-link(href='#' onclick='toggleHelp()') Help
 
-
         ul#panelsave.navbar-nav.ms-auto.mb-2.mb-lg-0.hidden
           li.nav-item
             a#buttonsave.btn.btn-warning(href='#' onclick='saveSegmentLocations(true)' title='CTRL+S')
               | Save layout
-
 
   div
     each segment in segments
@@ -133,7 +134,7 @@ block content
 
           dt.col-sm-5
             kbd
-              | H
+              | SHIFT + H
           dd.col-sm-7
             | Show/hide this help
 
@@ -150,19 +151,19 @@ block content
       event.preventDefault()
       newSegment() 
     })
-    hotkeys('h', function(event){ toggleHelp() })
+    hotkeys('shift+h', function(event){ toggleHelp() })
 
 
     function showHelp()
     {
       $("#help").fadeIn()
       setTimeout(() => $("#help").fadeOut(), 30 * 1000)
-      localStorage.setItem('hideHelp', false)
+      localStorage.setItem('hideLayoutHelp', false)
     }
     function hideHelp()
     {
       $("#help").fadeOut()
-      localStorage.setItem('hideHelp', true)
+      localStorage.setItem('hideLayoutHelp', true)
     }
     function toggleHelp()
     {
@@ -171,7 +172,7 @@ block content
       else
         showHelp()
     }
-    if (localStorage.getItem('hideHelp') != 'true') showHelp()
+    if (localStorage.getItem('hideLayoutHelp') != 'true') showHelp()
 
     const topMargin = #{topMargin}
     const blockSize = #{blockSize}

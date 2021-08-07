@@ -1,5 +1,7 @@
 const Router = require('fastify-route-group').Router
 
+const LayoutSegmentTrack = require('../lib/layoutClasses/layoutSegmentTrack')
+
 module.exports = (fastify) => {
   const router = new Router(fastify)
 
@@ -14,6 +16,8 @@ module.exports = (fastify) => {
           {
             title: 'Layout editor',
             topMargin: 64,
+            bgColor: layout.worldColor,
+
             blockSize: layout.blockSize,
             worldColor: layout.worldColor,
             terrainMargin: layout.terrainMargin,
@@ -74,23 +78,34 @@ module.exports = (fastify) => {
         const layout = layoutManager.getLayout()
         const segment = layoutManager.getLayout().getSegmentById(request.params.id)
         if (!segment) throw new Error(`Segment ${request.params.id} not found`)
+
+        const tracks = []
+        const tracktypes = LayoutSegmentTrack.getTypes()
+        for (const type in tracktypes)
+          tracks.push({
+            type: type,
+            name: tracktypes[type],
+            url: `/glyph/track/${type}`,
+          })
+
         return reply.noCache().view('editor/segment',
           {
             title: 'Segment editor',
-            segment: segment,
             topMargin: 64,
+            bgColor: segment.baseColor,
+
             blockSize: layout.blockSize,
-            worldColor: segment.baseColor,
-            terrainMargin: layout.terrainMargin,
-            segments: layout.getAllSegments(),
+
+            segment: segment,
+            tracks,
           })
       })
       router.namespace('set', () => {
         router.post('baseColor', async (request) => {
           const segment = layoutManager.getLayout().getSegmentById(request.params.id)
           if (!segment) throw new Error(`Segment ${request.params.id} not found`)
-          // layoutManager.getLayout().setWorldColor(request.body.worldColor)
-          // layoutManager.saveToFile()
+          segment.setBaseColor(request.body.baseColor)
+          layoutManager.saveToFile()
           return JSON.empty
         })
         router.post('elementlocations', async (request) => {

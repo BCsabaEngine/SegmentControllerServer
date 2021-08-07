@@ -43,5 +43,6 @@ module.exports = (fastify) => {
   require('./websocket.js')(fastify)
 
   require('./layout.js')(fastify)
+  require('./glyph.js')(fastify)
   require('./editor.js')(fastify)
 }

@@ -1,0 +1,27 @@
+extends ../_base
+
+block content
+
+  br
+  center
+    h4 
+      = title
+      small
+        | 
+        | (
+        = blockSize
+        | px)
+    br
+    each type in glyphs
+      dl.row(style='width:300px')
+        dt.col-sm-8
+          = type.name 
+          | 
+          small
+            br
+            | (
+            = type.type
+            | )
+        dd.col-sm-4
+          img(src=type.url)
+      br
