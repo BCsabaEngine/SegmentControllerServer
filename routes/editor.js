@@ -110,7 +110,11 @@ module.exports = (fastify) => {
           layoutManager.saveToFile()
           return JSON.empty
         })
-        router.post('elementlocations', async (request) => {
+        router.post('elements', async (request) => {
+          const segment = layoutManager.getLayout().getSegmentById(request.params.id)
+          if (!segment) throw new Error(`Segment ${request.params.id} not found`)
+          segment.setElements(JSON.tryParse(request.body.elements))
+          layoutManager.saveToFile()
           return JSON.empty
         })
       })

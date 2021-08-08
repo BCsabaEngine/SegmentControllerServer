@@ -104,15 +104,15 @@ block content
           a.dropdown-item.text-danger(href='#' onclick='removeMyElement(this)')
             | Delete
     .segmentelement.hidden#terrain(style=`position:absolute; left:0; top:0; width: ${blockSize}px; height: ${blockSize}px)`)
+      span.d-flex.align-items-center.justify-content-center(style="height:100%;").small
+        |
       ul.dropdown-menu.context-menu
         li
-          a.dropdown-item(href='#')
-            | Rename
+          a.dropdown-item(href='#' onclick='callMyElementMethod(this, "inputSetColor")')
+            | Set color
         li
-          a.dropdown-item(href='#')
-            | Modify ID
-            | (#
-            | )
+          a.dropdown-item(href='#' onclick='callMyElementMethod(this, "inputSetText")')
+            | Set text
         li
           a.dropdown-item.text-danger(href='#' onclick='removeMyElement(this)')
             | Delete
@@ -137,8 +137,22 @@ block content
 
     function removeElementById(id) { if (id in elements) elements[id].remove() }
     function removeMyElement(me) { removeElementById($(me).closest(".segmentelement").data("id")) }
+    async function callMyElementMethod(me, method)
+    {
+      const id = $(me).closest(".segmentelement").data("id")
+      if (id && (id in elements) && elements[id] && elements[id][method])
+        if (await elements[id][method]())
+          needSaveSegmentElements()
+    }
 
     function clearSelection() { $('#elementscontainer').children().removeClass('elementselected') }
+    $('#elementscontainer').on('click', () => { clearSelection() })
+
+    $('html').on('contextmenu', function () {
+      $('.context-menu').hide();
+      return false
+    });
+    initContextMenus('.segmentelement')
 
     window.addEventListener("keydown", function (event) {
       if (event.defaultPrevented) return
@@ -249,9 +263,8 @@ block content
               },
               end (event) {
                 that.setPos(jelement.offset().left / blockSize, (jelement.offset().top - topMargin) / blockSize)
-                $('#panelsave').fadeIn()
-                startAutosaveTimer()
-              },
+                needSaveSegmentElements()
+              }
             },
             modifiers: [
               interact.modifiers.snap({
@@ -311,6 +324,8 @@ block content
           delete elements[this.id]
         this.element().remove()
       }
+
+      saveData() { return { type: 'track', x: this.x, y: this.y, type: this.type } }
     }
 
     class Terrain {
@@ -320,7 +335,8 @@ block content
       w
       h
       color
-      constructor(x, y, w, h, color)
+      text
+      constructor(x, y, w, h, color, text)
       {
         elementid++
         this.id = elementid
@@ -343,6 +359,7 @@ block content
           .removeClass('hidden')
 
         this.setColor(color)
+        this.setText(text)
 
         const that = this
 
@@ -372,8 +389,7 @@ block content
               },
               end (event) {
                 that.setPos(jelement.offset().left / blockSize, (jelement.offset().top - topMargin) / blockSize)
-                $('#panelsave').fadeIn()
-                startAutosaveTimer()
+                needSaveSegmentElements()
               },
             },
             modifiers: [
@@ -400,7 +416,6 @@ block content
               move (event) {
                 sizeDelta.x += event.deltaRect.left
                 sizeDelta.y += event.deltaRect.top
-                console.log('move', sizeDelta)
 
                 event.target.style.width = `${event.rect.width}px`
                 event.target.style.height = `${event.rect.height}px`
@@ -409,14 +424,13 @@ block content
                 event.target.style.left = `${that.x * blockSize + sizeDelta.x}px`
                 event.target.style.top = `${that.y * blockSize + topMargin + sizeDelta.y}px`
 
-                event.target.textContent = Math.round(event.rect.width / blockSize) + '\u00D7' + Math.round(event.rect.height / blockSize)
+                //event.target.textContent = Math.round(event.rect.width / blockSize) + '\u00D7' + Math.round(event.rect.height / blockSize)
               },
               end (event) {
                 that.setPos(jelement.offset().left / blockSize, (jelement.offset().top - topMargin) / blockSize)
                 that.setSize(jelement.width() / blockSize, jelement.height() / blockSize)
-                event.target.textContent = ''
-                $('#panelsave').fadeIn()
-                startAutosaveTimer()
+                //event.target.textContent = ''
+                needSaveSegmentElements()
               }
             },
             modifiers: [
@@ -441,6 +455,14 @@ block content
         this.color = color
         this.element()
           .css('background-color', this.color)
+      }
+
+      setText(text)
+      {
+        this.text = text
+        this.element()
+          .find('span')
+          .text(text)
       }
 
       containsPoint(x, y) { return this.x >= x && this.x + this.w <= x && this.y >= y && this.y + this.h <= y}
@@ -481,26 +503,77 @@ block content
           delete elements[this.id]
         this.element().remove()
       }
+
+      saveData() { return { type: 'terrain', x: this.x, y: this.y, w: this.w, h: this.h, color: this.color, text: this.text } }
+
+      async inputSetColor()
+      {
+        const { value: newColor } = await Swal.fire({
+          title: 'Color of terrain',
+          showCancelButton: true,
+          backdrop: false,
+          preConfirm: () => { return document.getElementById('html5colorpicker').value },
+          html: '<input type="color" id="html5colorpicker" value="' + this.color + '" style="width:50%">' 
+        })
+
+        if (newColor)
+        {
+          this.setColor(newColor)
+          return true
+        }
+      }
+
+      async inputSetText()
+      {
+        const { value: newTitle } = await Swal.fire({
+          title: 'Title of terrain',
+          input: 'text',
+          inputValue: this.text || '',
+          showCancelButton: true,
+        })
+
+        if (newTitle !== undefined)
+        {
+          this.setText(newTitle)
+          return true
+        }
+      }
     }
 
-    $(function() {
-      //$('html').css('cursor', 'url("/glyph/track/vline"), auto');      
+  script(type='text/javascript')
+    | $(function() {
+    |  //$('html').css('cursor', 'url("/glyph/track/vline"), auto');      
+    | 
+    each terrain in segment.terrains
+      |  new Terrain(
+      = terrain.x
+      |, 
+      = terrain.y
+      |, 
+      = terrain.width
+      |, 
+      = terrain.height
+      |, '
+      = terrain.color
+      |'
+      |, '
+      = terrain.text
+      |');
+      |
+    |
+    each track in segment.tracks
+      |  new Track(
+      = track.x
+      |, 
+      = track.y
+      |, '
+      = terrain.type
+      |');
+      |
+    |
+    | })
 
-      new Terrain(0, 0, 15, 10, '#ebc417')
-
-      new Track(0, 0, 'hline')
-      new Track(1, 0, 'hline')
-      new Track(2, 0, 'hline')
-      new Track(3, 0, 'hline')
-      new Track(4, 0, 'hline')
-      new Track(5, 0, 'trturn')
-      new Track(4, 4, 'vline')
-
-      initContextMenus('.segmentelement')
-
-      $('#elementscontainer').on('click', () => { clearSelection() })
-    })
-
+  script(type='text/javascript').
     hotkeys('ctrl+s, command+s', function(event)
     {
       event.preventDefault()
@@ -535,7 +608,12 @@ block content
     function startAutosaveTimer()
     {
       stopAutosaveTimer()
-      timerAutosave = setTimeout(() => { saveSegmentElements() }, 3000)
+      timerAutosave = setTimeout(() => { saveSegmentElements() }, 750)
+    }
+    function needSaveSegmentElements()
+    {
+      $('#panelsave').fadeIn()
+      startAutosaveTimer()
     }
     function saveSegmentElements(displaytoast)
     {
@@ -543,31 +621,27 @@ block content
 
       if(!$("#panelsave").is(":visible")) return
 
-      //- const locations = {}
-      //- for(const segment of segments)
-      //- {
-      //-   const id = segment.id
-      //-   const x = segment.jelement.offset().left / blockSize
-      //-   const y = (segment.jelement.offset().top - topMargin) / blockSize
-      //-   locations[id] = {x, y}
-      //- }
-      //- $.post('/editor/layout/set/segmentlocations', { locations: JSON.stringify(locations) })
-      //-   .done(function() { 
-      //-     if (displaytoast && downcountSuccessSave)
-      //-     {
-      //-       ToastSuccess.fire({ html: 'Saved successfully<br/><small>(Will not appear next time)</small>' })
-      //-       downcountSuccessSave--
-      //-     }
-      //-     $('#buttonsave').removeClass('btn-danger').addClass('btn-warning')
-      //-     $('#panelsave').hide()
-      //-   })
-      //-   .fail(function(xhr, status, error) {
-      //-     if (displaytoast)
-      //-       ToastError.fire({ html: `<b>Error</b><br/>${xhr.responseText}` })
-      //-     else
-      //-       $('#buttonsave').removeClass('btn-warning').addClass('btn-danger')
-      //-     downcountSuccessSave = 1
-      //-   })
+      const elementsDataToSave = {}
+      for(const id in elements)
+        elementsDataToSave[id] = elements[id].saveData()
+      console.log(elementsDataToSave)
+      $.post('/editor/segment/#{segment.id}/set/elements', { elements: JSON.stringify(elementsDataToSave) })
+        .done(function() { 
+          if (displaytoast && downcountSuccessSave)
+          {
+            ToastSuccess.fire({ html: 'Saved successfully<br/><small>(Will not appear next time)</small>' })
+            downcountSuccessSave--
+          }
+          $('#buttonsave').removeClass('btn-danger').addClass('btn-warning')
+          $('#panelsave').fadeOut()
+        })
+        .fail(function(xhr, status, error) {
+          if (displaytoast)
+            ToastError.fire({ html: `<b>Error</b><br/>${xhr.responseText}` })
+          else
+            $('#buttonsave').removeClass('btn-warning').addClass('btn-danger')
+          downcountSuccessSave = 1
+        })
     }
 
     async function setBaseColor()
@@ -577,14 +651,14 @@ block content
         showCancelButton: true,
         preConfirm: () => { return document.getElementById('html5colorpicker').value },
         html: '<input type="color" id="html5colorpicker" value="#{segment.baseColor}" style="width:50%">' 
-    })
+      })
 
-    if (baseColor)
-      $.post('/editor/segment/#{segment.id}/set/baseColor', { baseColor: baseColor })
-        .done(function() { 
-          pagereload()
-        })
-        .fail(function(xhr, status, error) {
-          ToastError.fire({ html: `<b>Error</b><br/>${xhr.responseText}` })
-        })
+      if (baseColor)
+        $.post('/editor/segment/#{segment.id}/set/baseColor', { baseColor: baseColor })
+          .done(function() { 
+            pagereload()
+          })
+          .fail(function(xhr, status, error) {
+            ToastError.fire({ html: `<b>Error</b><br/>${xhr.responseText}` })
+          })
     }

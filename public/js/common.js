@@ -71,8 +71,8 @@ function initContextMenus(selector) {
           left: e.offsetX,
           top: e.offsetY
         });
+        return false
       }
-      return false
     });
   })
 }
@@ -83,10 +83,10 @@ if (window.jQuery)
       $('.context-menu').hide();
     });
 
-    $('html').on('contextmenu', function () {
-      $('.context-menu').hide();
-      return false
-    });
+    // $('html').on('contextmenu', function () {
+    //   $('.context-menu').hide();
+    //   return false
+    // });
 
     $(".dropdown-instant").on('mouseenter', function () {
       const dropdownMenu = $(this).children(".dropdown-menu");
