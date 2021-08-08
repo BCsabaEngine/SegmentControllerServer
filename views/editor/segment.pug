@@ -96,10 +96,409 @@ block content
           dd.col-sm-7
             | Show/hide this help
 
+  #elementscontainer(style='min-height: 100vh')
+    .segmentelement.hidden#track(style=`position:absolute; left:0; top:0; width: ${blockSize}px; height: ${blockSize}px)`)
+      img
+      ul.dropdown-menu.context-menu
+        li
+          a.dropdown-item.text-danger(href='#' onclick='removeMyElement(this)')
+            | Delete
+    .segmentelement.hidden#terrain(style=`position:absolute; left:0; top:0; width: ${blockSize}px; height: ${blockSize}px)`)
+      ul.dropdown-menu.context-menu
+        li
+          a.dropdown-item(href='#')
+            | Rename
+        li
+          a.dropdown-item(href='#')
+            | Modify ID
+            | (#
+            | )
+        li
+          a.dropdown-item.text-danger(href='#' onclick='removeMyElement(this)')
+            | Delete
+
+  style.
+    .elementselected {
+      outline-width: 1px;
+      outline-style: dashed;
+      outline-color: `${invertBgColor}`;
+    }
+
+  script(src='/assets/interactjs/interact.min.js?' + APPVERSION)
   script(type='text/javascript').
+    const topMargin = #{topMargin}
+    const blockSize = #{blockSize}
+
+    let isShiftDown = false
+    $(document).on('keyup keydown', function(e){ isShiftDown = e.shiftKey });
+
+    let elementid = 0
+    const elements = {}
+
+    function removeElementById(id) { if (id in elements) elements[id].remove() }
+    function removeMyElement(me) { removeElementById($(me).closest(".segmentelement").data("id")) }
+
+    function clearSelection() { $('#elementscontainer').children().removeClass('elementselected') }
+
+    window.addEventListener("keydown", function (event) {
+      if (event.defaultPrevented) return
+
+      const selections = $('#elementscontainer').children('.elementselected')
+      if (selections.length == 0) return 
+
+      const ids = []
+      for(const selection of selections)
+        ids.push($(selection).data('id'))
+
+      switch (event.key) {
+        case "Down": 
+        case "ArrowDown":
+          for(const id of ids)
+            elements[id].moveDown()
+          break;
+        case "Up": 
+        case "ArrowUp":
+          let allowup = true
+          for(const id of ids)
+            if (!elements[id].canMoveUp())
+            {
+              allowup = false 
+              break
+            }
+          if (allowup)
+            for(const id of ids)
+              elements[id].moveUp()
+          break;
+        case "Left": 
+        case "ArrowLeft":
+          let allowleft = true
+          for(const id of ids)
+            if (!elements[id].canMoveLeft())
+            {
+              allowleft = false 
+              break
+            }
+          if (allowleft)
+            for(const id of ids)
+              elements[id].moveLeft()
+          break;
+        case "Right": 
+        case "ArrowRight":
+          for(const id of ids)
+            elements[id].moveRight()
+          break;
+        case "Esc":
+        case "Escape":
+          clearSelection()
+          break;
+        default:
+          return;
+      }
+      event.preventDefault();
+    }, true);
+
+    class Track {
+      id
+      x
+      y
+      type = null
+      constructor(x, y, type)
+      {
+        elementid++
+        this.id = elementid
+        elements[this.id] = this
+        this.x = x
+        this.y = y
+
+        const jelement = $("#track")
+          .clone()
+          .attr('id', 'element' + this.id)
+          .data('id', this.id)
+          .css('left', x * blockSize)
+          .css('top', y * blockSize + topMargin)
+          .css('z-index', 1)
+          .insertAfter("#track")
+          .removeClass('hidden')
+
+        this.setType(type)
+
+        const that = this
+
+        jelement.on('click', () => {
+          if (!isShiftDown) clearSelection()
+          jelement.toggleClass('elementselected')
+          return false
+        })
+
+        const delta = { x: 0, y: 0 }
+        interact(document.getElementById('element' + this.id))
+          .draggable({
+            listeners: {
+              start (event) {
+                delta.x = 0
+                delta.y = 0
+                stopAutosaveTimer()
+                if (!isShiftDown) clearSelection()
+                jelement.addClass('elementselected')
+              },
+              move (event) {
+                delta.x += event.dx
+                delta.y += event.dy
+                event.target.style.left = `${that.x * blockSize + delta.x}px`
+                event.target.style.top = `${that.y * blockSize + topMargin + delta.y}px`
+              },
+              end (event) {
+                that.setPos(jelement.offset().left / blockSize, (jelement.offset().top - topMargin) / blockSize)
+                $('#panelsave').fadeIn()
+                startAutosaveTimer()
+              },
+            },
+            modifiers: [
+              interact.modifiers.snap({
+                targets: [
+                  interact.snappers.grid({ x: blockSize, y: blockSize })
+                ],
+                relativePoints: [ { x: 0, y: 0 } ]
+              }),
+              interact.modifiers.restrictRect({
+                restriction: { x: 0, y: topMargin, width: 10000, height: 10000 },
+                endOnly: false
+              })
+            ]
+          })
+      }
+
+      element() { return $(`#element${this.id}`) }
+
+      setType(type)
+      {
+        this.type = type
+        this.element()
+          .find('img')
+          .attr('src', `/glyph/track/${this.type}`)
+      }
+
+      containsPoint(x, y) { return this.x == x && this.y == y }
+
+      canMoveLeft() { return this.x > 0 }
+      canMoveUp() { return this.y > 0 }
+
+      moveLeft() { this.setPos(this.x - 1, this.y) }
+      moveRight() { this.setPos(this.x + 1, this.y) }
+      moveUp() { this.setPos(this.x, this.y - 1) }
+      moveDown() { this.setPos(this.x, this.y +1 ) }
+
+      setPos(x, y)
+      {
+        if (x < 0 || y < 0) return
+        this.x = x
+        this.y = y
+
+        this.element()
+          .css('left', this.x * blockSize)
+          .css('top', this.y * blockSize + topMargin)
+
+        //- for(const id in elements)
+        //-   if (id != this.id)
+        //-     if (elements[id] instanceof Track)
+        //-       if (elements[id].containsPoint(this.x, this.y))
+        //-         elements[id].remove()
+      }
+
+      remove()
+      {
+        if (this.id in elements)
+          delete elements[this.id]
+        this.element().remove()
+      }
+    }
+
+    class Terrain {
+      id
+      x
+      y
+      w
+      h
+      color
+      constructor(x, y, w, h, color)
+      {
+        elementid++
+        this.id = elementid
+        elements[this.id] = this
+        this.x = x
+        this.y = y
+        this.w = w
+        this.h = h
+
+        const jelement = $("#terrain")
+          .clone()
+          .attr('id', 'element' + this.id)
+          .data('id', this.id)
+          .css('left', x * blockSize)
+          .css('top', y * blockSize + topMargin)
+          .css('width', w * blockSize)
+          .css('height', h * blockSize)
+          .css('z-index', 0)
+          .insertAfter("#terrain")
+          .removeClass('hidden')
+
+        this.setColor(color)
+
+        const that = this
+
+        jelement.on('click', () => {
+          if (!isShiftDown) clearSelection()
+          jelement.toggleClass('elementselected')
+          return false
+        })
+
+        const moveDelta = { x: 0, y: 0 }
+        const sizeDelta = { x: 0, y: 0 }
+        interact(document.getElementById('element' + this.id))
+          .draggable({
+            listeners: {
+              start (event) {
+                moveDelta.x = 0
+                moveDelta.y = 0
+                stopAutosaveTimer()
+                if (!isShiftDown) clearSelection()
+                jelement.addClass('elementselected')
+              },
+              move (event) {
+                moveDelta.x += event.dx
+                moveDelta.y += event.dy
+                event.target.style.left = `${that.x * blockSize + moveDelta.x}px`
+                event.target.style.top = `${that.y * blockSize + topMargin + moveDelta.y}px`
+              },
+              end (event) {
+                that.setPos(jelement.offset().left / blockSize, (jelement.offset().top - topMargin) / blockSize)
+                $('#panelsave').fadeIn()
+                startAutosaveTimer()
+              },
+            },
+            modifiers: [
+              interact.modifiers.snap({
+                targets: [
+                  interact.snappers.grid({ x: blockSize, y: blockSize })
+                ],
+                relativePoints: [ { x: 0, y: 0 } ]
+              }),
+              interact.modifiers.restrictRect({
+                restriction: { x: 0, y: topMargin, width: 10000, height: 10000 },
+                endOnly: false
+              })
+            ]
+          })
+          .resizable({
+            edges: { left: true, right: true, bottom: true, top: true },
+            listeners: {
+              start(event) {
+                sizeDelta.x = 0
+                sizeDelta.y = 0
+                stopAutosaveTimer()
+              },
+              move (event) {
+                sizeDelta.x += event.deltaRect.left
+                sizeDelta.y += event.deltaRect.top
+                console.log('move', sizeDelta)
+
+                event.target.style.width = `${event.rect.width}px`
+                event.target.style.height = `${event.rect.height}px`
+
+
+                event.target.style.left = `${that.x * blockSize + sizeDelta.x}px`
+                event.target.style.top = `${that.y * blockSize + topMargin + sizeDelta.y}px`
+
+                event.target.textContent = Math.round(event.rect.width / blockSize) + '\u00D7' + Math.round(event.rect.height / blockSize)
+              },
+              end (event) {
+                that.setPos(jelement.offset().left / blockSize, (jelement.offset().top - topMargin) / blockSize)
+                that.setSize(jelement.width() / blockSize, jelement.height() / blockSize)
+                event.target.textContent = ''
+                $('#panelsave').fadeIn()
+                startAutosaveTimer()
+              }
+            },
+            modifiers: [
+              interact.modifiers.snap({
+                targets: [
+                  interact.snappers.grid({ x: blockSize, y: blockSize })
+                ],
+                relativePoints: [ { x: 0, y: 0 } ]
+              }),
+              interact.modifiers.restrictEdges({ outer: 'parent' }),
+              interact.modifiers.restrictSize({ min: { width: blockSize, height: blockSize } })
+            ],
+            inertia: true
+          })
+
+      }
+
+      element() { return $(`#element${this.id}`) }
+
+      setColor(color)
+      {
+        this.color = color
+        this.element()
+          .css('background-color', this.color)
+      }
+
+      containsPoint(x, y) { return this.x >= x && this.x + this.w <= x && this.y >= y && this.y + this.h <= y}
+
+      canMoveLeft() { return this.x > 0 }
+      canMoveUp() { return this.y > 0 }
+
+      moveLeft() { this.setPos(this.x - 1, this.y) }
+      moveRight() { this.setPos(this.x + 1, this.y) }
+      moveUp() { this.setPos(this.x, this.y - 1) }
+      moveDown() { this.setPos(this.x, this.y +1 ) }
+
+      setPos(x, y)
+      {
+        if (x < 0 || y < 0) return
+        this.x = x
+        this.y = y
+
+        this.element()
+          .css('left', this.x * blockSize)
+          .css('top', this.y * blockSize + topMargin)
+      }
+
+      setSize(w, h)
+      {
+        if (w <= 0 || h <= 0) return
+        this.w = w
+        this.h = h
+
+        this.element()
+          .css('width', this.w * blockSize)
+          .css('height', this.h * blockSize)
+      }
+
+      remove()
+      {
+        if (this.id in elements)
+          delete elements[this.id]
+        this.element().remove()
+      }
+    }
 
     $(function() {
-      $('html').css('cursor', 'url("/glyph/track/vline"), auto');      
+      //$('html').css('cursor', 'url("/glyph/track/vline"), auto');      
+
+      new Terrain(0, 0, 15, 10, '#ebc417')
+
+      new Track(0, 0, 'hline')
+      new Track(1, 0, 'hline')
+      new Track(2, 0, 'hline')
+      new Track(3, 0, 'hline')
+      new Track(4, 0, 'hline')
+      new Track(5, 0, 'trturn')
+      new Track(4, 4, 'vline')
+
+      initContextMenus('.segmentelement')
+
+      $('#elementscontainer').on('click', () => { clearSelection() })
     })
 
     hotkeys('ctrl+s, command+s', function(event)
@@ -108,7 +507,6 @@ block content
       saveSegmentElements(true)
     });
     hotkeys('shift+h', function(event){ toggleHelp() })
-
     function showHelp()
     {
       $("#help").fadeIn()
@@ -129,8 +527,6 @@ block content
     }
     if (localStorage.getItem('hideSegmentHelp') != 'true') showHelp()
 
-    const topMargin = #{topMargin}
-    const blockSize = #{blockSize}
     const segments = []
 
     let timerAutosave = null
@@ -192,5 +588,3 @@ block content
           ToastError.fire({ html: `<b>Error</b><br/>${xhr.responseText}` })
         })
     }
-
-  script(src='/assets/interactjs/interact.min.js?' + APPVERSION)

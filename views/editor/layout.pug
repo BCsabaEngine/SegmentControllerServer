@@ -75,7 +75,7 @@ block content
 
   div
     each segment in segments
-      .segment(id='div' + segment.id style=`position: absolute; left: ${segment.x * blockSize}px; top: ${segment.y * blockSize + topMargin}px`, ondblclick='window.location.href="/editor/segment/' + segment.id + '"')
+      .segment(id='segment' + segment.id style=`position: absolute; left: ${segment.x * blockSize}px; top: ${segment.y * blockSize + topMargin}px`, ondblclick='window.location.href="/editor/segment/' + segment.id + '"')
         img(src="/layout/segment/"+segment.id)
         ul.dropdown-menu.context-menu
           li
@@ -382,8 +382,8 @@ block content
       if (window.jQuery)
         $(function () {
           const position = { x: 0, y: 0 }
-          const element = document.getElementById('div#{segment.id}')
-          const jelement = $('#div#{segment.id}')
+          const element = document.getElementById('segment#{segment.id}')
+          const jelement = $('#segment#{segment.id}')
           segments.push({id: #{segment.id}, jelement})
 
           interact(element).draggable({

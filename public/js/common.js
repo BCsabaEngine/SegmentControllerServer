@@ -79,11 +79,11 @@ function initContextMenus(selector) {
 
 if (window.jQuery)
   $(function () {
-    $('html').click(function () {
+    $('html').on('click', function () {
       $('.context-menu').hide();
     });
 
-    $('html').contextmenu(function () {
+    $('html').on('contextmenu', function () {
       $('.context-menu').hide();
       return false
     });

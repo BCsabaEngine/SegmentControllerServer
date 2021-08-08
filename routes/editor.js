@@ -1,4 +1,5 @@
 const Router = require('fastify-route-group').Router
+const Color = require('color')
 
 const LayoutSegmentTrack = require('../lib/layoutClasses/layoutSegmentTrack')
 
@@ -93,6 +94,7 @@ module.exports = (fastify) => {
             title: 'Segment editor',
             topMargin: 64,
             bgColor: segment.baseColor,
+            invertBgColor: Color(segment.baseColor).negate().hex(),
 
             blockSize: layout.blockSize,
 
