@@ -24,7 +24,7 @@ block content
               | Layout
 
           li.nav-item.ms-5
-            a.nav-link(href='#' style="transform: rotate(-90deg)")
+            a.nav-link(href='#' style="transform: rotate(-90deg)" onclick="setCursor()")
               i.bi.bi-cursor-fill
 
           li.nav-item.dropdown.dropdown-instant.ms-2
@@ -34,7 +34,7 @@ block content
             ul.dropdown-menu
               each track in tracks
                 li
-                  a.dropdown-item(href='#')
+                  a.dropdown-item(href='#' onclick=`setCursor('${track.url}', cursorCreateTrack, { type: '${track.type}'})`)
                     img(src=track.url width='16px')
                     | 
                     = track.name
@@ -59,7 +59,7 @@ block content
             a.nav-link(href='#' onclick='toggleHelp()')
               i.bi.bi-question-circle-fill
 
-  .card#help.hidden(style=`position: absolute; width: 24rem; top: ${topMargin + 16}px; right: 16px`, onclick='hideHelp()')
+  .card#help.hidden(style=`position: absolute; width: 28rem; top: ${topMargin + 16}px; right: 16px`, onclick='hideHelp()')
     .card-body
       h6.card-title
         i.bi.bi-keyboard
@@ -67,28 +67,103 @@ block content
         | Shortcuts
       p.card-text
         small
-          | Many commands are available with keyboard shortcuts.
+          | Many functions are available with keyboard shortcuts.
         dl.row
           dt.col-sm-5
+            i.bi.bi-mouse
+            | 
             kbd
-              | SHIFT + N
+              | left
           dd.col-sm-7
-            | New segment
+            | Select element
+            br
+            | Drag element
+            br
+            | Resize element
+            br
+            | Place new element
+
+          dt.col-sm-5
+            i.bi.bi-mouse
+            |
+            kbd
+              | right
+          dd.col-sm-7
+            | Element menu
+
+          dt.col-sm-5
+            | Ctrl +
+            i.bi.bi-mouse
+            | 
+            kbd
+              | left
+          dd.col-sm-7
+            | Select multiple element
 
           dt.col-sm-5
             kbd
-              | SHIFT + S
+              | Arrows
           dd.col-sm-7
-            | Save layout immediately
+            | Move selected element(s)
+
+          dt.col-sm-5
+            kbd
+              | Del
+          dd.col-sm-7
+            | Remove selected element(s)
+
+          dt.col-sm-5
+            kbd
+              | Esc
+          dd.col-sm-7
+            | Clear selection
+            br
+            | Exit drawing mode
 
           dt.col-sm-5
             kbd
               | SHIFT + 1..9
           dd.col-sm-7
-            | Open segment
-            small
-              |
-              | (1-9 only)
+            | Drawing favorite elements
+
+          hr
+          dt.col-sm-5
+            | Drawing mode
+          dd.col-sm-7
+
+          dt.col-sm-5
+            kbd
+              | Space
+          dd.col-sm-7
+            | Place new element
+
+          dt.col-sm-5
+            kbd
+              | Backspace
+          dd.col-sm-7
+            | Remove last placed element
+
+          dt.col-sm-5
+            i.bi.bi-mouse
+            |
+            kbd
+              | right
+          dd.col-sm-7
+            | Exit drawing mode
+
+          dt.col-sm-5
+            kbd
+              | Esc
+          dd.col-sm-7
+            | Exit drawing mode
+
+          hr
+
+          dt.col-sm-5
+            kbd
+              | SHIFT + S
+          dd.col-sm-7
+            | Save segment immediately
 
           dt.col-sm-5
             kbd
@@ -114,6 +189,8 @@ block content
           a.dropdown-item(href='#' onclick='callMyElementMethod(this, "inputSetText")')
             | Set text
         li
+          hr.dropdown-divider
+        li
           a.dropdown-item.text-danger(href='#' onclick='removeMyElement(this)')
             | Delete
 
@@ -129,11 +206,63 @@ block content
     const topMargin = #{topMargin}
     const blockSize = #{blockSize}
 
-    let isShiftDown = false
-    $(document).on('keyup keydown', function(e){ isShiftDown = e.shiftKey });
+    let isCtrlDown = false
+    $(document).on('keyup keydown', function(e){ isCtrlDown = e.ctrlKey });
+
+    let mouseMovePos = { x: 0, y: 0 }
+    window.onmousemove = function(event) {
+      e = event || window.event;	
+      mouseMovePos = { x: Math.floor(e.clientX / blockSize), y: Math.floor((e.clientY - topMargin) / blockSize) };
+    }
+
+    interactsEnabled = true
+    function enableAllInteracts(enable)
+    {
+      for(const element in elements)
+        if (elements[element])
+          elements[element].enableInteract(enable)
+      interactsEnabled = enable
+    }
 
     let elementid = 0
     const elements = {}
+
+    let cursorCallback
+    let cursorCallbackParams
+    function setCursor(glyphurl, callback, params)
+    {
+      if (glyphurl)
+      {
+        enableAllInteracts(false)
+        $('html').css('cursor', `url("${glyphurl}") 16 16, auto`);
+      }
+      else
+      {
+        enableAllInteracts(true)
+        $('html').css('cursor', 'auto');
+      }
+
+      cursorCallback = callback
+      cursorCallbackParams = params
+    }
+    function cursorCreateTrack(x, y, params)
+    {
+      new Track(x, y, params.type)
+      needSaveSegmentElements()
+    }
+    $('#elementscontainer').on('mousedown', function(event)
+    {
+      switch(event.button)
+      {
+        case 0:
+          if (cursorCallback)
+            cursorCallback(mouseMovePos.x, mouseMovePos.y, cursorCallbackParams)
+          break;
+        case 2:
+          setCursor()
+          break;
+      }
+    })
 
     function removeElementById(id) { if (id in elements) elements[id].remove() }
     function removeMyElement(me) { removeElementById($(me).closest(".segmentelement").data("id")) }
@@ -145,21 +274,54 @@ block content
           needSaveSegmentElements()
     }
 
-    function clearSelection() { $('#elementscontainer').children().removeClass('elementselected') }
+    function getSelection() { return $('#elementscontainer').children('.elementselected') }
+    function clearSelection() { getSelection().removeClass('elementselected') }
     $('#elementscontainer').on('click', () => { clearSelection() })
 
     $('html').on('contextmenu', function () {
       $('.context-menu').hide();
       return false
-    });
+    })
     initContextMenus('.segmentelement')
+
+    lastElements = []
+    function addElementToUndoQueue(element)
+    {
+      lastElements.push(element)
+      while (lastElements.length > 10) lastElements.shift()
+    }
 
     window.addEventListener("keydown", function (event) {
       if (event.defaultPrevented) return
 
-      const selections = $('#elementscontainer').children('.elementselected')
-      if (selections.length == 0) return 
+      if (event.keyCode == 32)
+      {
+        if (cursorCallback)
+          cursorCallback(mouseMovePos.x, mouseMovePos.y, cursorCallbackParams)
+        event.preventDefault()
+        return
+      }
 
+      if (event.key == "Backspace")
+      {
+        if (lastElements.length && cursorCallback)
+        {
+          const last = lastElements.pop()
+          if (last)
+            last.remove()
+          event.preventDefault()
+        }
+      }
+
+      if (event.key == "Esc" || event.key == "Escape")
+      {
+        clearSelection()
+        setCursor()
+        event.preventDefault()
+      }
+
+      const selections =  getSelection()
+      if (selections.length == 0) return 
       const ids = []
       for(const selection of selections)
         ids.push($(selection).data('id'))
@@ -201,9 +363,13 @@ block content
           for(const id of ids)
             elements[id].moveRight()
           break;
-        case "Esc":
-        case "Escape":
-          clearSelection()
+        case "Delete":
+          for(const selection of selections)
+          {
+            const deleteId = $(selection).data('id')
+            if (deleteId in elements && elements[deleteId])
+              elements[deleteId].remove()
+          }
           break;
         default:
           return;
@@ -221,6 +387,7 @@ block content
         elementid++
         this.id = elementid
         elements[this.id] = this
+        addElementToUndoQueue(this)
         this.x = x
         this.y = y
 
@@ -239,7 +406,7 @@ block content
         const that = this
 
         jelement.on('click', () => {
-          if (!isShiftDown) clearSelection()
+          if (!isCtrlDown) clearSelection()
           jelement.toggleClass('elementselected')
           return false
         })
@@ -252,7 +419,7 @@ block content
                 delta.x = 0
                 delta.y = 0
                 stopAutosaveTimer()
-                if (!isShiftDown) clearSelection()
+                if (!isCtrlDown) clearSelection()
                 jelement.addClass('elementselected')
               },
               move (event) {
@@ -279,7 +446,10 @@ block content
               })
             ]
           })
+          .draggable(interactsEnabled)
       }
+
+      enableInteract(enable) { interact(document.getElementById('element' + this.id)).draggable(enable) }
 
       element() { return $(`#element${this.id}`) }
 
@@ -316,6 +486,7 @@ block content
         //-     if (elements[id] instanceof Track)
         //-       if (elements[id].containsPoint(this.x, this.y))
         //-         elements[id].remove()
+        needSaveSegmentElements()
       }
 
       remove()
@@ -323,9 +494,10 @@ block content
         if (this.id in elements)
           delete elements[this.id]
         this.element().remove()
+        needSaveSegmentElements()
       }
 
-      saveData() { return { type: 'track', x: this.x, y: this.y, type: this.type } }
+      saveData() { return { class: 'track', x: this.x, y: this.y, type: this.type } }
     }
 
     class Terrain {
@@ -341,6 +513,7 @@ block content
         elementid++
         this.id = elementid
         elements[this.id] = this
+        addElementToUndoQueue(this)
         this.x = x
         this.y = y
         this.w = w
@@ -364,7 +537,7 @@ block content
         const that = this
 
         jelement.on('click', () => {
-          if (!isShiftDown) clearSelection()
+          if (!isCtrlDown) clearSelection()
           jelement.toggleClass('elementselected')
           return false
         })
@@ -378,7 +551,7 @@ block content
                 moveDelta.x = 0
                 moveDelta.y = 0
                 stopAutosaveTimer()
-                if (!isShiftDown) clearSelection()
+                if (!isCtrlDown) clearSelection()
                 jelement.addClass('elementselected')
               },
               move (event) {
@@ -405,6 +578,7 @@ block content
               })
             ]
           })
+          .draggable(interactsEnabled)
           .resizable({
             edges: { left: true, right: true, bottom: true, top: true },
             listeners: {
@@ -445,8 +619,11 @@ block content
             ],
             inertia: true
           })
+          .resizable(interactsEnabled)
 
       }
+
+      enableInteract(enable) { interact(document.getElementById('element' + this.id)).draggable(enable).resizable(enable) }
 
       element() { return $(`#element${this.id}`) }
 
@@ -484,6 +661,7 @@ block content
         this.element()
           .css('left', this.x * blockSize)
           .css('top', this.y * blockSize + topMargin)
+        needSaveSegmentElements()
       }
 
       setSize(w, h)
@@ -495,6 +673,7 @@ block content
         this.element()
           .css('width', this.w * blockSize)
           .css('height', this.h * blockSize)
+        needSaveSegmentElements()
       }
 
       remove()
@@ -502,9 +681,10 @@ block content
         if (this.id in elements)
           delete elements[this.id]
         this.element().remove()
+        needSaveSegmentElements()
       }
 
-      saveData() { return { type: 'terrain', x: this.x, y: this.y, w: this.w, h: this.h, color: this.color, text: this.text } }
+      saveData() { return { class: 'terrain', x: this.x, y: this.y, w: this.w, h: this.h, color: this.color, text: this.text } }
 
       async inputSetColor()
       {
@@ -542,7 +722,6 @@ block content
 
   script(type='text/javascript')
     | $(function() {
-    |  //$('html').css('cursor', 'url("/glyph/track/vline"), auto');      
     | 
     each terrain in segment.terrains
       |  new Terrain(
@@ -567,7 +746,7 @@ block content
       |, 
       = track.y
       |, '
-      = terrain.type
+      = track.type
       |');
       |
     |
@@ -624,7 +803,6 @@ block content
       const elementsDataToSave = {}
       for(const id in elements)
         elementsDataToSave[id] = elements[id].saveData()
-      console.log(elementsDataToSave)
       $.post('/editor/segment/#{segment.id}/set/elements', { elements: JSON.stringify(elementsDataToSave) })
         .done(function() { 
           if (displaytoast && downcountSuccessSave)
