@@ -2,7 +2,7 @@ extends ../_base
 
 block content
 
-  nav.navbar.navbar-expand-lg.navbar-light.bg-light(style=`height: ${topMargin}px`)
+  nav.navbar.navbar-expand-lg.navbar-light.bg-light.fixed-top(style=`height: ${topMargin}px`)
     .container-fluid
       .navbar-brand
         img(src='/public/favicon/favicon-32x32.png')
@@ -110,15 +110,13 @@ block content
             kbd
               | Del
           dd.col-sm-7
-            | Remove selected element(s)
+            | Delete selected element(s)
 
           dt.col-sm-5
             kbd
               | Esc
           dd.col-sm-7
             | Clear selection
-            br
-            | Exit drawing mode
 
           dt.col-sm-5
             kbd
@@ -172,7 +170,7 @@ block content
             | Show/hide this help
 
   #elementscontainer(style='min-height: 100vh')
-    .segmentelement.hidden#track(style=`position:absolute; left:0; top:0; width: ${blockSize}px; height: ${blockSize}px)`)
+    .segmentelement.selectall.hidden#track(style=`position:absolute; left:0; top:0; width: ${blockSize}px; height: ${blockSize}px;`)
       img
       ul.dropdown-menu.context-menu
         li
@@ -200,6 +198,16 @@ block content
       outline-style: dashed;
       outline-color: `${invertBgColor}`;
     }
+    .elementwarning {
+      outline-width: 1px;
+      outline-style: solid;
+      outline-color: orange;
+    }
+    .elementerror {
+      outline-width: 1px;
+      outline-style: solid;
+      outline-color: red;
+    }
 
   script(src='/assets/interactjs/interact.min.js?' + APPVERSION)
   script(type='text/javascript').
@@ -207,7 +215,9 @@ block content
     const blockSize = #{blockSize}
 
     let isCtrlDown = false
+    let isShiftDown = false
     $(document).on('keyup keydown', function(e){ isCtrlDown = e.ctrlKey });
+    $(document).on('keyup keydown', function(e){ isShiftDown = e.shiftKey });
 
     let mouseMovePos = { x: 0, y: 0 }
     window.onmousemove = function(event) {
@@ -276,7 +286,62 @@ block content
 
     function getSelection() { return $('#elementscontainer').children('.elementselected') }
     function clearSelection() { getSelection().removeClass('elementselected') }
-    $('#elementscontainer').on('click', () => { clearSelection() })
+    $('#elementscontainer').on('click', (e) => { 
+      const selection = getSelection()
+      if (selection.length)
+        if (isShiftDown)
+        {
+          e.preventDefault()
+          const frompos = { x: Number.POSITIVE_INFINITY, y: Number.POSITIVE_INFINITY }
+          for(const selected of getSelection())
+          {
+            const jselected = $(selected)[0]
+            console.log(jselected.offsetLeft, jselected.offsetTop - topMargin)
+            if (frompos.x > jselected.offsetLeft)
+              frompos.x = jselected.offsetLeft
+            if (frompos.y > jselected.offsetTop - topMargin)
+              frompos.y = jselected.offsetTop - topMargin
+          }
+          frompos.x = Math.floor(frompos.x / blockSize)
+          frompos.y = Math.floor(frompos.y / blockSize)
+
+          const topos = mouseMovePos
+          if (frompos.x > topos.x)
+          {
+            let x = frompos.x
+            frompos.x = topos.x
+            topos.x = x
+          }
+          if (frompos.y > topos.y)
+          {
+            let y = frompos.y
+            frompos.y = topos.y
+            topos.y = y
+          }
+
+          for(const element of $('#elementscontainer').children())
+          {
+            const jelement = $(element)[0]
+            console.log(jelement)
+            const jx = jelement.offsetLeft
+            const jy = jelement.offsetTop - topMargin
+
+            if (jx >= frompos.x * blockSize && jx <= topos.x * blockSize)
+              if (jy >= frompos.y * blockSize && jy <= topos.y * blockSize)
+              {
+                console.log(jelement)
+                //jelement.addClass('elementselected')
+              }
+          }
+
+          console.log(frompos, topos)
+        }
+        else
+        {
+          e.preventDefault()
+          clearSelection()
+        }
+    })
 
     $('html').on('contextmenu', function () {
       $('.context-menu').hide();
@@ -750,10 +815,12 @@ block content
       |');
       |
     |
+    | detectErrors()
+    |
     | })
 
   script(type='text/javascript').
-    hotkeys('ctrl+s, command+s', function(event)
+    hotkeys('shift+s', function(event)
     {
       event.preventDefault()
       saveSegmentElements(true)
@@ -789,10 +856,21 @@ block content
       stopAutosaveTimer()
       timerAutosave = setTimeout(() => { saveSegmentElements() }, 750)
     }
+    function detectErrors()
+    {
+      $('#elementscontainer').children('.elementerror').removeClass('elementerror')
+      for(const a in elements)
+        if (elements[a] instanceof Track)
+          for(const b in elements)
+            if (a != b && elements[b] instanceof Track)
+              if (elements[a].containsPoint(elements[b].x, elements[b].y))
+                elements[a].element().addClass('elementerror')
+    }
     function needSaveSegmentElements()
     {
       $('#panelsave').fadeIn()
       startAutosaveTimer()
+      detectErrors()
     }
     function saveSegmentElements(displaytoast)
     {
