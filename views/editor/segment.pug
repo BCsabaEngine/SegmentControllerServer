@@ -30,6 +30,7 @@ block content
           li.nav-item.dropdown.dropdown-instant.ms-2
             a.nav-link.dropdown-toggleX(href='#' role='button' data-bs-toggle='dropdown')
               img(src=tracks[0].url width='24px')
+              | 
               | Tracks
             ul.dropdown-menu
               each track in tracks
@@ -38,6 +39,22 @@ block content
                     img(src=track.url width='16px')
                     | 
                     = track.name
+
+          li.nav-item.dropdown.dropdown-instant.ms-2
+            a.nav-link.dropdown-toggleX(href='#' role='button' data-bs-toggle='dropdown')
+              span#lastterraincolor.lastterraincolor(style='display: inline-block; width:24px; height:24px; background-color: #48A')
+                | &nbsp;
+              | 
+              | Terrains
+            ul.dropdown-menu
+              each size in [1,2,3,4]
+                li
+                  a.dropdown-item(href='#' onclick=`const color = $('#lastterraincolor').css('background-color'); setCursor('/glyph/terrain?size=' + (${blockSize} * ${size}) + '&color=' + rgb2hex(color, false), cursorCreateTerrain, { size: ${size}, color: rgb2hex(color, true) })`)
+                    span.lastterraincolor(style='display: inline-block; width:16px; height:16px; background-color: #48A')
+                    | 
+                    = size
+                    | x
+                    = size
 
         ul.navbar-nav.ms-auto.mb-2.mb-lg-0
           li#panelsave.nav-item.hidden
@@ -258,6 +275,11 @@ block content
     function cursorCreateTrack(x, y, params)
     {
       new Track(x, y, params.type)
+      needSaveSegmentElements()
+    }
+    function cursorCreateTerrain(x, y, params)
+    {
+      new Terrain(x, y, params.size, params.size, params.color)
       needSaveSegmentElements()
     }
     $('#elementscontainer').on('mousedown', function(event)
@@ -764,6 +786,7 @@ block content
         if (newColor)
         {
           this.setColor(newColor)
+          $('.lastterraincolor').css('background-color', newColor)
           return true
         }
       }

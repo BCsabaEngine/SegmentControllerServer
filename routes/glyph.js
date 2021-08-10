@@ -44,5 +44,21 @@ module.exports = (fastify) => {
       reply.type('image/png')
       return buf
     })
+    router.get('terrain', async (request, reply) => {
+      console.log(request.query)
+      let color = request.query.color || '4080A0'
+      if (!color.startsWith('#')) color = '#' + color
+      const size = Number(request.query.size) || 32
+
+      const canvas = createCanvas(size, size)
+      const context = canvas.getContext('2d')
+
+      context.fillStyle = String(color)
+      context.fillRect(0, 0, size, size)
+
+      const buf = canvas.toBuffer('image/png', { compressionLevel: 3, filters: canvas.PNG_FILTER_NONE })
+      reply.type('image/png')
+      return buf
+    })
   })
 }
