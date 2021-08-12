@@ -81,15 +81,6 @@ module.exports = (fastify) => {
         const segment = layout.getSegmentById(request.params.id)
         if (!segment) throw new Error(`Segment ${request.params.id} not found`)
 
-        const tracks = []
-        const tracktypes = LayoutSegmentTrack.getTypes()
-        for (const type in tracktypes)
-          tracks.push({
-            type: type,
-            name: tracktypes[type],
-            url: `/glyph/track/${type}`,
-          })
-
         const usedSurfaceColors = {}
         for (const segment of layout.getAllSegments())
           for (const surface of segment.surfaces)
@@ -108,7 +99,8 @@ module.exports = (fastify) => {
             usedSurfaceColors,
 
             segment,
-            tracks,
+            firsttracktype: Object.keys(LayoutSegmentTrack.getTypeGroups())[0],
+            tracktypegroups: LayoutSegmentTrack.getTypeGroups(),
           })
       })
       router.namespace('set', () => {

@@ -29,36 +29,29 @@ block content
 
           li.nav-item.dropdown.dropdown-instant.ms-2
             a.nav-link(href='#' role='button' data-bs-toggle='dropdown')
-              img(src=tracks[0].url width='24px')
+              img(src=`/glyph/track/${firsttracktype}` width='24px')
               | 
               | Track
             ul.dropdown-menu
-
-              li.nav-item.dropdown.dropdown-instant.dropend
-                a.dropdown-toggle.nav-link(href='#' role='button' data-bs-toggle='dropdown')
-                  | Submenu
-                ul.dropdown-menu.dropend
+              each tracktypename, tracktype in tracktypegroups
+                if (global.isObject(tracktypegroups[tracktype]))
+                  li.nav-item.dropdown.dropdown-instant.dropend
+                    a.dropdown-toggle.dropdown-item(href='#' role='button' data-bs-toggle='dropdown')
+                      = tracktype
+                      | 
+                    ul.dropdown-menu.dropend
+                      each tracksubtypename, tracksubtype in tracktypegroups[tracktype]
+                        li
+                          a.dropdown-item(href='#' onclick=`setCursor('/glyph/track/${tracksubtype}', cursorCreateTrack, { type: '${tracksubtype}'})`)
+                            img(src=`/glyph/track/${tracksubtype}` width='16px')
+                            | 
+                            = tracksubtypename
+                else
                   li
-                    a.dropdown-item(href='#')
-                      | Subitem 1
-                  li
-                    a.dropdown-item(href='#')
-                      | Subitem 2
-                  li
-                    hr.dropdown-divider
-                  li
-                    h6.dropdown-header
-                      | Predefined colors
-                  li
-                    a.dropdown-item(href='#')
-                      | Subitem 3
-
-              each track in tracks
-                li
-                  a.dropdown-item(href='#' onclick=`setCursor('${track.url}', cursorCreateTrack, { type: '${track.type}'})`)
-                    img(src=track.url width='16px')
-                    | 
-                    = track.name
+                    a.dropdown-item(href='#' onclick=`setCursor('/glyph/track/${tracktype}', cursorCreateTrack, { type: '${tracktype}'})`)
+                      img(src=`/glyph/track/${tracktype}` width='16px')
+                      | 
+                      = tracktypename
 
           li.nav-item.dropdown.dropdown-instant.ms-2
             a.nav-link.dropdown-toggleX(href='#' role='button' data-bs-toggle='dropdown')
@@ -168,6 +161,12 @@ block content
               | Arrows
           dd.col-sm-7
             | Move selected element(s)
+
+          dt.col-sm-5
+            kbd
+              | R / Shift + R
+          dd.col-sm-7
+            | Rotate selected element(s)
 
           dt.col-sm-5
             kbd
@@ -364,7 +363,7 @@ block content
           for(const selected of getSelection())
           {
             const jselected = $(selected)[0]
-            console.log(jselected.offsetLeft, jselected.offsetTop - topMargin)
+            //console.log(jselected.offsetLeft, jselected.offsetTop - topMargin)
             if (frompos.x > jselected.offsetLeft)
               frompos.x = jselected.offsetLeft
             if (frompos.y > jselected.offsetTop - topMargin)
@@ -390,19 +389,19 @@ block content
           for(const element of $('#elementscontainer').children())
           {
             const jelement = $(element)[0]
-            console.log(jelement)
+            //console.log(jelement)
             const jx = jelement.offsetLeft
             const jy = jelement.offsetTop - topMargin
 
             if (jx >= frompos.x * blockSize && jx <= topos.x * blockSize)
               if (jy >= frompos.y * blockSize && jy <= topos.y * blockSize)
               {
-                console.log(jelement)
+                //console.log(jelement)
                 //jelement.addClass('elementselected')
               }
           }
 
-          console.log(frompos, topos)
+          //console.log(frompos, topos)
         }
         else
         {
@@ -427,30 +426,28 @@ block content
     window.addEventListener("keydown", function (event) {
       if (event.defaultPrevented) return
 
-      if (event.keyCode == 32)
+      switch(event.key)
       {
-        if (cursorCallback)
-          cursorCallback(mouseMovePos.x, mouseMovePos.y, cursorCallbackParams)
-        event.preventDefault()
-        return
-      }
-
-      if (event.key == "Backspace")
-      {
-        if (lastElements.length && cursorCallback)
-        {
-          const last = lastElements.pop()
-          if (last)
-            last.remove()
+        case ' ':
+          if (cursorCallback)
+            cursorCallback(mouseMovePos.x, mouseMovePos.y, cursorCallbackParams)
           event.preventDefault()
-        }
-      }
-
-      if (event.key == "Esc" || event.key == "Escape")
-      {
-        clearSelection()
-        setCursor()
-        event.preventDefault()
+          break;
+        case 'Backspace':
+          if (lastElements.length && cursorCallback)
+          {
+            const last = lastElements.pop()
+            if (last)
+              last.remove()
+            event.preventDefault()
+          }
+          break;
+        case 'Esc':
+        case 'Escape':
+          clearSelection()
+          setCursor()
+          event.preventDefault()
+          break;
       }
 
       const selections =  getSelection()
@@ -502,6 +499,15 @@ block content
             const deleteId = $(selection).data('id')
             if (deleteId in elements && elements[deleteId])
               elements[deleteId].remove()
+          }
+          break;
+        case 'r':
+        case 'R':
+          for(const selection of selections)
+          {
+            const rotateId = $(selection).data('id')
+            if (rotateId in elements && elements[rotateId] && elements[rotateId].rotate)
+              elements[rotateId].rotate(event.key == 'R')
           }
           break;
         default:
@@ -592,6 +598,7 @@ block content
         this.element()
           .find('img')
           .attr('src', `/glyph/track/${this.type}`)
+        needSaveSegmentElements()
       }
 
       containsPoint(x, y) { return this.x == x && this.y == y }
@@ -622,6 +629,33 @@ block content
         needSaveSegmentElements()
       }
 
+      rotate(anticlockwise)
+      {
+        const rotLine = ['hline', 'lskew', 'vline', 'rskew']
+        const rot90 = ['br90turn', 'bl90turn', 'tl90turn', 'tr90turn']
+        const rot45 = ['lt45turn', 'lb45turn', 'rt45turn', 'rb45turn', 'tl45turn', 'tr45turn', 'bl45turn', 'br45turn']
+        const rotCross = ['hvcross', 'hlscross', 'hrscross', 'vlscross', 'vrscross', 'lsrscross']
+        const rots = [rotLine, rot90, rot45, rotCross]
+
+        const currentType = this.type
+        for(const rot of rots)
+          if (rot.includes(currentType))
+          {
+            let index = rot.indexOf(currentType)
+            if (index >= 0)
+            {
+              index += anticlockwise ? -1 : 1
+              if (index < 0)
+                index = rot.length - 1
+              if (index > rot.length - 1)
+                index = 0
+
+              this.setType(rot[index])
+            }
+            break
+          }
+      }
+
       remove()
       {
         if (this.id in elements)
@@ -630,7 +664,7 @@ block content
         needSaveSegmentElements()
       }
 
-      saveData() { return { class: 'track', x: this.x, y: this.y, type: this.type } }
+      getSaveData() { return { class: 'track', x: this.x, y: this.y, type: this.type } }
     }
 
     class Surface {
@@ -809,6 +843,8 @@ block content
         needSaveSegmentElements()
       }
 
+      rotate() { this.setSize(this.h, this.w) }
+
       remove()
       {
         if (this.id in elements)
@@ -817,7 +853,7 @@ block content
         needSaveSegmentElements()
       }
 
-      saveData() { return { class: 'surface', x: this.x, y: this.y, w: this.w, h: this.h, color: this.color, text: this.text } }
+      getSaveData() { return { class: 'surface', x: this.x, y: this.y, w: this.w, h: this.h, color: this.color, text: this.text } }
 
       async inputSetColor()
       {
@@ -949,7 +985,8 @@ block content
 
       const elementsDataToSave = {}
       for(const id in elements)
-        elementsDataToSave[id] = elements[id].saveData()
+        if (elements[id].getSaveData)
+          elementsDataToSave[id] = elements[id].getSaveData()
       $.post('/editor/segment/#{segment.id}/set/elements', { elements: JSON.stringify(elementsDataToSave) })
         .done(function() { 
           if (displaytoast && downcountSuccessSave)
