@@ -31,7 +31,7 @@ block content
             a.nav-link.dropdown-toggleX(href='#' role='button' data-bs-toggle='dropdown')
               img(src=tracks[0].url width='24px')
               | 
-              | Tracks
+              | Track
             ul.dropdown-menu
               each track in tracks
                 li
@@ -45,7 +45,7 @@ block content
               span#lastterraincolor.lastterraincolor(style='display: inline-block; width:24px; height:24px; background-color: #48A')
                 | &nbsp;
               | 
-              | Terrains
+              | Surface
             ul.dropdown-menu
               each size in [1,2,3,4]
                 li
@@ -55,6 +55,17 @@ block content
                     = size
                     | x
                     = size
+              li
+                hr.dropdown-divider
+              li
+                h6.dropdown-header
+                  | Predefined colors
+                each value,key in predefinedSurfaceColors
+                  li
+                    a.dropdown-item(href='#' onclick=`$('.lastterraincolor').css('background-color', '${key}');`)
+                      span(style='display: inline-block; width:16px; height:16px; background-color: ' + key)
+                      | 
+                      = value
 
         ul.navbar-nav.ms-auto.mb-2.mb-lg-0
           li#panelsave.nav-item.hidden

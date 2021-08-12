@@ -97,6 +97,7 @@ module.exports = (fastify) => {
             invertBgColor: Color(segment.baseColor).negate().hex(),
 
             blockSize: layout.blockSize,
+            predefinedSurfaceColors: layout.predefinedSurfaceColors,
 
             segment: segment,
             tracks,
