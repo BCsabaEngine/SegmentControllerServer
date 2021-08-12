@@ -92,7 +92,11 @@ if (window.jQuery)
 
     $(".dropdown-instant").on('mouseenter', function () {
       const dropdownMenu = $(this).children(".dropdown-menu");
-      if (dropdownMenu) dropdownMenu.show();
+      if (dropdownMenu) {
+        if (dropdownMenu.hasClass('dropend'))
+          dropdownMenu.css({ left: '100%', right: 'auto', top: '-8px' })
+        dropdownMenu.show();
+      }
     });
     $(".dropdown-instant").on('mouseleave', function () {
       const dropdownMenu = $(this).children(".dropdown-menu");
