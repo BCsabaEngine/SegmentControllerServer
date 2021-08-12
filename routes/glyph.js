@@ -44,7 +44,7 @@ module.exports = (fastify) => {
       reply.type('image/png')
       return buf
     })
-    router.get('terrain', async (request, reply) => {
+    router.get('surface', async (request, reply) => {
       console.log(request.query)
       let color = request.query.color || '4080A0'
       if (!color.startsWith('#')) color = '#' + color

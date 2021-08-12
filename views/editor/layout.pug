@@ -63,10 +63,10 @@ block content
                   = worldColor
                   | )
               li
-                a.dropdown-item(href='#' onclick="setTerrainMargin()")
-                  | Terrain margin
+                a.dropdown-item(href='#' onclick="setSurfaceMargin()")
+                  | Surface margin
                   | (
-                  = terrainMargin
+                  = surfaceMargin
                   | px)
 
           li.nav-item
@@ -291,10 +291,10 @@ block content
           })
     }
 
-    async function setTerrainMargin()
+    async function setSurfaceMargin()
     {
-      const { value: terrainMargin } = await Swal.fire({
-        title: 'Margin of terrain elements',
+      const { value: surfaceMargin } = await Swal.fire({
+        title: 'Margin of surface elements',
         input: 'range',
         inputLabel: 'Margin in pixels (max. 1/4th of block size)',
         inputAttributes: {
@@ -302,12 +302,12 @@ block content
           max: #{blockSize / 4},
           step: 1
         },
-        inputValue: #{terrainMargin},
+        inputValue: #{surfaceMargin},
         showCancelButton: true,
       })
 
-      if (terrainMargin)
-        $.post('/editor/layout/set/terrainmargin', { terrainMargin: terrainMargin })
+      if (surfaceMargin)
+        $.post('/editor/layout/set/surfacemargin', { surfaceMargin: surfaceMargin })
           .done(function() { 
             pagereload()
           })

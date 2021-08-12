@@ -35,7 +35,7 @@ module.exports = (fastify) => {
       const canvas = createCanvas(imageSize.width, imageSize.height)
       const context = canvas.getContext('2d')
 
-      segment.drawTerrains(context, layout, 0, 0)
+      segment.drawSurfaces(context, layout, 0, 0)
 
       const buf = canvas.toBuffer('image/png', { compressionLevel: 3, filters: canvas.PNG_FILTER_NONE })
       reply.type('image/png')

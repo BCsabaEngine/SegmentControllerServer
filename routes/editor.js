@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/cognitive-complexity */
 const Router = require('fastify-route-group').Router
 const Color = require('color')
 
@@ -21,7 +22,7 @@ module.exports = (fastify) => {
 
             blockSize: layout.blockSize,
             worldColor: layout.worldColor,
-            terrainMargin: layout.terrainMargin,
+            surfaceMargin: layout.surfaceMargin,
             segments: layout.getAllSegments(),
             nextId: layout.getNextAvailableId(),
           })
@@ -44,8 +45,8 @@ module.exports = (fastify) => {
           layoutManager.saveToFile()
           return JSON.empty
         })
-        router.post('terrainmargin', async (request) => {
-          layoutManager.getLayout().setTerrainMargin(Number(request.body.terrainMargin))
+        router.post('surfacemargin', async (request) => {
+          layoutManager.getLayout().setSurfaceMargin(Number(request.body.surfaceMargin))
           layoutManager.saveToFile()
           return JSON.empty
         })
@@ -77,7 +78,7 @@ module.exports = (fastify) => {
     router.namespace(URL_SEGMENT_ID, () => {
       router.get('', async (request, reply) => {
         const layout = layoutManager.getLayout()
-        const segment = layoutManager.getLayout().getSegmentById(request.params.id)
+        const segment = layout.getSegmentById(request.params.id)
         if (!segment) throw new Error(`Segment ${request.params.id} not found`)
 
         const tracks = []
@@ -89,6 +90,12 @@ module.exports = (fastify) => {
             url: `/glyph/track/${type}`,
           })
 
+        const usedSurfaceColors = {}
+        for (const segment of layout.getAllSegments())
+          for (const surface of segment.surfaces)
+            if (!(surface.color in usedSurfaceColors))
+              usedSurfaceColors[surface.color] = `${surface.text || 'noname'} in ${segment.name}`
+
         return reply.noCache().view('editor/segment',
           {
             title: 'Segment editor',
@@ -98,8 +105,9 @@ module.exports = (fastify) => {
 
             blockSize: layout.blockSize,
             predefinedSurfaceColors: layout.predefinedSurfaceColors,
+            usedSurfaceColors,
 
-            segment: segment,
+            segment,
             tracks,
           })
       })

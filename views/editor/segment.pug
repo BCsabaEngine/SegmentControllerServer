@@ -28,11 +28,31 @@ block content
               i.bi.bi-cursor-fill
 
           li.nav-item.dropdown.dropdown-instant.ms-2
-            a.nav-link.dropdown-toggleX(href='#' role='button' data-bs-toggle='dropdown')
+            a.nav-link(href='#' role='button' data-bs-toggle='dropdown')
               img(src=tracks[0].url width='24px')
               | 
               | Track
             ul.dropdown-menu
+
+              li.nav-item.dropdown.dropdown-instant.dropend
+                a.dropdown-toggle.nav-link(href='#' role='button' data-bs-toggle='dropdown')
+                  | Submenu
+                ul.dropdown-menu.dropend
+                  li
+                    a.dropdown-item(href='#')
+                      | Subitem 1
+                  li
+                    a.dropdown-item(href='#')
+                      | Subitem 2
+                  li
+                    hr.dropdown-divider
+                  li
+                    h6.dropdown-header
+                      | Predefined colors
+                  li
+                    a.dropdown-item(href='#')
+                      | Subitem 3
+
               each track in tracks
                 li
                   a.dropdown-item(href='#' onclick=`setCursor('${track.url}', cursorCreateTrack, { type: '${track.type}'})`)
@@ -42,30 +62,45 @@ block content
 
           li.nav-item.dropdown.dropdown-instant.ms-2
             a.nav-link.dropdown-toggleX(href='#' role='button' data-bs-toggle='dropdown')
-              span#lastterraincolor.lastterraincolor(style='display: inline-block; width:24px; height:24px; background-color: #48A')
+              span#lastsurfacecolor.lastsurfacecolor(style='display: inline-block; width:24px; height:24px; background-color: #40c020')
                 | &nbsp;
               | 
               | Surface
             ul.dropdown-menu
               each size in [1,2,3,4]
                 li
-                  a.dropdown-item(href='#' onclick=`const color = $('#lastterraincolor').css('background-color'); setCursor('/glyph/terrain?size=' + (${blockSize} * ${size}) + '&color=' + rgb2hex(color, false), cursorCreateTerrain, { size: ${size}, color: rgb2hex(color, true) })`)
-                    span.lastterraincolor(style='display: inline-block; width:16px; height:16px; background-color: #48A')
+                  a.dropdown-item(href='#' onclick=`const color = $('#lastsurfacecolor').css('background-color'); setCursor('/glyph/surface?size=' + (${blockSize} * ${size}) + '&color=' + rgb2hex(color, false), cursorCreateSurface, { size: ${size}, color: rgb2hex(color, true) })`)
+                    span.lastsurfacecolor(style='display: inline-block; width:16px; height:16px; background-color: #40c020')
                     | 
                     = size
                     | x
                     = size
-              li
-                hr.dropdown-divider
-              li
-                h6.dropdown-header
-                  | Predefined colors
-                each value,key in predefinedSurfaceColors
-                  li
-                    a.dropdown-item(href='#' onclick=`$('.lastterraincolor').css('background-color', '${key}');`)
-                      span(style='display: inline-block; width:16px; height:16px; background-color: ' + key)
-                      | 
-                      = value
+
+              if predefinedSurfaceColors
+                li.nav-item.dropdown.dropdown-instant.dropend
+                  a.dropdown-toggle.dropdown-item(href='#' role='button' data-bs-toggle='dropdown')
+                    | Predefined colors
+                    | 
+                  ul.dropdown-menu.dropend
+                    each value,key in predefinedSurfaceColors
+                      li
+                        a.dropdown-item(href='#' onclick=`$('.lastsurfacecolor').css('background-color', '${key}');`)
+                          span(style='display: inline-block; width:16px; height:16px; background-color: ' + key)
+                          | 
+                          = value
+
+              if usedSurfaceColors
+                li.nav-item.dropdown.dropdown-instant.dropend
+                  a.dropdown-toggle.dropdown-item(href='#' role='button' data-bs-toggle='dropdown')
+                    | Used colors
+                    | 
+                  ul.dropdown-menu.dropend
+                    each value,key in usedSurfaceColors
+                      li
+                        a.dropdown-item(href='#' onclick=`$('.lastsurfacecolor').css('background-color', '${key}');`)
+                          span(style='display: inline-block; width:16px; height:16px; background-color: ' + key)
+                          | 
+                          = value
 
         ul.navbar-nav.ms-auto.mb-2.mb-lg-0
           li#panelsave.nav-item.hidden
@@ -204,7 +239,7 @@ block content
         li
           a.dropdown-item.text-danger(href='#' onclick='removeMyElement(this)')
             | Delete
-    .segmentelement.hidden#terrain(style=`position:absolute; left:0; top:0; width: ${blockSize}px; height: ${blockSize}px)`)
+    .segmentelement.hidden#surface(style=`position:absolute; left:0; top:0; width: ${blockSize}px; height: ${blockSize}px)`)
       span.d-flex.align-items-center.justify-content-center(style="height:100%;").small
         |
       ul.dropdown-menu.context-menu
@@ -288,9 +323,9 @@ block content
       new Track(x, y, params.type)
       needSaveSegmentElements()
     }
-    function cursorCreateTerrain(x, y, params)
+    function cursorCreateSurface(x, y, params)
     {
-      new Terrain(x, y, params.size, params.size, params.color)
+      new Surface(x, y, params.size, params.size, params.color)
       needSaveSegmentElements()
     }
     $('#elementscontainer').on('mousedown', function(event)
@@ -598,7 +633,7 @@ block content
       saveData() { return { class: 'track', x: this.x, y: this.y, type: this.type } }
     }
 
-    class Terrain {
+    class Surface {
       id
       x
       y
@@ -617,7 +652,7 @@ block content
         this.w = w
         this.h = h
 
-        const jelement = $("#terrain")
+        const jelement = $("#surface")
           .clone()
           .attr('id', 'element' + this.id)
           .data('id', this.id)
@@ -626,7 +661,7 @@ block content
           .css('width', w * blockSize)
           .css('height', h * blockSize)
           .css('z-index', 0)
-          .insertAfter("#terrain")
+          .insertAfter("#surface")
           .removeClass('hidden')
 
         this.setColor(color)
@@ -782,12 +817,12 @@ block content
         needSaveSegmentElements()
       }
 
-      saveData() { return { class: 'terrain', x: this.x, y: this.y, w: this.w, h: this.h, color: this.color, text: this.text } }
+      saveData() { return { class: 'surface', x: this.x, y: this.y, w: this.w, h: this.h, color: this.color, text: this.text } }
 
       async inputSetColor()
       {
         const { value: newColor } = await Swal.fire({
-          title: 'Color of terrain',
+          title: 'Color of surface',
           showCancelButton: true,
           backdrop: false,
           preConfirm: () => { return document.getElementById('html5colorpicker').value },
@@ -797,7 +832,7 @@ block content
         if (newColor)
         {
           this.setColor(newColor)
-          $('.lastterraincolor').css('background-color', newColor)
+          $('.lastsurfacecolor').css('background-color', newColor)
           return true
         }
       }
@@ -805,7 +840,7 @@ block content
       async inputSetText()
       {
         const { value: newTitle } = await Swal.fire({
-          title: 'Title of terrain',
+          title: 'Title of surface',
           input: 'text',
           inputValue: this.text || '',
           showCancelButton: true,
@@ -822,20 +857,20 @@ block content
   script(type='text/javascript')
     | $(function() {
     | 
-    each terrain in segment.terrains
-      |  new Terrain(
-      = terrain.x
+    each surface in segment.surfaces
+      |  new Surface(
+      = surface.x
       |, 
-      = terrain.y
+      = surface.y
       |, 
-      = terrain.width
+      = surface.width
       |, 
-      = terrain.height
+      = surface.height
       |, '
-      = terrain.color
+      = surface.color
       |'
       |, '
-      = terrain.text
+      = surface.text
       |');
       |
     |
