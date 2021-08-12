@@ -45,7 +45,6 @@ module.exports = (fastify) => {
       return buf
     })
     router.get('surface', async (request, reply) => {
-      console.log(request.query)
       let color = request.query.color || '4080A0'
       if (!color.startsWith('#')) color = '#' + color
       const size = Number(request.query.size) || 32

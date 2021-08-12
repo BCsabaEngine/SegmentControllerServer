@@ -390,12 +390,8 @@ block content
             listeners: {
               start (event) {
                 stopAutosaveTimer()
-                //console.log(event.type, event.target)
               },
               end (event) {
-                //console.log(event.type, event.target)
-                //console.log(jelement.offset().top - topMargin, jelement.offset().left)
-                //console.log((jelement.offset().top - topMargin) / blockSize, jelement.offset().left / blockSize)
                 $('#panelsave').fadeIn()
                 startAutosaveTimer()
               },
