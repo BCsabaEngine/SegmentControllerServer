@@ -24,9 +24,7 @@ html(lang='en')
   script(type='text/javascript').
     ws_channels =
     {
-      b: function(data) {
-        console.log(data);
-      }
+      layoutchange: function() { pagereload() }
     }
 
     function ws_onreceive(data) {
