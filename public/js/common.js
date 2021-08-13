@@ -1,5 +1,7 @@
 function rgb2hex(rgb, usehashmark) { return (usehashmark ? '#' : '') + `${rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/).slice(1).map(n => Number.parseInt(n, 10).toString(16).padStart(2, '0')).join('')}` }
 
+Number.prototype.between = function (a, b) { return this >= Math.min.apply(Math, [a, b]) && this <= Math.max.apply(Math, [a, b]); }
+
 function pagereload(latencyms) {
   if (latencyms === undefined)
     window.location.reload();
@@ -71,7 +73,7 @@ function initContextMenus(selector) {
         $(menu[0]).css({
           display: "block",
           left: e.offsetX,
-          top: e.offsetY
+          top: e.offsetY,
         });
         return false
       }
