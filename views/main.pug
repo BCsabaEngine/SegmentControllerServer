@@ -1,28 +1,25 @@
-extends _base
+doctype html
+html(lang='en')
+  include include/head.pug
+  body(style=`overflow: hidden; background-color: ${backColor}`)
+    include include/scripts.pug
+    i.ws-indicator.bi-lightning-fill(style='position:absolute; right:4px; top:4px')
+    #bg
 
-block content
-  | a
-  | b
-  |
-  br
-  i.pull-right.ws-indicator.bi-lightning-fill
-  | a
-  | b
-  | c
-  br
-  br
-  br
-  img(src="/layout/box")
-  br
-  br
-  br
-  img(src="/layout/circle")
-
-  img(src="/layout/track/0/0?t=1112" style="position:absolute;left:100px;right:100px")
-  img(src="/layout/track/0/0?t=1112" style="position:absolute;left:132px;right:100px")
-  img(src="/layout/track/0/0?t=1112" style="position:absolute;left:164px;right:100px")
-  img(src="/layout/track/0/0?t=1112" style="position:absolute;left:196px;right:100px")
-  img(src="/layout/track/0/0?t=1112" style="position:absolute;left:228px;right:100px")
+  style.
+    #bg {
+      background-image: url('/layout/background?last=#{layoutLastModify}');
+      background-position: 0 0;
+      background-repeat: no-repeat;
+      background-color: transparent;
+      border: 0;
+      position: absolute;
+      top: 0px;
+      left: 0px;
+      width: #{backgroundSize.width}px;
+      height: #{backgroundSize.height}px;
+      z-index: -1;
+    }
 
   script(type='text/javascript').
     ws_channels =
@@ -35,3 +32,82 @@ block content
     function ws_onreceive(data) {
       console.log(data);
     }
+
+    let imgw = #{backgroundSize.width}
+    let imgh = #{backgroundSize.height}
+
+    $(document).ready(function () {
+      var $bg = $('#bg'),
+        origin = { x: 0, y: 0 },
+        start = { x: 0, y: 0 },
+        movecontinue = false;
+
+      function move(e) {
+        if (e.type == 'touchmove') {
+          e.clientX = Math.round(e.touches[0].clientX);
+          e.clientY = Math.round(e.touches[0].clientY);
+        }
+
+        var moveby = {
+          x: origin.x - e.clientX,
+          y: origin.y - e.clientY
+        };
+
+        if (movecontinue === true) {
+          if (!isNaN(moveby.x))
+            start.x = start.x - moveby.x;
+          if (!isNaN(moveby.y))
+            start.y = start.y - moveby.y;
+
+          if (start.x > 0)
+            start.x = 0;
+          if (start.y > 0)
+            start.y = 0;
+
+          if (start.x < window.innerWidth - imgw)
+            start.x = window.innerWidth - imgw;
+          if (start.y < window.innerHeight - imgh)
+            start.y = window.innerHeight - imgh;
+
+          console.log($(this));
+          //$(this).css('background-position', start.x + 'px ' + start.y + 'px');
+          $(this).css('top', start.y + 'px');
+          $(this).css('left', start.x + 'px');
+        }
+        if (!isNaN(e.clientX))
+          origin.x = e.clientX;
+        if (!isNaN(e.clientY))
+          origin.y = e.clientY;
+
+        e.stopPropagation();
+        return false;
+      }
+
+      function handle(e) {
+        movecontinue = false;
+        $bg.unbind('mousemove touchmove', move);
+
+        if (e.type == 'mousedown' || e.type == 'touchstart') {
+          origin.x = e.clientX;
+          origin.y = e.clientY;
+          movecontinue = true;
+          $bg.bind('mousemove touchmove', move);
+        } else {
+          $(document.body).focus();
+        }
+
+        e.stopPropagation();
+        return false;
+      }
+
+      function reset() {
+        start = { x: 0, y: 0 };
+        // $(this).css('backgroundPosition', '0 0');
+        // $(this).css('top', '0');
+        // $(this).css('left', '0');
+        $(this).animate({ top: 0, left: 0 }, 'fast');
+      }
+
+      $bg.bind('mousedown mouseup mouseleave touchstart touchend touchcancel', handle);
+      $bg.bind('dblclick', reset);
+    });

@@ -1,6 +1,6 @@
 module.exports = (fastify) => {
 
-  fastify.get('/', async (request, reply) => {
+  fastify.get('/session', async (request, reply) => {
     let counter = request.session.get('counter')
     if (Number.isNaN(counter))
       counter = 0
@@ -8,7 +8,9 @@ module.exports = (fastify) => {
     request.session.set('counter', counter)
     //console.log(counter)
 
-    return reply.view('main', { text: 'text' })
+    return reply.view('main', {
+      text: 'text',
+    })
   })
 
 }

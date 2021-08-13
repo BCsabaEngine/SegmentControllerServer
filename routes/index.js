@@ -42,6 +42,7 @@ module.exports = (fastify) => {
   require('./common.js')(fastify)
   require('./websocket.js')(fastify)
 
+  require('./dashboard.js')(fastify)
   require('./layout.js')(fastify)
   require('./glyph.js')(fastify)
   require('./editor.js')(fastify)

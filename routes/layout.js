@@ -17,7 +17,6 @@ module.exports = (fastify) => {
       layout.draw(context)
 
       const buf = canvas.toBuffer('image/png', { compressionLevel: 3, filters: canvas.PNG_FILTER_NONE })
-      //const buf = canvas.toBuffer('image/jpeg', { quality: 0.9, progressive: false, chromaSubsampling: true })
       reply.type('image/png')
       return buf
     })
@@ -35,7 +34,7 @@ module.exports = (fastify) => {
       const canvas = createCanvas(imageSize.width, imageSize.height)
       const context = canvas.getContext('2d')
 
-      segment.drawSurfaces(context, layout, 0, 0)
+      segment.draw(context, layout, 0, 0)
 
       const buf = canvas.toBuffer('image/png', { compressionLevel: 3, filters: canvas.PNG_FILTER_NONE })
       reply.type('image/png')
