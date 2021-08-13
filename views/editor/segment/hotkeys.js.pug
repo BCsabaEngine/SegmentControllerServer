@@ -2,84 +2,116 @@ script(type='text/javascript').
 
   let isCtrlDown = false
   let isShiftDown = false
+  let isMouseLeftDown = false
+  let isMouseRightDown = false
   $(document).on('keyup keydown', function(e){ isCtrlDown = e.ctrlKey });
   $(document).on('keyup keydown', function(e){ isShiftDown = e.shiftKey });
 
   let mouseMovePos = { x: 0, y: 0 }
-  window.onmousemove = function(event) {
+  let mouseLeftDownPos = { x: 0, y: 0 }
+  let mouseRightDownPos = { x: 0, y: 0 }
+
+  function isSelectionRect()
+  {
+    const { lefttop, bottomright } = getSelectionRect()
+    return lefttop.x < bottomright.x && lefttop.y < bottomright.y
+  }
+
+  function getSelectionRect()
+  {
+    const lefttop = { x: mouseLeftDownPos.x, y: mouseLeftDownPos.y }
+    const bottomright = { x: mouseMovePos.x, y: mouseMovePos.y }
+
+    if (bottomright.x < lefttop.x)
+    {
+      const x = bottomright.x
+      bottomright.x = lefttop.x
+      lefttop.x = x
+    }
+    if (bottomright.y < lefttop.y)
+    {
+      const y = bottomright.y
+      bottomright.y = lefttop.y
+      lefttop.y = y
+    }
+
+    return { lefttop, bottomright }
+  }
+
+  function redrawSelectionRect()
+  {
+    const { lefttop, bottomright } = getSelectionRect()
+
+    $('#selectregion').css({
+      left: lefttop.x * blockSize,
+      top: topMargin + lefttop.y * blockSize,
+      width: (bottomright.x - lefttop.x) * blockSize,
+      height: (bottomright.y - lefttop.y) * blockSize,
+    })
+
+    $('#selectregion').show()
+  }
+
+  function selectBySelectionRect()
+  {
+    const { lefttop, bottomright } = getSelectionRect()
+
+    for(const element of $('#elementscontainer').children())
+      if ($(element) && $(element).data('id'))
+      {
+        const id = $(element).data('id')
+        if (id && elements[id] && elements[id].isOverLap)
+          if (elements[id].isOverLap(lefttop.x, lefttop.y, bottomright.x - 1, bottomright.y - 1))
+            $(element).addClass('elementselected')
+      }
+  }
+
+  $('#elementscontainer').on('mousemove', function(event) 
+  {
     e = event || window.event;	
     mouseMovePos = { x: Math.floor(e.clientX / blockSize), y: Math.floor((e.clientY - topMargin) / blockSize) };
-  }
+
+    if (isMouseLeftDown && isShiftDown)
+      redrawSelectionRect()
+  })
 
   $('#elementscontainer').on('mousedown', function(event)
   {
     switch(event.button)
     {
       case 0:
+        isMouseLeftDown = true
+        e = event || window.event;	
+        mouseLeftDownPos = { x: Math.floor(e.clientX / blockSize), y: Math.floor((e.clientY - topMargin) / blockSize) };
         if (cursorCallback)
           cursorCallback(mouseMovePos.x, mouseMovePos.y, cursorCallbackParams)
+        else
+          if (!isCtrlDown)
+            clearSelection()
         break;
       case 2:
+        isMouseRightDown = true
+        e = event || window.event;	
+        mouseRightDownPos = { x: Math.round(e.clientX / blockSize), y: Math.round((e.clientY - topMargin) / blockSize) };
+        clearSelection()
         setCursor()
         break;
     }
   })
 
-  $('#elementscontainer').on('click', (e) => { 
-    const selection = getSelection()
-    if (selection.length)
-      if (isShiftDown)
-      {
-        e.preventDefault()
-        const frompos = { x: Number.POSITIVE_INFINITY, y: Number.POSITIVE_INFINITY }
-        for(const selected of getSelection())
-        {
-          const jselected = $(selected)[0]
-          //console.log(jselected.offsetLeft, jselected.offsetTop - topMargin)
-          if (frompos.x > jselected.offsetLeft)
-            frompos.x = jselected.offsetLeft
-          if (frompos.y > jselected.offsetTop - topMargin)
-            frompos.y = jselected.offsetTop - topMargin
-        }
-        frompos.x = Math.floor(frompos.x / blockSize)
-        frompos.y = Math.floor(frompos.y / blockSize)
-
-        const topos = mouseMovePos
-        if (frompos.x > topos.x)
-        {
-          let x = frompos.x
-          frompos.x = topos.x
-          topos.x = x
-        }
-        if (frompos.y > topos.y)
-        {
-          let y = frompos.y
-          frompos.y = topos.y
-          topos.y = y
-        }
-
-        for(const element of $('#elementscontainer').children())
-        {
-          const jelement = $(element)[0]
-          //console.log(jelement)
-          const jx = jelement.offsetLeft
-          const jy = jelement.offsetTop - topMargin
-
-          if (jx >= frompos.x * blockSize && jx <= topos.x * blockSize)
-            if (jy >= frompos.y * blockSize && jy <= topos.y * blockSize)
-            {
-              //console.log(jelement)
-              //jelement.addClass('elementselected')
-            }
-        }
-
-        //console.log(frompos, topos)
-      }
-      else
-      {
-        e.preventDefault()
-        clearSelection()
-      }
+  $('#elementscontainer').on('mouseup', function(event)
+  {
+    switch(event.button)
+    {
+      case 0:
+        isMouseLeftDown = false
+        selectBySelectionRect()
+        $('#selectregion').hide()
+        break;
+      case 2:
+        isMouseRightDown = false
+        break;
+    }
   })
 
   window.addEventListener("keydown", function (event) {
@@ -116,7 +148,8 @@ script(type='text/javascript').
     if (selections.length == 0) return 
     const ids = []
     for(const selection of selections)
-      ids.push($(selection).data('id'))
+      if ($(selection) && $(selection).data('id'))
+        ids.push($(selection).data('id'))
 
     switch (event.key) {
       case "Down": 

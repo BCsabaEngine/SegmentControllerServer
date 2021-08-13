@@ -43,7 +43,7 @@ script(type='text/javascript').
 
       jelement.on('click', () => {
         if (!isCtrlDown) clearSelection()
-        jelement.toggleClass('elementselected')
+        jelement.addClass('elementselected')
         return false
       })
 
@@ -147,6 +147,12 @@ script(type='text/javascript').
       }
 
       containsPoint(x, y) { return this.x >= x && this.x + this.w <= x && this.y >= y && this.y + this.h <= y}
+      isOverLap(x1, y1, x2, y2)
+      {
+        const overlapx = x1.between(this.x, this.x + this.w) || x2.between(this.x, this.x + this.w) || this.x.between(x1, x2) || (this.x + this.w).between(x1, x2)
+        const overlapy = y1.between(this.y, this.y + this.h) || y2.between(this.y, this.y + this.h) || this.y.between(y1, y2) || (this.y + this.h).between(y1, y2)
+        return overlapx && overlapy
+      }
 
       canMoveLeft() { return this.x > 0 }
       canMoveUp() { return this.y > 0 }

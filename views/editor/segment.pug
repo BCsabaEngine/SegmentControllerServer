@@ -2,6 +2,17 @@ extends ../_base
 
 block content
 
+  .card#help.hidden(style=`position: absolute; width: 32rem; top: ${topMargin + 16}px; right: 16px`, onclick='hideHelp()')
+    .card-body
+      h6.card-title
+        i.bi.bi-keyboard
+        | 
+        | Shortcuts
+      p.card-text
+        small
+          | Many functions are available with keyboard shortcuts.
+        include segment/hotkeys.pug
+
   nav.navbar.navbar-expand-lg.navbar-light.bg-light.fixed-top(style=`height: ${topMargin}px`)
     .container-fluid
       .navbar-brand
@@ -115,18 +126,9 @@ block content
             a.nav-link(href='#' onclick='toggleHelp()')
               i.bi.bi-question-circle-fill
 
-  .card#help.hidden(style=`position: absolute; width: 28rem; top: ${topMargin + 16}px; right: 16px`, onclick='hideHelp()')
-    .card-body
-      h6.card-title
-        i.bi.bi-keyboard
-        | 
-        | Shortcuts
-      p.card-text
-        small
-          | Many functions are available with keyboard shortcuts.
-        include segment/hotkeys.pug
 
   #elementscontainer(style='min-height: 100vh')
+    .hidden#selectregion
     .segmentelement.selectall.hidden#track(style=`position:absolute; left:0; top:0; width: ${blockSize}px; height: ${blockSize}px;`)
       img
       ul.dropdown-menu.context-menu
@@ -164,6 +166,14 @@ block content
       outline-width: 1px;
       outline-style: solid;
       outline-color: red;
+    }
+    #selectregion {
+      border: 1px dotted #222;
+      position: absolute;
+      z-index: 100;
+    }
+    .context-menu {
+      z-index: 50;
     }
 
   script(src='/assets/interactjs/interact.min.js?' + APPVERSION)

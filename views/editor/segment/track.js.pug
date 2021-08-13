@@ -25,7 +25,7 @@ script(type='text/javascript').
         .data('id', this.id)
         .css('left', x * blockSize)
         .css('top', y * blockSize + topMargin)
-        .css('z-index', 1)
+        .css('z-index', 10)
         .insertAfter("#track")
         .removeClass('hidden')
 
@@ -35,7 +35,7 @@ script(type='text/javascript').
 
       jelement.on('click', () => {
         if (!isCtrlDown) clearSelection()
-        jelement.toggleClass('elementselected')
+        jelement.addClass('elementselected')
         return false
       })
 
@@ -91,6 +91,7 @@ script(type='text/javascript').
     }
 
     containsPoint(x, y) { return this.x == x && this.y == y }
+    isOverLap(x1, y1, x2, y2) { return this.x >= x1 && this.x <= x2 && this.y >= y1 && this.y <= y2 }
 
     canMoveLeft() { return this.x > 0 }
     canMoveUp() { return this.y > 0 }
@@ -110,11 +111,6 @@ script(type='text/javascript').
         .css('left', this.x * blockSize)
         .css('top', this.y * blockSize + topMargin)
 
-      //- for(const id in elements)
-      //-   if (id != this.id)
-      //-     if (elements[id] instanceof Track)
-      //-       if (elements[id].containsPoint(this.x, this.y))
-      //-         elements[id].remove()
       needSaveSegmentElements()
     }
 
