@@ -1,0 +1,233 @@
+script(type='text/javascript').
+
+  let isCtrlDown = false
+  let isShiftDown = false
+  $(document).on('keyup keydown', function(e){ isCtrlDown = e.ctrlKey });
+  $(document).on('keyup keydown', function(e){ isShiftDown = e.shiftKey });
+
+  let mouseMovePos = { x: 0, y: 0 }
+  window.onmousemove = function(event) {
+    e = event || window.event;	
+    mouseMovePos = { x: Math.floor(e.clientX / blockSize), y: Math.floor((e.clientY - topMargin) / blockSize) };
+  }
+
+  $('#elementscontainer').on('mousedown', function(event)
+  {
+    switch(event.button)
+    {
+      case 0:
+        if (cursorCallback)
+          cursorCallback(mouseMovePos.x, mouseMovePos.y, cursorCallbackParams)
+        break;
+      case 2:
+        setCursor()
+        break;
+    }
+  })
+
+  $('#elementscontainer').on('click', (e) => { 
+    const selection = getSelection()
+    if (selection.length)
+      if (isShiftDown)
+      {
+        e.preventDefault()
+        const frompos = { x: Number.POSITIVE_INFINITY, y: Number.POSITIVE_INFINITY }
+        for(const selected of getSelection())
+        {
+          const jselected = $(selected)[0]
+          //console.log(jselected.offsetLeft, jselected.offsetTop - topMargin)
+          if (frompos.x > jselected.offsetLeft)
+            frompos.x = jselected.offsetLeft
+          if (frompos.y > jselected.offsetTop - topMargin)
+            frompos.y = jselected.offsetTop - topMargin
+        }
+        frompos.x = Math.floor(frompos.x / blockSize)
+        frompos.y = Math.floor(frompos.y / blockSize)
+
+        const topos = mouseMovePos
+        if (frompos.x > topos.x)
+        {
+          let x = frompos.x
+          frompos.x = topos.x
+          topos.x = x
+        }
+        if (frompos.y > topos.y)
+        {
+          let y = frompos.y
+          frompos.y = topos.y
+          topos.y = y
+        }
+
+        for(const element of $('#elementscontainer').children())
+        {
+          const jelement = $(element)[0]
+          //console.log(jelement)
+          const jx = jelement.offsetLeft
+          const jy = jelement.offsetTop - topMargin
+
+          if (jx >= frompos.x * blockSize && jx <= topos.x * blockSize)
+            if (jy >= frompos.y * blockSize && jy <= topos.y * blockSize)
+            {
+              //console.log(jelement)
+              //jelement.addClass('elementselected')
+            }
+        }
+
+        //console.log(frompos, topos)
+      }
+      else
+      {
+        e.preventDefault()
+        clearSelection()
+      }
+  })
+
+  window.addEventListener("keydown", function (event) {
+    if (event.defaultPrevented) return
+
+    switch(event.key)
+    {
+      case ' ':
+        if (cursorCallback)
+        {
+          cursorCallback(mouseMovePos.x, mouseMovePos.y, cursorCallbackParams)
+          event.preventDefault()
+        }
+        break;
+      case 'Backspace':
+        if (lastElements.length && cursorCallback)
+        {
+
+          const last = lastElements.pop()
+          if (last)
+            last.remove()
+          event.preventDefault()
+        }
+        break;
+      case 'Esc':
+      case 'Escape':
+        clearSelection()
+        setCursor()
+        event.preventDefault()
+        break;
+    }
+
+    const selections =  getSelection()
+    if (selections.length == 0) return 
+    const ids = []
+    for(const selection of selections)
+      ids.push($(selection).data('id'))
+
+    switch (event.key) {
+      case "Down": 
+      case "ArrowDown":
+        for(const id of ids)
+          elements[id].moveDown()
+        event.preventDefault();
+        break;
+      case "Up": 
+      case "ArrowUp":
+        let allowup = true
+        for(const id of ids)
+          if (!elements[id].canMoveUp())
+          {
+            allowup = false 
+            break
+          }
+        if (allowup)
+          for(const id of ids)
+            elements[id].moveUp()
+        event.preventDefault();
+        break;
+      case "Left": 
+      case "ArrowLeft":
+        let allowleft = true
+        for(const id of ids)
+          if (!elements[id].canMoveLeft())
+          {
+            allowleft = false 
+            break
+          }
+        if (allowleft)
+          for(const id of ids)
+            elements[id].moveLeft()
+        event.preventDefault();
+        break;
+      case "Right": 
+      case "ArrowRight":
+        for(const id of ids)
+          elements[id].moveRight()
+        event.preventDefault();
+        break;
+      case "Delete":
+        for(const selection of selections)
+        {
+          const deleteId = $(selection).data('id')
+          if (deleteId in elements && elements[deleteId])
+            elements[deleteId].remove()
+        }
+        event.preventDefault();
+        break;
+      case 'r':
+      case 'R':
+        if (!isCtrlDown)
+        {
+          for(const selection of selections)
+          {
+            const rotateId = $(selection).data('id')
+            if (rotateId in elements && elements[rotateId] && elements[rotateId].rotate)
+              elements[rotateId].rotate(event.key == 'R')
+          }
+          event.preventDefault();
+        }
+        break;
+      case 'c':
+        if (isCtrlDown)
+        {
+          if (selections.length == 1)
+          {
+            const copyId = $(selections[0]).data('id')
+            if (copyId in elements && elements[copyId] && elements[copyId].setCopyCursor)
+              elements[copyId].setCopyCursor()
+
+          }
+          event.preventDefault();
+        }
+        break;
+      default:
+        return;
+    }
+  }, true);
+
+  $('html').on('contextmenu', function () {
+    $('.context-menu').hide();
+    return false
+  })
+  initContextMenus('.segmentelement')
+
+  hotkeys('shift+s', function(event)
+  {
+    event.preventDefault()
+    saveSegmentElements(true)
+  });
+  hotkeys('shift+h', function(event){ toggleHelp() })
+  function showHelp()
+  {
+    $("#help").fadeIn()
+    setTimeout(() => $("#help").fadeOut(), 30 * 1000)
+    localStorage.setItem('hideSegmentHelp', false)
+  }
+  function hideHelp()
+  {
+    $("#help").fadeOut()
+    localStorage.setItem('hideSegmentHelp', true)
+  }
+  function toggleHelp()
+  {
+    if($("#help").is(":visible"))
+      hideHelp()
+    else
+      showHelp()
+  }
+  if (localStorage.getItem('hideSegmentHelp') != 'true')
+    showHelp()
