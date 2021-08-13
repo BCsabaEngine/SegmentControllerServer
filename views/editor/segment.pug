@@ -425,7 +425,7 @@ block content
 
     window.addEventListener("keydown", function (event) {
       if (event.defaultPrevented) return
-      
+
       switch(event.key)
       {
         case ' ':
@@ -510,6 +510,16 @@ block content
             if (rotateId in elements && elements[rotateId] && elements[rotateId].rotate)
               elements[rotateId].rotate(event.key == 'R')
           }
+          break;
+        case 'c':
+          if (isCtrlDown)
+            if (selections.length == 1)
+            {
+              const copyId = $(selections[0]).data('id')
+              if (copyId in elements && elements[copyId] && elements[copyId].setCopyCursor)
+                elements[copyId].setCopyCursor()
+
+            }
           break;
         default:
           return;
@@ -665,6 +675,8 @@ block content
         this.element().remove()
         needSaveSegmentElements()
       }
+
+      setCopyCursor() { setCursor('/glyph/track/' + this.type, cursorCreateTrack, { type: this.type}) }
 
       getSaveData() { return { class: 'track', x: this.x, y: this.y, type: this.type } }
     }
@@ -854,6 +866,8 @@ block content
         this.element().remove()
         needSaveSegmentElements()
       }
+
+      setCopyCursor() { setCursor('/glyph/surface?size='+ blockSize + '&color=' + this.color, cursorCreateSurface, { size: 1, color: this.color }) }
 
       getSaveData() { return { class: 'surface', x: this.x, y: this.y, w: this.w, h: this.h, color: this.color, text: this.text } }
 
