@@ -123,12 +123,6 @@ block content
 
           dt.col-sm-5
             kbd
-              | SHIFT + S
-          dd.col-sm-7
-            | Save layout immediately
-
-          dt.col-sm-5
-            kbd
               | SHIFT + 1..9
           dd.col-sm-7
             | Open segment
@@ -146,17 +140,11 @@ block content
 
     initContextMenus('.segment')
 
-    hotkeys('shift+s', function(event)
-    {
-      event.preventDefault()
-      saveSegmentLocations(true)
-    })
     hotkeys('shift+n', function(event){
       event.preventDefault()
       newSegment() 
     })
     hotkeys('shift+h', function(event){ toggleHelp() })
-
 
     function showHelp()
     {

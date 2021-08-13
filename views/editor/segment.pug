@@ -63,6 +63,10 @@ block content
                       img(src=`/glyph/track/${tracktype}` width='16px')
                       | 
                       = tracktypename
+              li
+                hr.dropdown-divider
+              li
+                a.dropdown-item(href='#' onclick=`$('.track').toggle()`) Show/hide tracks
 
           li.nav-item.dropdown.dropdown-instant.ms-2
             a.nav-link.dropdown-toggleX(href='#' role='button' data-bs-toggle='dropdown')
@@ -105,6 +109,10 @@ block content
                           span(style='display: inline-block; width:16px; height:16px; background-color: ' + key)
                           | 
                           = value
+              li
+                hr.dropdown-divider
+              li
+                a.dropdown-item(href='#' onclick=`$('.surface').toggle()`) Show/hide surfaces
 
         ul.navbar-nav.ms-auto.mb-2.mb-lg-0
           li#panelsave.nav-item.hidden
@@ -129,13 +137,13 @@ block content
 
   #elementscontainer(style='min-height: 100vh')
     .hidden#selectregion
-    .segmentelement.selectall.hidden#track(style=`position:absolute; left:0; top:0; width: ${blockSize}px; height: ${blockSize}px;`)
+    .segmentelement.track.hidden#track(style=`position:absolute; left:0; top:0; width: ${blockSize}px; height: ${blockSize}px;`)
       img
       ul.dropdown-menu.context-menu
         li
           a.dropdown-item.text-danger(href='#' onclick='removeMyElement(this)')
             | Delete
-    .segmentelement.hidden#surface(style=`position:absolute; left:0; top:0; width: ${blockSize}px; height: ${blockSize}px)`)
+    .segmentelement.surface.hidden#surface(style=`position:absolute; left:0; top:0; width: ${blockSize}px; height: ${blockSize}px)`)
       span.d-flex.align-items-center.justify-content-center(style="height:100%;").small
         |
       ul.dropdown-menu.context-menu

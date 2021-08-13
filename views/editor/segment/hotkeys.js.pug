@@ -58,22 +58,14 @@ script(type='text/javascript').
 
     for(const element of $('#elementscontainer').children())
       if ($(element) && $(element).data('id'))
-      {
-        const id = $(element).data('id')
-        if (id && elements[id] && elements[id].isOverLap)
-          if (elements[id].isOverLap(lefttop.x, lefttop.y, bottomright.x - 1, bottomright.y - 1))
-            $(element).addClass('elementselected')
-      }
+        if ($(element).is(":visible"))
+        {
+          const id = $(element).data('id')
+          if (id && elements[id] && elements[id].isOverLap)
+            if (elements[id].isOverLap(lefttop.x, lefttop.y, bottomright.x - 1, bottomright.y - 1))
+              $(element).addClass('elementselected')
+        }
   }
-
-  $('#elementscontainer').on('mousemove', function(event) 
-  {
-    e = event || window.event;	
-    mouseMovePos = { x: Math.floor(e.clientX / blockSize), y: Math.floor((e.clientY - topMargin) / blockSize) };
-
-    if (isMouseLeftDown && isShiftDown)
-      redrawSelectionRect()
-  })
 
   $('#elementscontainer').on('mousedown', function(event)
   {
@@ -99,13 +91,23 @@ script(type='text/javascript').
     }
   })
 
+  $('#elementscontainer').on('mousemove', function(event) 
+  {
+    e = event || window.event;	
+    mouseMovePos = { x: Math.floor(e.clientX / blockSize), y: Math.floor((e.clientY - topMargin) / blockSize) };
+
+    if (isMouseLeftDown && isShiftDown)
+      redrawSelectionRect()
+  })
+
   $('#elementscontainer').on('mouseup', function(event)
   {
     switch(event.button)
     {
       case 0:
         isMouseLeftDown = false
-        selectBySelectionRect()
+        if (isShiftDown)
+          selectBySelectionRect()
         $('#selectregion').hide()
         break;
       case 2:
@@ -238,10 +240,15 @@ script(type='text/javascript').
   })
   initContextMenus('.segmentelement')
 
+  hotkeys('shift+t', function(event)
+  {
+    $('.track').toggle()
+    event.preventDefault()
+  });
   hotkeys('shift+s', function(event)
   {
+    $('.surface').toggle()
     event.preventDefault()
-    saveSegmentElements(true)
   });
   hotkeys('shift+h', function(event){ toggleHelp() })
   function showHelp()
