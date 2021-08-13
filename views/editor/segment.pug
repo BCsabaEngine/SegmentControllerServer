@@ -66,7 +66,37 @@ block content
               li
                 hr.dropdown-divider
               li
-                a.dropdown-item(href='#' onclick=`$('.track').toggle()`) Show/hide tracks
+                a.dropdown-item(href='#' onclick=`$('.trackhide').toggle()`) Show/hide tracks & turnouts
+
+          li.nav-item.dropdown.dropdown-instant.ms-2
+            a.nav-link(href='#' role='button' data-bs-toggle='dropdown')
+              img(src=`/glyph/turnout/${firstturnouttype}` width='24px')
+              | 
+              | Turnout
+            ul.dropdown-menu
+              each turnouttypename, turnouttype in turnouttypegroups
+                if (global.isObject(turnouttypegroups[turnouttype]))
+                  li.nav-item.dropdown.dropdown-instant.dropend
+                    a.dropdown-toggle.dropdown-item(href='#' role='button' data-bs-toggle='dropdown')
+                      = turnouttype
+                      | 
+                    ul.dropdown-menu.dropend
+                      each turnoutsubtypename, turnoutsubtype in turnouttypegroups[turnouttype]
+                        li
+                          a.dropdown-item(href='#' onclick=`setCursor('/glyph/turnout/${turnoutsubtype}', cursorCreateTurnout, { type: '${turnoutsubtype}'})`)
+                            img(src=`/glyph/turnout/${turnoutsubtype}` width='16px')
+                            | 
+                            = turnoutsubtypename
+                else
+                  li
+                    a.dropdown-item(href='#' onclick=`setCursor('/glyph/turnout/${turnouttype}', cursorCreateTurnout, { type: '${turnouttype}'})`)
+                      img(src=`/glyph/turnout/${turnouttype}` width='16px')
+                      | 
+                      = turnouttypename
+              li
+                hr.dropdown-divider
+              li
+                a.dropdown-item(href='#' onclick=`$('.trackhide').toggle()`) Show/hide tracks & turnouts
 
           li.nav-item.dropdown.dropdown-instant.ms-2
             a.nav-link.dropdown-toggleX(href='#' role='button' data-bs-toggle='dropdown')
@@ -112,7 +142,7 @@ block content
               li
                 hr.dropdown-divider
               li
-                a.dropdown-item(href='#' onclick=`$('.surface').toggle()`) Show/hide surfaces
+                a.dropdown-item(href='#' onclick=`$('.surfacehide').toggle()`) Show/hide surfaces
 
         ul.navbar-nav.ms-auto.mb-2.mb-lg-0
           li#panelsave.nav-item.hidden
@@ -137,13 +167,19 @@ block content
 
   #elementscontainer(style='min-height: 100vh')
     .hidden#selectregion
-    .segmentelement.track.hidden#track(style=`position:absolute; left:0; top:0; width: ${blockSize}px; height: ${blockSize}px;`)
+    .segmentelement.trackhide.hidden#track(style=`position:absolute; left:0; top:0; width: ${blockSize}px; height: ${blockSize}px;`)
       img
       ul.dropdown-menu.context-menu
         li
           a.dropdown-item.text-danger(href='#' onclick='removeMyElement(this)')
             | Delete
-    .segmentelement.surface.hidden#surface(style=`position:absolute; left:0; top:0; width: ${blockSize}px; height: ${blockSize}px)`)
+    .segmentelement.trackhide.hidden#turnout(style=`position:absolute; left:0; top:0; width: ${blockSize}px; height: ${blockSize}px;`)
+      img
+      ul.dropdown-menu.context-menu
+        li
+          a.dropdown-item.text-danger(href='#' onclick='removeMyElement(this)')
+            | Delete
+    .segmentelement.surfacehide.hidden#surface(style=`position:absolute; left:0; top:0; width: ${blockSize}px; height: ${blockSize}px)`)
       span.d-flex.align-items-center.justify-content-center(style="height:100%;").small
         |
       ul.dropdown-menu.context-menu
@@ -191,6 +227,7 @@ block content
 
   include segment/elements.js.pug
   include segment/track.js.pug
+  include segment/turnout.js.pug
   include segment/surface.js.pug
   include segment/save.js.pug
   include segment/hotkeys.js.pug
@@ -222,6 +259,16 @@ block content
       = track.y
       |, '
       = track.type
+      |');
+      |
+    |
+    each turnout in segment.turnouts
+      |  new Turnout(
+      = turnout.x
+      |, 
+      = turnout.y
+      |, '
+      = turnout.type
       |');
       |
     |

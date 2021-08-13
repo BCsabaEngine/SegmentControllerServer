@@ -3,6 +3,7 @@ const Router = require('fastify-route-group').Router
 const Color = require('color')
 
 const LayoutSegmentTrack = require('../lib/layoutClasses/layoutSegmentTrack')
+const LayoutSegmentTurnout = require('../lib/layoutClasses/layoutSegmentTurnout')
 
 module.exports = (fastify) => {
   const router = new Router(fastify)
@@ -101,6 +102,8 @@ module.exports = (fastify) => {
             segment,
             firsttracktype: Object.keys(LayoutSegmentTrack.getTypeGroups())[0],
             tracktypegroups: LayoutSegmentTrack.getTypeGroups(),
+            firstturnouttype: Object.keys(LayoutSegmentTurnout.getTypeGroups())[0],
+            turnouttypegroups: LayoutSegmentTurnout.getTypeGroups(),
           })
       })
       router.namespace('set', () => {
