@@ -425,7 +425,7 @@ block content
 
     window.addEventListener("keydown", function (event) {
       if (event.defaultPrevented) return
-
+      
       switch(event.key)
       {
         case ' ':
@@ -436,6 +436,7 @@ block content
         case 'Backspace':
           if (lastElements.length && cursorCallback)
           {
+
             const last = lastElements.pop()
             if (last)
               last.remove()
@@ -635,7 +636,8 @@ block content
         const rot90 = ['br90turn', 'bl90turn', 'tl90turn', 'tr90turn']
         const rot45 = ['lt45turn', 'lb45turn', 'rt45turn', 'rb45turn', 'tl45turn', 'tr45turn', 'bl45turn', 'br45turn']
         const rotCross = ['hvcross', 'hlscross', 'hrscross', 'vlscross', 'vrscross', 'lsrscross']
-        const rots = [rotLine, rot90, rot45, rotCross]
+        const rotStop = ['lstop', 'tstop', 'rstop', 'bstop']
+        const rots = [rotLine, rot90, rot45, rotCross, rotStop]
 
         const currentType = this.type
         for(const rot of rots)
@@ -921,6 +923,7 @@ block content
       |
     |
     | detectErrors()
+    | lastElements = []
     |
     | })
 
