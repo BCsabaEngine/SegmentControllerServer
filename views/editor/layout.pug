@@ -2,7 +2,7 @@ extends ../_base
 
 block content
 
-  nav.navbar.navbar-expand-lg.navbar-light.bg-light.fixed-top(style=`height: ${topMargin}px`)
+  nav.navbar.navbar-expand-lg.navbar-light.bg-light.fixed-top.noselect(style=`height: ${topMargin}px`)
     .container-fluid
       .navbar-brand
         img(src='/public/favicon/favicon-32x32.png')
@@ -73,7 +73,7 @@ block content
             a.nav-link(href='#' onclick='toggleHelp()')
               i.bi.bi-question-circle-fill
 
-  div
+  .noselect
     each segment in segments
       .segment(id='segment' + segment.id style=`position: absolute; left: ${segment.x * blockSize}px; top: ${segment.y * blockSize + topMargin}px`, ondblclick='window.location.href="/editor/segment/' + segment.id + '"')
         img(src="/layout/segment/"+segment.id)
@@ -105,7 +105,7 @@ block content
             a.dropdown-item.text-danger(href='#' onclick='deleteSegment(' + segment.id + ', "' + segment.name + '")')
               | Delete
 
-  .card#help.hidden(style=`position: absolute; width: 24rem; top: ${topMargin + 16}px; right: 16px`, onclick='hideHelp()')
+  .card#help.hidden.noselect(style=`position: absolute; width: 24rem; top: ${topMargin + 16}px; right: 16px; z-index: 100`, onclick='hideHelp()')
     .card-body
       h6.card-title
         i.bi.bi-keyboard

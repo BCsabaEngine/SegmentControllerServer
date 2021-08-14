@@ -240,6 +240,16 @@ script(type='text/javascript').
   })
   initContextMenus('.segmentelement')
 
+  hotkeys('ctrl+a', function(event)
+  {
+    $('#elementscontainer').children().toggleClass('elementselected')
+    event.preventDefault()
+  });
+  hotkeys('shift+a', function(event)
+  {
+    $('#elementscontainer').children('.trackhide').toggleClass('elementselected')
+    event.preventDefault()
+  });
   hotkeys('shift+t', function(event)
   {
     $('.trackhide').toggle()
