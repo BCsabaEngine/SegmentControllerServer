@@ -56,7 +56,8 @@
       "segments": "readonly",
       "ws": "readonly",
       "layoutManager": "readonly",
-      "http": "readonly"
+      "http": "readonly",
+      "context2dTranslate": "readonly"
     },
     "rules": {
       "semi": [

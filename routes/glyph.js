@@ -7,6 +7,7 @@ const LayoutSegmentTurnout = require('../lib/layoutClasses/layoutSegmentTurnout'
 module.exports = (fastify) => {
   const router = new Router(fastify)
 
+  // eslint-disable-next-line sonarjs/cognitive-complexity
   router.namespace('glyph', () => {
     router.namespace('track', () => {
       router.get('', async (request, reply) => {
@@ -36,11 +37,11 @@ module.exports = (fastify) => {
         const layout = layoutManager.getLayout()
 
         const canvas = createCanvas(layout.blockSize, layout.blockSize)
-        const context = canvas.getContext('2d')
+        const context2d = canvas.getContext('2d')
 
         const track = new LayoutSegmentTrack()
         track.setType(type)
-        track.draw(context, layout, 0, 0)
+        track.draw(context2d, layout, 0, 0)
 
         const buf = canvas.toBuffer('image/png', { compressionLevel: 3, filters: canvas.PNG_FILTER_NONE })
         reply.type('image/png')
@@ -75,11 +76,11 @@ module.exports = (fastify) => {
         const layout = layoutManager.getLayout()
 
         const canvas = createCanvas(layout.blockSize, layout.blockSize)
-        const context = canvas.getContext('2d')
+        const context2d = canvas.getContext('2d')
 
         const turnout = new LayoutSegmentTurnout()
         turnout.setType(type)
-        turnout.draw(context, layout, 0, 0)
+        turnout.draw(context2d, layout, 0, 0)
 
         const buf = canvas.toBuffer('image/png', { compressionLevel: 3, filters: canvas.PNG_FILTER_NONE })
         reply.type('image/png')
@@ -92,10 +93,10 @@ module.exports = (fastify) => {
       const size = Number(request.query.size) || 32
 
       const canvas = createCanvas(size, size)
-      const context = canvas.getContext('2d')
+      const context2d = canvas.getContext('2d')
 
-      context.fillStyle = String(color)
-      context.fillRect(0, 0, size, size)
+      context2d.fillStyle = String(color)
+      context2d.fillRect(0, 0, size, size)
 
       const buf = canvas.toBuffer('image/png', { compressionLevel: 3, filters: canvas.PNG_FILTER_NONE })
       reply.type('image/png')
