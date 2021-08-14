@@ -3,9 +3,57 @@ html(lang='en')
   include include/head.pug
   body(style=`overflow: hidden; background-color: ${backColor}`)
     include include/scripts.pug
-    i.ws-indicator.bi-lightning-fill(style='position:absolute; right:4px; top:4px')
-    center
-      #bg
+
+    .dropdown
+      button#menu.btn.btn-secondary.opacity75(type='button' data-bs-toggle='dropdown' style='position:absolute; left:8px; top:8px;')
+        img.rounded-circle(src='/public/favicon/favicon-32x32.png' width='32px')
+        | 
+        | Menu
+        | 
+        i.ws-indicator.bi-lightning-fill
+      ul.dropdown-menu()
+        li.ws-indicator
+          h3.dropdown-header.ws-indicator
+            | Websocket error!
+          hr.dropdown-divider.text-secondary
+        li
+          h3.dropdown-header.text-success
+            | Hello RAILMAN!
+        li
+          a.dropdown-item(href='#')
+            i.bi.bi-people-fill
+            |
+            | Guest users
+        li
+          a.dropdown-item(href='/editor/layout')
+            i.bi.bi-layers
+            | 
+            | Layout editor
+        li
+          a.dropdown-item(href='#')
+            i.bi.bi-hdd-network-fill
+            | 
+            | Segment network
+        li
+          a.dropdown-item(href='#')
+            i.bi.bi-joystick
+            | 
+            | Z21
+        li
+          hr.dropdown-divider
+        li
+          a.dropdown-item.small(href='#')
+            i.bi.bi-wrench
+            | 
+            | Tools
+        li
+          a.dropdown-item.small(href='#')
+            i.bi.bi-gear-fill
+            | 
+            | Settings
+
+    #bg
+      a.btn.btn-success(style='position:absolute; left:400px; top:140px' onclick='alert("xxx")') xxx
 
   style.
     #bg {
@@ -68,8 +116,6 @@ html(lang='en')
           if (start.y < window.innerHeight - imgh)
             start.y = window.innerHeight - imgh;
 
-          console.log($(this));
-          //$(this).css('background-position', start.x + 'px ' + start.y + 'px');
           $(this).css('top', start.y + 'px');
           $(this).css('left', start.x + 'px');
         }
@@ -84,21 +130,26 @@ html(lang='en')
 
       function Handle(e) {
         movecontinue = false;
-        //$bg.unbind('mousemove touchmove', Move);
         $bg.unbind('mousemove touchmove', Move);
 
         if (e.type == 'mousedown' || e.type == 'touchstart') {
           origin.x = e.clientX;
           origin.y = e.clientY;
           movecontinue = true;
-          //$bg.bind('mousemove touchmove', Move);
-          $bg.bind('mousemove', Move);
+          $bg.bind('mousemove touchmove', Move);
         } else {
           $(document.body).focus();
         }
+        //e.stopPropagation();
+        //return false;
+      }
 
-        e.stopPropagation();
-        return false;
+      let eventcount = 0
+      function HandleDouble(e) {
+        eventcount++
+        if (eventcount >= 2)
+          Reset()
+        setTimeout(() => { eventcount = 0 }, 350)
       }
 
       function Reset() {
@@ -111,14 +162,13 @@ html(lang='en')
         if (imgw < window.innerWidth && imgh < window.innerHeight)
         {
           $bg.unbind('mousedown mouseup mouseleave touchstart touchend touchcancel', Handle);
-          $bg.unbind('dblclick', Reset);
+          $bg.unbind('mouseup touchend', HandleDouble);
           $('#bg').animate({ left: (window.innerWidth - imgw) / 2, top: (window.innerHeight - imgh) / 2 }, 'fast')
         }
         else
         {
-          //$bg.bind('mousedown mouseup mouseleave touchstart touchend touchcancel', Handle);
-          $bg.bind('mousedown mouseup mouseleave', Handle);
-          $bg.bind('dblclick', Reset);
+          $bg.bind('mousedown mouseup mouseleave touchstart touchend touchcancel', Handle);
+          $bg.bind('mouseup touchend', HandleDouble);
           Reset()
         }
       }
