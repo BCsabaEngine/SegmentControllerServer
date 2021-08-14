@@ -10,6 +10,7 @@ global.cmdline = require('./lib/cmdline')
 if (!cmdline.debug)
   process.env.NODE_ENV = 'production'
 
+global.runtimeConfig = require('./lib/runtimeConfig')
 global.config = require('./lib/config')
 global.logger = require('./lib/logger')
 global.rf24 = require('./lib/rf24')

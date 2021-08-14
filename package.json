@@ -51,6 +51,7 @@
       "Buffer": "readonly",
       "cmdline": "readonly",
       "config": "readonly",
+      "runtimeConfig": "readonly",
       "logger": "readonly",
       "rf24": "readonly",
       "segments": "readonly",
