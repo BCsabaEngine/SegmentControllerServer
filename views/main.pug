@@ -4,7 +4,8 @@ html(lang='en')
   body(style=`overflow: hidden; background-color: ${backColor}`)
     include include/scripts.pug
     i.ws-indicator.bi-lightning-fill(style='position:absolute; right:4px; top:4px')
-    #bg
+    center
+      #bg
 
   style.
     #bg {
@@ -40,7 +41,7 @@ html(lang='en')
         start = { x: 0, y: 0 },
         movecontinue = false;
 
-      function move(e) {
+      function Move(e) {
         if (e.type == 'touchmove') {
           e.clientX = Math.round(e.touches[0].clientX);
           e.clientY = Math.round(e.touches[0].clientY);
@@ -81,15 +82,17 @@ html(lang='en')
         return false;
       }
 
-      function handle(e) {
+      function Handle(e) {
         movecontinue = false;
-        $bg.unbind('mousemove touchmove', move);
+        //$bg.unbind('mousemove touchmove', Move);
+        $bg.unbind('mousemove touchmove', Move);
 
         if (e.type == 'mousedown' || e.type == 'touchstart') {
           origin.x = e.clientX;
           origin.y = e.clientY;
           movecontinue = true;
-          $bg.bind('mousemove touchmove', move);
+          //$bg.bind('mousemove touchmove', Move);
+          $bg.bind('mousemove', Move);
         } else {
           $(document.body).focus();
         }
@@ -98,14 +101,27 @@ html(lang='en')
         return false;
       }
 
-      function reset() {
+      function Reset() {
         start = { x: 0, y: 0 };
-        // $(this).css('backgroundPosition', '0 0');
-        // $(this).css('top', '0');
-        // $(this).css('left', '0');
-        $(this).animate({ top: 0, left: 0 }, 'fast');
+        $('#bg').animate({ top: 0, left: 0 }, 'fast');
       }
 
-      $bg.bind('mousedown mouseup mouseleave touchstart touchend touchcancel', handle);
-      $bg.bind('dblclick', reset);
+      function InitBySize()
+      {
+        if (imgw < window.innerWidth && imgh < window.innerHeight)
+        {
+          $bg.unbind('mousedown mouseup mouseleave touchstart touchend touchcancel', Handle);
+          $bg.unbind('dblclick', Reset);
+          $('#bg').animate({ left: (window.innerWidth - imgw) / 2, top: (window.innerHeight - imgh) / 2 }, 'fast')
+        }
+        else
+        {
+          //$bg.bind('mousedown mouseup mouseleave touchstart touchend touchcancel', Handle);
+          $bg.bind('mousedown mouseup mouseleave', Handle);
+          $bg.bind('dblclick', Reset);
+          Reset()
+        }
+      }
+      $(window).resize(InitBySize)
+      InitBySize()
     });
