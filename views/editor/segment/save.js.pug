@@ -1,7 +1,11 @@
 script(type='text/javascript').
   let timerAutosave = null
   let downcountSuccessSave = 1
-  function stopAutosaveTimer() { clearTimeout(timerAutosave) }
+  let initializationState = false
+  function stopAutosaveTimer()
+  {
+    clearTimeout(timerAutosave)
+  }
   function startAutosaveTimer()
   {
     stopAutosaveTimer()
@@ -19,6 +23,8 @@ script(type='text/javascript').
   }
   function needSaveSegmentElements()
   {
+    if (initializationState)
+      return
     $('#panelsave').fadeIn()
     startAutosaveTimer()
     detectErrors()

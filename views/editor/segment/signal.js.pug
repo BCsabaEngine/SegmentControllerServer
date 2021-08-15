@@ -1,0 +1,163 @@
+script(type='text/javascript').
+  function cursorCreateSignal(x, y, params)
+  {
+    new Signal(x, y, params.type, params.bulbs)
+    needSaveSegmentElements()
+  }
+
+  class Signal {
+    id
+    x
+    y
+    type = null
+    bulbs = null
+    constructor(x, y, type, bulbs)
+    {
+      elementid++
+      this.id = elementid
+      elements[this.id] = this
+      addElementToUndoQueue(this)
+      this.x = x
+      this.y = y
+
+      const jelement = $("#signal")
+        .clone()
+        .attr('id', 'element' + this.id)
+        .data('id', this.id)
+        .css('left', x * blockSize)
+        .css('top', y * blockSize + topMargin)
+        .css('z-index', 20)
+        .insertAfter("#signal")
+        .removeClass('hidden')
+
+      this.setType(type)
+      this.setBulbs(bulbs)
+
+      const that = this
+
+      jelement.on('click', () => {
+        if (!isCtrlDown) clearSelection()
+        jelement.addClass('elementselected')
+        return false
+      })
+
+      const delta = { x: 0, y: 0 }
+      interact(document.getElementById('element' + this.id))
+        .draggable({
+          listeners: {
+            start (event) {
+              delta.x = 0
+              delta.y = 0
+              stopAutosaveTimer()
+              if (!isCtrlDown) clearSelection()
+              jelement.addClass('elementselected')
+            },
+            move (event) {
+              delta.x += event.dx
+              delta.y += event.dy
+              event.target.style.left = `${that.x * blockSize + delta.x}px`
+              event.target.style.top = `${that.y * blockSize + topMargin + delta.y}px`
+            },
+            end (event) {
+              that.setPos(jelement.offset().left / blockSize, (jelement.offset().top - topMargin) / blockSize)
+              needSaveSegmentElements()
+            }
+          },
+          modifiers: [
+            interact.modifiers.snap({
+              targets: [
+                interact.snappers.grid({ x: blockSize, y: blockSize })
+              ],
+              relativePoints: [ { x: 0, y: 0 } ]
+            }),
+            interact.modifiers.restrictRect({
+              restriction: { x: 0, y: topMargin, width: 10000, height: 10000 },
+              endOnly: false
+            })
+          ]
+        })
+        .draggable(interactsEnabled)
+    }
+
+    enableInteract(enable) { interact(document.getElementById('element' + this.id)).draggable(enable) }
+
+    element() { return $(`#element${this.id}`) }
+
+    setType(type)
+    {
+      this.type = type
+      this.element()
+        .find('img')
+        .attr('src', `/glyph/signal/${this.type}/${this.bulbs}`)
+      needSaveSegmentElements()
+    }
+
+    setBulbs(bulbs)
+    {
+      this.bulbs = bulbs
+      this.element()
+        .find('img')
+        .attr('src', `/glyph/signal/${this.type}/${this.bulbs}`)
+      needSaveSegmentElements()
+    }
+
+    containsPoint(x, y) { return this.x == x && this.y == y }
+    isOverLap(x1, y1, x2, y2) { return this.x >= x1 && this.x <= x2 && this.y >= y1 && this.y <= y2 }
+
+    canMoveLeft() { return this.x > 0 }
+    canMoveUp() { return this.y > 0 }
+
+    moveLeft() { this.setPos(this.x - 1, this.y) }
+    moveRight() { this.setPos(this.x + 1, this.y) }
+    moveUp() { this.setPos(this.x, this.y - 1) }
+    moveDown() { this.setPos(this.x, this.y +1 ) }
+
+    setPos(x, y)
+    {
+      if (x < 0 || y < 0) return
+      this.x = x
+      this.y = y
+
+      this.element()
+        .css('left', this.x * blockSize)
+        .css('top', this.y * blockSize + topMargin)
+
+      needSaveSegmentElements()
+    }
+
+    rotate(anticlockwise)
+    {
+      const rotRight = ['nsignal', 'nesignal', 'esignal', 'sesignal', 'ssignal', 'swsignal', 'wsignal', 'nwsignal']
+      const rots = [rotRight]
+
+      const currentType = this.type
+      for(const rot of rots)
+        if (rot.includes(currentType))
+        {
+          let index = rot.indexOf(currentType)
+          if (index >= 0)
+          {
+            index += anticlockwise ? -1 : 1
+            if (index < 0)
+              index = rot.length - 1
+            if (index > rot.length - 1)
+              index = 0
+
+            this.setType(rot[index])
+          }
+          break
+        }
+    }
+
+    remove()
+    {
+      if (this.id in elements)
+        delete elements[this.id]
+      this.element().remove()
+      needSaveSegmentElements()
+    }
+
+    setCopyCursor() { setCursor(`/glyph/signal/${this.type}/${this.bulbs}`, cursorCreateSignal, { type: this.type, bulbs: this.bulbs }) }
+
+    getSaveData() { return { class: 'signal', x: this.x, y: this.y, type: this.type, bulbs: this.bulbs } }
+  }

@@ -194,41 +194,6 @@ script(type='text/javascript').
           elements[id].moveRight()
         event.preventDefault();
         break;
-      case "Delete":
-        for(const selection of selections)
-        {
-          const deleteId = $(selection).data('id')
-          if (deleteId in elements && elements[deleteId])
-            elements[deleteId].remove()
-        }
-        event.preventDefault();
-        break;
-      case 'r':
-      case 'R':
-        if (!isCtrlDown)
-        {
-          for(const selection of selections)
-          {
-            const rotateId = $(selection).data('id')
-            if (rotateId in elements && elements[rotateId] && elements[rotateId].rotate)
-              elements[rotateId].rotate(event.key == 'R')
-          }
-          event.preventDefault();
-        }
-        break;
-      case 'c':
-        if (isCtrlDown)
-        {
-          if (selections.length == 1)
-          {
-            const copyId = $(selections[0]).data('id')
-            if (copyId in elements && elements[copyId] && elements[copyId].setCopyCursor)
-              elements[copyId].setCopyCursor()
-
-          }
-          event.preventDefault();
-        }
-        break;
       default:
         return;
     }
@@ -240,6 +205,41 @@ script(type='text/javascript').
   })
   initContextMenus('.segmentelement')
 
+  hotkeys('r,shift+r', function(event, handler)
+  {
+    const selections =  getSelection()
+    if (selections.length == 0) return 
+    for(const selection of selections)
+    {
+      const rotateId = $(selection).data('id')
+      if (rotateId in elements && elements[rotateId] && elements[rotateId].rotate)
+        elements[rotateId].rotate(handler.key == 'shift+r')
+    }
+    event.preventDefault()
+  });
+  hotkeys('ctrl+c', function(event, handler)
+  {
+    const selections =  getSelection()
+    if (selections.length == 1)
+    {
+      const copyId = $(selections[0]).data('id')
+      if (copyId in elements && elements[copyId] && elements[copyId].setCopyCursor)
+        elements[copyId].setCopyCursor()
+    }
+    event.preventDefault()
+  });
+  hotkeys('del', function(event, handler)
+  {
+    const selections =  getSelection()
+    if (selections.length == 0) return 
+    for(const selection of selections)
+    {
+      const deleteId = $(selection).data('id')
+      if (deleteId in elements && elements[deleteId])
+        elements[deleteId].remove()
+    }
+    event.preventDefault()
+  });
   hotkeys('ctrl+a', function(event)
   {
     $('#elementscontainer').children().toggleClass('elementselected')
@@ -252,12 +252,17 @@ script(type='text/javascript').
   });
   hotkeys('shift+t', function(event)
   {
-    $('.trackhide').toggle()
+    $('.trackhide').fadeToggle('fast')
+    event.preventDefault()
+  });
+  hotkeys('shift+l', function(event)
+  {
+    $('.signalhide').fadeToggle('fast')
     event.preventDefault()
   });
   hotkeys('shift+s', function(event)
   {
-    $('.surfacehide').toggle()
+    $('.surfacehide').fadeToggle('fast')
     event.preventDefault()
   });
   hotkeys('shift+h', function(event){ toggleHelp() })

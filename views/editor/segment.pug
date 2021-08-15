@@ -7,7 +7,7 @@ block content
       h6.card-title
         i.bi.bi-keyboard
         | 
-        | Shortcuts
+        | Segment editor shortcuts
       p.card-text
         small
           | Many functions are available with keyboard shortcuts.
@@ -66,7 +66,7 @@ block content
               li
                 hr.dropdown-divider
               li
-                a.dropdown-item(href='#' onclick=`$('.trackhide').toggle()`) Show/hide all
+                a.dropdown-item(href='#' onclick=`$('.trackhide').fadeToggle('fast')`) Show/hide all
 
           li.nav-item.dropdown.dropdown-instant.ms-2
             a.nav-link(href='#' role='button' data-bs-toggle='dropdown')
@@ -96,7 +96,24 @@ block content
               li
                 hr.dropdown-divider
               li
-                a.dropdown-item(href='#' onclick=`$('.trackhide').toggle()`) Show/hide all
+                a.dropdown-item(href='#' onclick=`$('.trackhide').fadeToggle('fast')`) Show/hide all
+
+          li.nav-item.dropdown.dropdown-instant.ms-2
+            a.nav-link(href='#' role='button' data-bs-toggle='dropdown')
+              img(src=`/glyph/signal/${firstsignaltype}/GYR` width='24px')
+              | 
+              | Signals
+            ul.dropdown-menu
+              each signaltypename, signaltype in signaltypes
+                li
+                  a.dropdown-item(href='#' onclick=`setCursor('/glyph/signal/${signaltype}/GYR', cursorCreateSignal, { type: '${signaltype}', bulbs: 'GYR' })`)
+                    img(src=`/glyph/signal/${signaltype}/GYR` width='16px')
+                    | 
+                    = signaltypename
+              li
+                hr.dropdown-divider
+              li
+                a.dropdown-item(href='#' onclick=`$('.signalhide').fadeToggle('fast')`) Show/hide all
 
           li.nav-item.dropdown.dropdown-instant.ms-2
             a.nav-link.dropdown-toggleX(href='#' role='button' data-bs-toggle='dropdown')
@@ -142,7 +159,7 @@ block content
               li
                 hr.dropdown-divider
               li
-                a.dropdown-item(href='#' onclick=`$('.surfacehide').toggle()`) Show/hide all
+                a.dropdown-item(href='#' onclick=`$('.surfacehide').fadeToggle('fast')`) Show/hide all
 
         ul.navbar-nav.ms-auto.mb-2.mb-lg-0
           li#panelsave.nav-item.hidden
@@ -174,6 +191,12 @@ block content
           a.dropdown-item.text-danger(href='#' onclick='removeMyElement(this)')
             | Delete
     .segmentelement.trackhide.hidden#turnout(style=`position:absolute; left:0; top:0; width: ${blockSize}px; height: ${blockSize}px;`)
+      img
+      ul.dropdown-menu.context-menu
+        li
+          a.dropdown-item.text-danger(href='#' onclick='removeMyElement(this)')
+            | Delete
+    .segmentelement.signalhide.hidden#signal(style=`position:absolute; left:0; top:0; width: ${blockSize}px; height: ${blockSize}px;`)
       img
       ul.dropdown-menu.context-menu
         li
@@ -229,14 +252,17 @@ block content
     const blockSize = #{blockSize}
 
   include segment/elements.js.pug
+  include segment/surface.js.pug
   include segment/track.js.pug
   include segment/turnout.js.pug
-  include segment/surface.js.pug
+  include segment/signal.js.pug
   include segment/save.js.pug
   include segment/hotkeys.js.pug
 
   script(type='text/javascript')
     | $(function() {
+    |
+    | initializationState = true
     | 
     each surface in segment.surfaces
       |  new Surface(
@@ -275,7 +301,20 @@ block content
       |');
       |
     |
+    each signal in segment.signals
+      |  new Signal(
+      = signal.x
+      |, 
+      = signal.y
+      |, '
+      = signal.type
+      |', '
+      = signal.bulbs
+      |');
+      |
+    |
     | detectErrors()
+    | initializationState = false
     | lastElements = []
     |
     | })
