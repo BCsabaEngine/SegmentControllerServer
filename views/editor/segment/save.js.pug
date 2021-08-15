@@ -14,12 +14,17 @@ script(type='text/javascript').
   function detectErrors()
   {
     $('#elementscontainer').children('.elementerror').removeClass('elementerror')
+
     for(const a in elements)
-      if (elements[a] instanceof Track)
-        for(const b in elements)
-          if (a != b && elements[b] instanceof Track)
-            if (elements[a].containsPoint(elements[b].x, elements[b].y))
-              elements[a].element().addClass('elementerror')
+      for(const b in elements)
+      {
+        if (a != b && elements[a] instanceof Track && elements[b] instanceof Track)
+          if (elements[a].containsPoint(elements[b].x, elements[b].y))
+            elements[a].element().addClass('elementerror')
+        if (a != b && elements[a] instanceof Signal && elements[b] instanceof Signal)
+          if (elements[a].containsPoint(elements[b].x, elements[b].y))
+            elements[a].element().addClass('elementerror')
+      }
   }
   function needSaveSegmentElements()
   {
