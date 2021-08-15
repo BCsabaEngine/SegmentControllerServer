@@ -40,7 +40,7 @@ script(type='text/javascript').
         needSaveSegmentElements()
   }
 
-  function getSelection() { return $('#elementscontainer').children('.elementselected') }
+  function getSelection() { return $('#elementscontainer').children('.elementselected:visible') }
   function clearSelection() { getSelection().removeClass('elementselected') }
 
   lastElements = []
