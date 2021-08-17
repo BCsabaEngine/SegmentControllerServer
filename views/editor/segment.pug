@@ -217,7 +217,9 @@ block content
           a.dropdown-item.text-danger(href='#' onclick='removeMyElement(this)')
             | Delete
     .segmentelement.surfacehide.hidden#surface(style=`position:absolute; left:0; top:0; width: ${blockSize}px; height: ${blockSize}px)`)
-      span.d-flex.align-items-center.justify-content-center(style="height:100%;").small
+      span.design.d-flex(style="position:absolute;").small.fw-bold
+        |
+      span.text.d-flex.align-items-center.justify-content-center(style="height:100%;").small
         |
       ul.dropdown-menu.context-menu
         li

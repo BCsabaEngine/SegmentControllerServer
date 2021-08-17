@@ -66,10 +66,11 @@ script(type='text/javascript').
               moveDelta.y += event.dy
               event.target.style.left = `${that.x * blockSize + moveDelta.x}px`
               event.target.style.top = `${that.y * blockSize + topMargin + moveDelta.y}px`
+              $(event.target).children('span.design').text(Math.round(that.x + moveDelta.x / blockSize) + ',' + Math.round(that.y + moveDelta.y / blockSize))
             },
             end (event) {
               that.setPos(jelement.offset().left / blockSize, (jelement.offset().top - topMargin) / blockSize)
-              needSaveSegmentElements()
+              $(event.target).children('span.design').text('')
             },
           },
           modifiers: [
@@ -105,13 +106,12 @@ script(type='text/javascript').
               event.target.style.left = `${that.x * blockSize + sizeDelta.x}px`
               event.target.style.top = `${that.y * blockSize + topMargin + sizeDelta.y}px`
 
-              //event.target.textContent = Math.round(event.rect.width / blockSize) + '\u00D7' + Math.round(event.rect.height / blockSize)
+              $(event.target).children('span.design').text(Math.round(event.rect.width / blockSize) + '\u00D7' + Math.round(event.rect.height / blockSize))
             },
             end (event) {
               that.setPos(jelement.offset().left / blockSize, (jelement.offset().top - topMargin) / blockSize)
               that.setSize(jelement.width() / blockSize, jelement.height() / blockSize)
-              //event.target.textContent = ''
-              needSaveSegmentElements()
+              $(event.target).children('span.design').text('')
             }
           },
           modifiers: [
@@ -144,7 +144,7 @@ script(type='text/javascript').
       {
         this.text = text
         this.element()
-          .find('span')
+          .find('span.text')
           .text(text)
       }
 
