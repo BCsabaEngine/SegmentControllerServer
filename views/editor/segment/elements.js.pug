@@ -41,7 +41,20 @@ script(type='text/javascript').
   }
 
   function getSelection() { return $('#elementscontainer').children('.elementselected:visible') }
-  function clearSelection() { getSelection().removeClass('elementselected') }
+  function clearSelection() {
+    getSelection().removeClass('elementselected')
+    updateSelectionDisplay()
+  }
+  function updateSelectionDisplay() {
+    const count = getSelection().length
+    if (count > 1)
+    {
+      $('#selectionindicator').show()
+      $('#selectioncount').html(count)
+    }
+    else
+      $('#selectionindicator').hide()
+  }
 
   lastElements = []
   function addElementToUndoQueue(element)

@@ -65,6 +65,7 @@ script(type='text/javascript').
             if (elements[id].isOverLap(lefttop.x, lefttop.y, bottomright.x - 1, bottomright.y - 1))
               $(element).addClass('elementselected')
         }
+    updateSelectionDisplay()
   }
 
   $('#elementscontainer').on('mousedown', function(event)
@@ -243,11 +244,13 @@ script(type='text/javascript').
   hotkeys('ctrl+a', function(event)
   {
     $('#elementscontainer').children().toggleClass('elementselected')
+    updateSelectionDisplay()
     event.preventDefault()
   });
   hotkeys('shift+a', function(event)
   {
     $('#elementscontainer').children('.trackhide').toggleClass('elementselected')
+    updateSelectionDisplay()
     event.preventDefault()
   });
   hotkeys('shift+t', function(event)

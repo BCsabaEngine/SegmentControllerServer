@@ -36,6 +36,7 @@ script(type='text/javascript').
       jelement.on('click', () => {
         if (!isCtrlDown) clearSelection()
         jelement.addClass('elementselected')
+        updateSelectionDisplay()
         return false
       })
 
@@ -49,6 +50,7 @@ script(type='text/javascript').
               stopAutosaveTimer()
               if (!isCtrlDown) clearSelection()
               jelement.addClass('elementselected')
+              updateSelectionDisplay()
             },
             move (event) {
               delta.x += event.dx

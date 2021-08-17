@@ -161,6 +161,13 @@ block content
               li
                 a.dropdown-item(href='#' onclick=`$('.surfacehide').fadeToggle('fast')`) Show/hide all
 
+          li.nav-item.elementselected.small.hidden#selectionindicator
+            a.nav-link(href='#')
+              b#selectioncount
+                | 0
+              |
+              | selected
+
         ul.navbar-nav.ms-auto.mb-2.mb-lg-0
           li#panelsave.nav-item.hidden
             a#buttonsave.btn.btn-warning(href='#' onclick='saveSegmentElements(true)' title='CTRL+S')
