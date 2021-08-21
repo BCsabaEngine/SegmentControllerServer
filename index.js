@@ -93,6 +93,28 @@ process.on('SIGUSR2', gracefullyClose)
 segments.on('event', (...arguments_) => { console.log(arguments_) })
 
 // setInterval(() => {
+//   console.log('Toggle signal')
+//   const sarud = segments.GetSegmentById(5)
+//   sarud.signal.ToggleSignal(5)
+// }, 5 * 1000)
+// setInterval(() => {
+//   console.log('PLAY')
+//   const sarud = segments.GetSegmentById(5)
+//   sarud.sound.Play(1)
+//   setTimeout(() => {
+//     console.log('STOP')
+//     const sarud = segments.GetSegmentById(5)
+//     sarud.sound.Stop()
+//   }, 4 * 1000)
+// }, 10 * 1000)
+// setTimeout(() => {
+//   console.log('STOP')
+//   const sarud = segments.GetSegmentById(5)
+//   sarud.sound.Stop()
+// }, 12 * 1000)
+
+
+// setInterval(() => {
 //   for (const id of segments.GetSegmentIds()) {
 //     const seg = segments.GetSegmentById(id)
 //     console.log(seg.signal1.signalStates[0])
