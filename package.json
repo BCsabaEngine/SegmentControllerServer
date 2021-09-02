@@ -8,9 +8,10 @@
   "bin": "index.js",
   "scripts": {
     "lint": "node_modules\\.bin\\eslint ./**/*.js",
-    "pkg": "pkg .",
-    "pkgzip": "pkg . --compress GZip",
-    "pkgbro": "pkg . --compress Brotli"
+    "pkg": "pkg -t latest-linux-x64 .",
+    "pkgzip": "pkg -t latest-linux-x64 --compress GZip .",
+    "pkgw": "pkg -t latest-win-x64 .",
+    "pkgwzip": "pkg -t latest-win-x64 --compress GZip ."
   },
   "keywords": [
     "SegmentController"
@@ -116,11 +117,9 @@
       "views/**/*",
       "public/**/*",
       "node_modules/canvas/build/Release/*.dll",
+      "node_modules/canvas/build/Release/libjpg.so.*",
       "node_modules/platform-folders/build/Release/platformFolders.node",
       "node_modules/@serialport/bindings/build/Release/bindings.node"
-    ],
-    "targets": [
-      "latest-win-x64"
     ],
     "outputPath": "../SegmentControllerServerDist"
   },
