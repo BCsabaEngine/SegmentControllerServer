@@ -131,7 +131,7 @@
     "canvas": "^2.8.0",
     "color": "^4.0.1",
     "dayjs": "^1.10.6",
-    "fastify": "^3.20.2",
+    "fastify": "^3.21.0",
     "fastify-compress": "^3.6.0",
     "fastify-cookie": "^5.3.1",
     "fastify-etag": "^2.1.0",
@@ -157,8 +157,8 @@
     "yargs": "^17.1.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.15.0",
-    "@babel/eslint-parser": "^7.15.0",
+    "@babel/core": "^7.15.5",
+    "@babel/eslint-parser": "^7.15.4",
     "eslint": "^7.32.0",
     "eslint-plugin-const-case": "^1.2.2",
     "eslint-plugin-deprecate": "^0.7.0",
