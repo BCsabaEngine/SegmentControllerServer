@@ -126,11 +126,11 @@
   "dependencies": {
     "@mgcrea/fastify-session": "^0.14.1",
     "bitset": "^5.1.1",
-    "bootstrap": "^5.1.0",
+    "bootstrap": "^5.1.1",
     "bootstrap-icons": "^1.5.0",
     "canvas": "^2.8.0",
     "color": "^4.0.1",
-    "dayjs": "^1.10.6",
+    "dayjs": "^1.10.7",
     "fastify": "^3.21.0",
     "fastify-compress": "^3.6.0",
     "fastify-cookie": "^5.3.1",
@@ -152,7 +152,7 @@
     "point-of-view": "^4.15.2",
     "pug": "^3.0.2",
     "rf24meshserialnode": "^0.9.4",
-    "sweetalert2": "^11.1.4",
+    "sweetalert2": "^11.1.5",
     "winston": "^3.3.3",
     "yargs": "^17.1.1"
   },
@@ -165,6 +165,6 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^5.1.0",
     "eslint-plugin-sonarjs": "^0.10.0",
-    "eslint-plugin-unicorn": "^35.0.0"
+    "eslint-plugin-unicorn": "^36.0.0"
   }
 }
