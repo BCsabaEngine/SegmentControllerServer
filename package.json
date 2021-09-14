@@ -121,6 +121,7 @@
       "node_modules/canvas/build/Release/libpixman-*.dylib",
       "node_modules/canvas/build/Release/libcairo.*.dylib",
       "node_modules/canvas/build/Release/libpng16.*.dylib",
+      "node_modules/canvas/build/Release/libpangocairo-*.dylib",
       "node_modules/platform-folders/build/Release/platformFolders.node",
       "node_modules/@serialport/bindings/build/Release/bindings.node"
     ],
