@@ -117,11 +117,8 @@
       "views/**/*",
       "public/**/*",
       "node_modules/canvas/build/Release/*.dll",
-      
       "node_modules/canvas/build/Release/libjpg.so.*",
-      
       "node_modules/canvas/build/Release/lib*.dylib",
-      
       "node_modules/platform-folders/build/Release/platformFolders.node",
       "node_modules/@serialport/bindings/build/Release/bindings.node"
     ],
