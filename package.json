@@ -127,7 +127,7 @@
       "node_modules/canvas/build/Release/libpango-*.dylib",
       "node_modules/canvas/build/Release/libgobject-*.dylib",
       "node_modules/canvas/build/Release/libglib-*.dylib",
-      "node_modules/canvas/build/Release/libintl-*.dylib",
+      "node_modules/canvas/build/Release/libintl.*.dylib",
       
       "node_modules/platform-folders/build/Release/platformFolders.node",
       "node_modules/@serialport/bindings/build/Release/bindings.node"
