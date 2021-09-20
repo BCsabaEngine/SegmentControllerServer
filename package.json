@@ -10,6 +10,8 @@
     "lint": "node_modules\\.bin\\eslint ./**/*.js",
     "pkg": "pkg -t latest-linux-x64 .",
     "pkgzip": "pkg -t latest-linux-x64 --compress GZip .",
+    "pkgm": "pkg -t latest-macos-x64 .",
+    "pkgmzip": "pkg -t latest-macos-x64 --compress GZip .",
     "pkgw": "pkg -t latest-win-x64 .",
     "pkgwzip": "pkg -t latest-win-x64 --compress GZip ."
   },
