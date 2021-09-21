@@ -71,7 +71,7 @@ module.exports = (fastify) => {
         const layout = layoutManager.getLayout()
 
         reply.type('image/png')
-        return new LayoutSegmentTurnout(0, 0, type).getImage(layout)
+        return new LayoutSegmentTurnout(0, 0, 0, 0, type).getImage(layout)
       })
     })
     router.namespace('signal', () => {
@@ -107,7 +107,7 @@ module.exports = (fastify) => {
         const layout = layoutManager.getLayout()
 
         reply.type('image/png')
-        return new LayoutSegmentSignal(0, 0, type, bulbs).getImage(layout)
+        return new LayoutSegmentSignal(0, 0, 0, 0, type, bulbs).getImage(layout)
       })
     })
     router.get('surface', async (request, reply) => {

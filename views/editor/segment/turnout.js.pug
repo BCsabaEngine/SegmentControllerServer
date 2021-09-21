@@ -9,8 +9,10 @@ script(type='text/javascript').
     id
     x
     y
+    panel = null
+    index = null
     type = null
-    constructor(x, y, type)
+    constructor(x, y, panel, index, type)
     {
       elementid++
       this.id = elementid
@@ -29,6 +31,7 @@ script(type='text/javascript').
         .insertAfter("#turnout")
         .removeClass('hidden')
 
+      this.setPanelIndex(panel, index)
       this.setType(type)
 
       const that = this
@@ -82,6 +85,12 @@ script(type='text/javascript').
     enableInteract(enable) { interact(document.getElementById('element' + this.id)).draggable(enable) }
 
     element() { return $(`#element${this.id}`) }
+
+    setPanelIndex(panel, index)
+    {
+      this.panel = panel
+      this.index = index
+    }
 
     setType(type)
     {
@@ -151,5 +160,57 @@ script(type='text/javascript').
 
     setCopyCursor() { setCursor('/glyph/turnout/' + this.type, cursorCreateTurnout, { type: this.type}) }
 
-    getSaveData() { return { class: 'turnout', x: this.x, y: this.y, type: this.type } }
+    getSaveData() { return { class: 'turnout', x: this.x, y: this.y, panel: this.panel, index: this.index, type: this.type } }
+
+    async inputSetPanel()
+    {
+      const { value: newPanelIndex } = await Swal.fire({
+        title: 'Select panel for signal',
+        input: 'select',
+        inputValue: (this.panel + 1) * 10 + this.index + 1,
+        inputOptions: {
+          0: 'Not connected',
+          'Turnout#1': {
+            11: 'Turnout#1 A',
+            12: 'Turnout#1 B',
+            13: 'Turnout#1 C',
+            14: 'Turnout#1 D',
+            15: 'Turnout#1 E',
+            16: 'Turnout#1 F'
+          },
+          'Turnout#2': {
+            21: 'Turnout#2 A',
+            22: 'Turnout#2 B',
+            23: 'Turnout#2 C',
+            24: 'Turnout#2 D',
+            25: 'Turnout#2 E',
+            26: 'Turnout#2 F'
+          },
+          'Turnout#3': {
+            31: 'Turnout#3 A',
+            32: 'Turnout#3 B',
+            33: 'Turnout#3 C',
+            34: 'Turnout#3 D',
+            35: 'Turnout#3 E',
+            36: 'Turnout#3 F'
+          },
+          'Turnout#4': {
+            41: 'Turnout#4 A',
+            42: 'Turnout#4 B',
+            43: 'Turnout#4 C',
+            44: 'Turnout#4 D',
+            45: 'Turnout#4 E',
+            46: 'Turnout#4 F'
+          }
+        },
+        //inputPlaceholder: 'Select panel and index',
+        showCancelButton: true
+      })
+
+      if (newPanelIndex !== undefined)
+      {
+        this.setPanelIndex(Math.floor(newPanelIndex / 10) - 1, newPanelIndex % 10 - 1)
+        return true
+      }
+    }
   }

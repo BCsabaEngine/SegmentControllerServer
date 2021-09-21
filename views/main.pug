@@ -159,7 +159,7 @@ html(lang='en')
 
       function InitBySize()
       {
-        if (imgw < window.innerWidth && imgh < window.innerHeight)
+        if (imgw < window.innerWidth || imgh < window.innerHeight)
         {
           $bg.unbind('mousedown mouseup mouseleave touchstart touchend touchcancel', Handle);
           $bg.unbind('mouseup touchend', HandleDouble);
@@ -172,6 +172,11 @@ html(lang='en')
           Reset()
         }
       }
-      $(window).resize(InitBySize)
+      let resizetimer = null
+      $(window).resize(function()
+      {
+        clearTimeout(resizetimer);
+        resizetimer = setTimeout(function() { InitBySize() }, 250)
+      })
       InitBySize()
     });

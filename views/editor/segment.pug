@@ -208,11 +208,24 @@ block content
       img
       ul.dropdown-menu.context-menu
         li
+          a.dropdown-item(href='#' onclick='callMyElementMethod(this, "inputSetPanel")')
+            | Connect to panel
+        li
+          hr.dropdown-divider
+        li
           a.dropdown-item.text-danger(href='#' onclick='removeMyElement(this)')
             | Delete
     .segmentelement.signalhide.hidden#signal(style=`position:absolute; left:0; top:0; width: ${blockSize}px; height: ${blockSize}px;`)
       img
       ul.dropdown-menu.context-menu
+        li
+          a.dropdown-item(href='#' onclick='callMyElementMethod(this, "inputSetBulbs")')
+            | Set bulbs
+        li
+          a.dropdown-item(href='#' onclick='callMyElementMethod(this, "inputSetPanel")')
+            | Connect to panel
+        li
+          hr.dropdown-divider
         li
           a.dropdown-item.text-danger(href='#' onclick='removeMyElement(this)')
             | Delete
@@ -312,6 +325,10 @@ block content
       = turnout.x
       |, 
       = turnout.y
+      |, 
+      = turnout.panel
+      |, 
+      = turnout.index
       |, '
       = turnout.type
       |');
@@ -322,6 +339,10 @@ block content
       = signal.x
       |, 
       = signal.y
+      |, 
+      = signal.panel
+      |, 
+      = signal.index
       |, '
       = signal.type
       |', '
