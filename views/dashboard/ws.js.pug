@@ -1,0 +1,9 @@
+script(type='text/javascript').
+  ws_channels =
+  {
+    layoutchange: function() { pagereload() }
+  }
+
+  function ws_onreceive(data) {
+    console.log(data);
+  }

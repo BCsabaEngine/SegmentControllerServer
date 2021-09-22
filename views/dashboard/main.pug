@@ -1,0 +1,88 @@
+doctype html
+html(lang='en')
+  include ../include/head.pug
+  body(style=`overflow: hidden; background-color: ${backColor}`)
+    include ../include/scripts.pug
+
+    .dropdown
+      button#menu.btn.btn-secondary.opacity75(type='button' data-bs-toggle='dropdown' style='position:absolute; left:8px; top:8px;')
+        img.rounded-circle(src='/public/favicon/favicon-32x32.png' width='32px')
+        | 
+        | Menu
+        | 
+        i.ws-indicator.bi-lightning-fill
+      ul.dropdown-menu()
+        li.ws-indicator
+          h3.dropdown-header.ws-indicator
+            | Websocket error!
+          hr.dropdown-divider.text-secondary
+        li
+          h3.dropdown-header.text-success
+            | Hello RAILMAN!
+        li
+          a.dropdown-item.hidden(href='#')
+            i.bi.bi-people-fill
+            |
+            | Guest users
+        li
+          a.dropdown-item(href='/editor/layout')
+            i.bi.bi-layers
+            | 
+            | Layout editor
+        li
+          a.dropdown-item.disabled(href='#')
+            i.bi.bi-hdd-network-fill
+            | 
+            | Segment network
+        li
+          a.dropdown-item.disabled(href='#')
+            i.bi.bi-joystick
+            | 
+            | Z21
+        li
+          hr.dropdown-divider
+        li
+          a.dropdown-item.small.disabled(href='#')
+            i.bi.bi-wrench
+            | 
+            | Tools
+        li
+          a.dropdown-item.small.disabled(href='#')
+            i.bi.bi-gear-fill
+            | 
+            | Settings
+
+    #bg
+
+  include elements/common.js.pug
+  include bg.js.pug
+  include ws.js.pug
+  include elements/signal.js.pug
+
+  script(type='text/javascript')
+    | $(function() {
+    |
+    | initializationState = true
+    |
+    each segment in segments
+      each signal in segment.signals
+        |  new Signal('
+        = signal.id
+        |', 
+        = segment.x + signal.x
+        |, 
+        = segment.y + signal.y
+        |, 
+        = signal.panel
+        |, 
+        = signal.index
+        |, '
+        = signal.type
+        |', '
+        = signal.bulbs
+        |');
+        |
+    |
+    | initializationState = false
+    |
+    | })

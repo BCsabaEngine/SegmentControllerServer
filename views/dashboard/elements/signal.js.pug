@@ -1,0 +1,89 @@
+.hidden#signal(style=`position:absolute; left:0; top:0; width: ${blockSize}px; height: ${blockSize}px;`)
+  img
+  ul.dropdown-menu.context-menu
+    li
+      a.dropdown-item(href='#' onclick='callMyElementMethod(this, "inputSetPanel")')
+        | XXX
+    li
+      hr.dropdown-divider
+    li
+      a.dropdown-item.text-danger(href='#' onclick='removeMyElement(this)')
+        | YYY
+
+script(type='text/javascript').
+  class Signal {
+    id
+    x
+    y
+    panel = null
+    index = null
+    type = null
+    bulbs = null
+
+    constructor(id, x, y, panel, index, type, bulbs)
+    {
+      this.id = id
+      this.x = x
+      this.y = y
+      this.panel = panel
+      this.index = index
+      this.type = type
+      this.bulbs = bulbs
+      elements[this.id] = this
+
+      const jelement = $('#signal').clone()
+        .attr('id', 'element' + this.id)
+        .css('left', this.x * blockSize)
+        .css('top', this.y * blockSize)
+        .css('z-index', 1)
+        .removeClass('hidden')
+        .appendTo("#bg")
+
+      this.displayBulbs('0'.repeat(this.bulbs.length))
+      this.adaptBulbs('1100')
+
+      jelement.on('click', () => {
+        this.adaptBulbs('10S0')
+      })
+    }
+
+    element() { return $(`#element${this.id}`) }
+
+    tickAlternate(state) { 
+      if (this.state1 !== this.state2)
+        this.displayBulbs(state ? this.state1 : this.state2)
+    }
+
+    state1 = '0'
+    state2 = '0'
+    adaptBulbs(bulbStates)
+    {
+      this.state1 = ''
+      this.state2 = ''
+      for(let i = 0; i < this.bulbs.length; i++)
+        switch(bulbStates[i])
+        {
+          case '1':
+            this.state1 += this.bulbs[i]
+            this.state2 += this.bulbs[i]
+            break
+          case 'S':
+          case 'F':
+            this.state1 += this.bulbs[i]
+            this.state2 += '0'
+            break
+          default:
+            this.state1 += '0'
+            this.state2 += '0'
+            break
+        }
+      this.displayBulbs(this.state1)
+    }
+
+    displayBulbs(state)
+    {
+      this.element()
+        .find('img')
+        .attr('src', `/glyph/signal/${this.type}/${state}`)
+    }
+  }

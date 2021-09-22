@@ -90,7 +90,7 @@ module.exports = (fastify) => {
               })
         return reply.noCache().view(PUG_GLYPHSHOW,
           {
-            title: 'Signal glyphs [GYR, GYRY, RGRY]',
+            title: 'Signal glyphs [W, RG, GYR, GYRY, RGRY]',
             glyphs,
             blockSize: layout.blockSize
           })
