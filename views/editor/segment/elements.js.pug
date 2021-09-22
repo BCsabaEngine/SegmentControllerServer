@@ -45,6 +45,14 @@ script(type='text/javascript').
     getSelection().removeClass('elementselected')
     updateSelectionDisplay()
   }
+  function setSelectionById(id) {
+    clearSelection()
+    if (id in elements)
+    {
+      elements[id].element().addClass('elementselected')
+      updateSelectionDisplay()
+    }
+  }
   let updateSelectionTimer = null
   function updateSelectionDisplay(delay) {
     clearTimeout(updateSelectionTimer)

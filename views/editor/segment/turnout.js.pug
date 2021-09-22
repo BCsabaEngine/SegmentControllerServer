@@ -1,7 +1,7 @@
 script(type='text/javascript').
   function cursorCreateTurnout(x, y, params)
   {
-    new Turnout(x, y, params.type)
+    new Turnout(x, y, -1, -1, params.type)
     needSaveSegmentElements()
   }
 
@@ -90,6 +90,7 @@ script(type='text/javascript').
     {
       this.panel = panel
       this.index = index
+      this.element().prop('title', this.panel + this.index >= 0 ? `Turnout ${this.panel + 1} / ${this.index + 1}` : 'Turnout not connected')
     }
 
     setType(type)
@@ -161,6 +162,8 @@ script(type='text/javascript').
     setCopyCursor() { setCursor('/glyph/turnout/' + this.type, cursorCreateTurnout, { type: this.type}) }
 
     getSaveData() { return { class: 'turnout', x: this.x, y: this.y, panel: this.panel, index: this.index, type: this.type } }
+
+    getConnectionInfo() { return this.panel + this.index >= 0 ? `Turnout ${this.panel + 1} / ${this.index + 1}` : 'Turnout not connected' }
 
     async inputSetPanel()
     {

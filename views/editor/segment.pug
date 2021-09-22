@@ -168,17 +168,21 @@ block content
               |
               | selected
 
-          li.nav-item.elementselected.small.hidden#selectionindicator
-            a.nav-link(href='#')
-              b#selectioncount
-                | 0
-              |
-              | selected
-
         ul.navbar-nav.ms-auto.mb-2.mb-lg-0
           li#panelsave.nav-item.hidden
             a#buttonsave.btn.btn-warning(href='#' onclick='saveSegmentElements(true)' title='CTRL+S')
               | Save segment
+
+          li.nav-item.dropdown.dropstart#connectedlist
+            a.nav-link(href='#' role='button' data-bs-toggle='dropdown')
+              i.bi.bi-link-45deg
+            ul.dropdown-menu#connecteditems
+              li
+                a.dropdown-item(href='#' onclick="setBaseColor()")
+                  | Base color
+                  | (
+                  = segment.baseColor
+                  | )
 
           li.nav-item.dropdown.dropstart
             a.nav-link(href='#' role='button' data-bs-toggle='dropdown')
@@ -204,7 +208,7 @@ block content
         li
           a.dropdown-item.text-danger(href='#' onclick='removeMyElement(this)')
             | Delete
-    .segmentelement.trackhide.hidden#turnout(style=`position:absolute; left:0; top:0; width: ${blockSize}px; height: ${blockSize}px;`)
+    .segmentelement.trackhide.hidden#turnout(style=`position:absolute; left:0; top:0; width: ${blockSize}px; height: ${blockSize}px;` title='')
       img
       ul.dropdown-menu.context-menu
         li
@@ -215,7 +219,7 @@ block content
         li
           a.dropdown-item.text-danger(href='#' onclick='removeMyElement(this)')
             | Delete
-    .segmentelement.signalhide.hidden#signal(style=`position:absolute; left:0; top:0; width: ${blockSize}px; height: ${blockSize}px;`)
+    .segmentelement.signalhide.hidden#signal(style=`position:absolute; left:0; top:0; width: ${blockSize}px; height: ${blockSize}px;` title='')
       img
       ul.dropdown-menu.context-menu
         li
@@ -357,6 +361,24 @@ block content
     | })
 
   script(type='text/javascript').
+    $(function()
+    {
+      $('#connectedlist').on('show.bs.dropdown', function () {
+        $('#connecteditems').empty()
+
+        conns = []
+        for(const id in elements)
+          if (elements[id].getConnectionInfo)
+            conns.push({ id: id, name: elements[id].getConnectionInfo() })
+        conns.sort((a, b) => ('' + a.name).localeCompare('' + b.name))
+        if (conns.length)
+          for(const conn of conns)
+            $('#connecteditems').append(`<li><a class="dropdown-item" href="#" onclick="setSelectionById(${conn.id})">${conn.name}</a></li>`)
+        else
+          $('#connecteditems').append(`<li><h6 class="dropdown-header">No item with connection</h6></li>`)
+      })
+    })
+
     async function setBaseColor()
     {
       const { value: baseColor } = await Swal.fire({

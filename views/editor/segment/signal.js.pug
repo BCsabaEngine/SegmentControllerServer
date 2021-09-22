@@ -1,7 +1,7 @@
 script(type='text/javascript').
   function cursorCreateSignal(x, y, params)
   {
-    new Signal(x, y, 0, 0, params.type, params.bulbs)
+    new Signal(x, y, -1, -1, params.type, params.bulbs)
     needSaveSegmentElements()
   }
 
@@ -92,6 +92,7 @@ script(type='text/javascript').
     {
       this.panel = panel
       this.index = index
+      this.element().prop('title', this.panel + this.index >= 0 ? `Signal ${this.panel + 1} / ${this.index + 1}` : 'Signal not connected')
     }
 
     setType(type)
@@ -171,6 +172,8 @@ script(type='text/javascript').
     setCopyCursor() { setCursor(`/glyph/signal/${this.type}/${this.bulbs}`, cursorCreateSignal, { type: this.type, bulbs: this.bulbs }) }
 
     getSaveData() { return { class: 'signal', x: this.x, y: this.y, panel: this.panel, index: this.index, type: this.type, bulbs: this.bulbs } }
+
+    getConnectionInfo() { return this.panel + this.index >= 0 ? `Signal ${this.panel + 1} / ${this.index + 1}` : 'Signal not connected' }
 
     async inputSetBulbs()
     {
