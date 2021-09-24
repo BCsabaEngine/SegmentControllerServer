@@ -1,7 +1,11 @@
 script(type='text/javascript').
   ws_channels =
   {
-    layoutchange: function() { pagereload() }
+    layoutchange: function() { pagereload() },
+    dashboard: function(json) { 
+      //console.log(json)
+      processEvent(json.segmentid, json.panel, json.event, json.eventdata)
+    }
   }
 
   function ws_onreceive(data) {

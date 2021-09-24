@@ -13,3 +13,11 @@ script(type='text/javascript').
                     elements[id].tickAlternate(tickAlternateState)
         }, 500)
     })
+
+    function processEvent(segmentid, panelid, event, eventdata)
+    {
+        for(const id in elements)
+            if (elements[id].processEvent)
+                if (elements[id].processEvent(segmentid, panelid, event, eventdata))
+                    return
+    }

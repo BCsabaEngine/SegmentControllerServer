@@ -13,6 +13,7 @@
 script(type='text/javascript').
   class Signal {
     id
+    segmentid
     x
     y
     panel = null
@@ -20,9 +21,10 @@ script(type='text/javascript').
     type = null
     bulbs = null
 
-    constructor(id, x, y, panel, index, type, bulbs)
+    constructor(id, segmentid, x, y, panel, index, type, bulbs)
     {
       this.id = id
+      this.segmentid = segmentid
       this.x = x
       this.y = y
       this.panel = panel
@@ -85,5 +87,24 @@ script(type='text/javascript').
       this.element()
         .find('img')
         .attr('src', `/glyph/signal/${this.type}/${state}`)
+    }
+
+    processEvent(segmentid, panelid, event, eventdata)
+    {
+      if (segmentid = this.segmentid && panelid == `signal${this.panel+1}`)
+        if (eventdata && eventdata[0] == this.index)
+        {
+          const bulbStates = eventdata[1]
+          const bulbConverter = ['0', 'S', 'F', '1']
+          const bulbStatesToDisplay = 
+            bulbConverter[bulbStates.bulbA] + 
+            bulbConverter[bulbStates.bulbB] + 
+            bulbConverter[bulbStates.bulbC] + 
+            bulbConverter[bulbStates.bulbD]
+
+          this.adaptBulbs(bulbStatesToDisplay)
+          console.log(bulbStates)
+          return true
+        }
     }
   }

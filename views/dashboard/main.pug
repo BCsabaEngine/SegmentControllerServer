@@ -60,6 +60,7 @@ html(lang='en')
   include elements/signal.js.pug
 
   script(type='text/javascript')
+    |
     | $(function() {
     |
     | initializationState = true
@@ -69,6 +70,8 @@ html(lang='en')
         |  new Signal('
         = signal.id
         |', 
+        = segment.id
+        |, 
         = segment.x + signal.x
         |, 
         = segment.y + signal.y
