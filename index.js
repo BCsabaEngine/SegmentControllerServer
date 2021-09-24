@@ -90,13 +90,7 @@ process.on('SIGUSR2', gracefullyClose)
 
 //sarud.on('event', (...arguments_) => { console.log(arguments_) })
 
-segments.on('event', (...arguments_) => {
-  console.log(arguments_)
-
-  let segmentid, panel, event, eventdata
-  [segmentid, panel, event, ...eventdata] = arguments_
-  ws.broadcast({ segmentid, panel, event, eventdata }, 'dashboard')
-})
+global.segments.InitializeEventsToDashboard()
 
 // setInterval(() => {
 //   console.log('Toggle signal')

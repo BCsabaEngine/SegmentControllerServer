@@ -37,6 +37,7 @@ script(type='text/javascript').
         .attr('id', 'element' + this.id)
         .css('left', this.x * blockSize)
         .css('top', this.y * blockSize)
+        .css('cursor', 'pointer')
         .css('z-index', 1)
         .removeClass('hidden')
         .appendTo("#bg")
@@ -45,7 +46,7 @@ script(type='text/javascript').
       this.adaptBulbs('1100')
 
       jelement.on('click', () => {
-        this.adaptBulbs('10S0')
+        doAction(this.segmentid, `signal/${this.panel + 1}/toggle/${this.index}`)
       })
     }
 
@@ -96,8 +97,8 @@ script(type='text/javascript').
 
       if (eventdata && eventdata.length == 2 && eventdata[0] == this.index)
       {
-        const bulbStates = eventdata[1]
         const bulbConverter = '0SF1'
+        const bulbStates = eventdata[1]
         const bulbStatesToDisplay = 
           bulbConverter[bulbStates.bulbA] + 
           bulbConverter[bulbStates.bulbB] + 

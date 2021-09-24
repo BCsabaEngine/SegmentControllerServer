@@ -20,4 +20,5 @@ script(type='text/javascript').
             if (elements[id].processEvent)
                 elements[id].processEvent(segmentid, panelid, event, eventdata)
     }
-    
+
+    function doAction(segmentid, uri) { $.post(`/op/${segmentid}/${uri}`) }
