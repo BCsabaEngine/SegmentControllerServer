@@ -86,6 +86,9 @@ if (window.jQuery)
     $('html').on('click', function () {
       $('.context-menu').hide();
     });
+    $('html').on('click', function () {
+      //$('.bs-menu').hide();
+    });
 
     // $('html').on('contextmenu', function () {
     //   $('.context-menu').hide();

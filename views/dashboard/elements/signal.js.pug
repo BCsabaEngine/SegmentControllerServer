@@ -1,6 +1,6 @@
-.hidden#signal(style=`position:absolute; left:0; top:0; width: ${blockSize}px; height: ${blockSize}px;`)
-  img
-  ul.dropdown-menu.context-menu
+.context-container.hidden#signal(style=`position:absolute; left:0; top:0; width: ${blockSize}px; height: ${blockSize}px;`)
+  img(oncontextmenu='return false;')
+  ul.dropdown-menu.bs-menu(data-bs-offset='0,2')
     li
       a.dropdown-item(href='#' onclick='callMyElementMethod(this, "inputSetPanel")')
         | XXX

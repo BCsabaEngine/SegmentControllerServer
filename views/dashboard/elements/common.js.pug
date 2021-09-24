@@ -14,6 +14,21 @@ script(type='text/javascript').
         }, 500)
     })
 
+    function initLongPress()
+    {
+        let pressTimer
+        $('.context-container').on('mousedown touchstart', function(e) {
+            e.stopPropagation()
+            pressTimer = setTimeout(function(that)
+            {
+                $(that).find('ul.dropdown-menu').css('left', -16).css('top', -16).show()
+            },750, this);
+        });
+        $('.context-container').on('mouseup touchend', function(e) {
+            clearTimeout(pressTimer)
+        });
+    }
+
     function processEvent(segmentid, panelid, event, eventdata)
     {
         for(const id in elements)
@@ -21,4 +36,7 @@ script(type='text/javascript').
                 elements[id].processEvent(segmentid, panelid, event, eventdata)
     }
 
-    function doAction(segmentid, uri) { $.post(`/op/${segmentid}/${uri}`) }
+    function doAction(segmentid, uri) {
+        console.log('action') 
+        $.post(`/op/${segmentid}/${uri}`)
+         }

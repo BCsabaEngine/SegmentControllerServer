@@ -61,7 +61,7 @@ script(type='text/javascript').
       e.stopPropagation();
       return false;
     }
-
+    
     function Handle(e) {
       movecontinue = false;
       $bg.unbind('mousemove touchmove', Move);
@@ -81,9 +81,9 @@ script(type='text/javascript').
     let eventcount = 0
     function HandleDouble(e) {
       eventcount++
-      if (eventcount >= 2)
+      if (eventcount > 2)
         Reset()
-      setTimeout(() => { eventcount = 0 }, 350)
+      setTimeout(() => { eventcount = 0 }, 250)
     }
 
     function Reset() {
