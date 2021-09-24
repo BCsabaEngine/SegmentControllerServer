@@ -91,20 +91,20 @@ script(type='text/javascript').
 
     processEvent(segmentid, panelid, event, eventdata)
     {
-      if (segmentid = this.segmentid && panelid == `signal${this.panel+1}`)
-        if (eventdata && eventdata[0] == this.index)
-        {
-          const bulbStates = eventdata[1]
-          const bulbConverter = ['0', 'S', 'F', '1']
-          const bulbStatesToDisplay = 
-            bulbConverter[bulbStates.bulbA] + 
-            bulbConverter[bulbStates.bulbB] + 
-            bulbConverter[bulbStates.bulbC] + 
-            bulbConverter[bulbStates.bulbD]
+      if (segmentid !== this.segmentid) return
+      if (panelid !== `signal${this.panel+1}`) return 
 
-          this.adaptBulbs(bulbStatesToDisplay)
-          console.log(bulbStates)
-          return true
-        }
+      if (eventdata && eventdata.length == 2 && eventdata[0] == this.index)
+      {
+        const bulbStates = eventdata[1]
+        const bulbConverter = '0SF1'
+        const bulbStatesToDisplay = 
+          bulbConverter[bulbStates.bulbA] + 
+          bulbConverter[bulbStates.bulbB] + 
+          bulbConverter[bulbStates.bulbC] + 
+          bulbConverter[bulbStates.bulbD]
+
+        this.adaptBulbs(bulbStatesToDisplay)
+      }
     }
   }

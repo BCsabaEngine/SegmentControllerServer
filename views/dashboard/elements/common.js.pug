@@ -18,6 +18,6 @@ script(type='text/javascript').
     {
         for(const id in elements)
             if (elements[id].processEvent)
-                if (elements[id].processEvent(segmentid, panelid, event, eventdata))
-                    return
+                elements[id].processEvent(segmentid, panelid, event, eventdata)
     }
+    
