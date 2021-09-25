@@ -21,7 +21,7 @@ script(type='text/javascript').
     type = null
     bulbs = null
 
-    constructor(id, segmentid, x, y, panel, index, type, bulbs)
+    constructor(id, segmentid, x, y, panel, index, type, bulbs, currenstates)
     {
       this.id = id
       this.segmentid = segmentid
@@ -43,10 +43,10 @@ script(type='text/javascript').
         .appendTo("#bg")
 
       this.displayBulbs('0'.repeat(this.bulbs.length))
-      this.adaptBulbs('1100')
+      this.adaptBulbs(currenstates)
 
       jelement.on('click', () => {
-        doAction(this.segmentid, `signal/${this.panel + 1}/toggle/${this.index}`)
+        doAction(this.segmentid, `signal/${this.panel + 1}/toggle/${this.index + 1}`)
       })
     }
 
@@ -93,7 +93,7 @@ script(type='text/javascript').
     processEvent(segmentid, panelid, event, eventdata)
     {
       if (segmentid !== this.segmentid) return
-      if (panelid !== `signal${this.panel+1}`) return 
+      if (panelid !== `signal${this.panel + 1}`) return 
 
       if (eventdata && eventdata.length == 2 && eventdata[0] == this.index)
       {

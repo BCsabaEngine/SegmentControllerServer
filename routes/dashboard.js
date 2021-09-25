@@ -4,6 +4,11 @@ module.exports = (fastify) => {
 
   fastify.get('/', async (request, reply) => {
     const layout = layoutManager.getLayout()
+    const segments = layout.segments
+    for (const segment of segments)
+      for (const signal of segment.signals)
+        signal.currentstate = signal.getCurrentState(segment.id)
+
     return reply.noCache().view('dashboard/main', {
       title: 'Dashboard',
 
@@ -12,7 +17,7 @@ module.exports = (fastify) => {
       layoutLastModify: layout.lastModify,
 
       blockSize: layout.blockSize,
-      segments: layout.segments,
+      segments: segments,
     })
   })
 
@@ -21,15 +26,13 @@ module.exports = (fastify) => {
   router.namespace('op/:segmentid', () => {
     router.namespace('signal/:panelindex', () => {
       router.post('toggle/:index', (request, reply) => {
-        const segmentid = request.params.segmentid
-        const panelindex = request.params.panelindex
-        const index = request.params.index
+        const segmentid = Number(request.params.segmentid)
+        const panelindex = Number(request.params.panelindex)
+        const index = Number(request.params.index)
 
-        if (global.segments.HasSegmentById(segmentid)) {
-          const signal = global.segments.GetSegmentById(segmentid).getSignal(panelindex)
-          if (signal)
-            signal.ToggleSignal(index)
-        }
+        const signal = global.segments.GetSegmentById(segmentid).getSignal(panelindex)
+        if (signal)
+          signal.ToggleSignal(index - 1)
         reply.send()
       })
       router.post('set/:index/:state', (request, reply) => {

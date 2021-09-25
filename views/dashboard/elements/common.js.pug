@@ -36,7 +36,4 @@ script(type='text/javascript').
                 elements[id].processEvent(segmentid, panelid, event, eventdata)
     }
 
-    function doAction(segmentid, uri) {
-        console.log('action') 
-        $.post(`/op/${segmentid}/${uri}`)
-         }
+    function doAction(segmentid, uri) { $.post(`/op/${segmentid}/${uri}`) }

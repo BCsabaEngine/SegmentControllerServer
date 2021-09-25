@@ -92,7 +92,7 @@ script(type='text/javascript').
     {
       this.panel = panel
       this.index = index
-      this.element().prop('title', this.panel + this.index >= 0 ? `Signal ${this.panel + 1} / ${this.index + 1}` : 'Signal not connected')
+      this.element().prop('title', this.getConnectionInfo())
     }
 
     setType(type)
@@ -173,7 +173,7 @@ script(type='text/javascript').
 
     getSaveData() { return { class: 'signal', x: this.x, y: this.y, panel: this.panel, index: this.index, type: this.type, bulbs: this.bulbs } }
 
-    getConnectionInfo() { return this.panel + this.index >= 0 ? `Signal ${this.panel + 1} / ${this.index + 1}` : 'Signal not connected' }
+    getConnectionInfo() { return this.panel + this.index >= 0 ? `Signal #${this.panel + 1} / ${'ABCDEF'[this.index]}` : 'Signal not connected' }
 
     async inputSetBulbs()
     {

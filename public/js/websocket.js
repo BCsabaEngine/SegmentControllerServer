@@ -17,9 +17,9 @@ function socket_open() {
       if (typeof ws_channels !== 'undefined') {
         let i = 0;
         for (const key of Object.keys(ws_channels))
-          setTimeout(function () {
-            socket.send(JSON.stringify({ command: 'subscribe', channel: key }));
-          }, 150 * ++i);
+          setTimeout(function (channel) {
+            socket.send(JSON.stringify({ command: 'subscribe', channel: channel }));
+          }, 10 + 150 * ++i, key);
       }
     };
 
@@ -39,12 +39,12 @@ function socket_open() {
                 if (key == json.channel)
                   if (typeof value === 'function') {
                     delete json.channel;
-                    setTimeout(() => value(json), 1);
+                    setTimeout((delegation) => delegation.value(delegation.json), 1, { value, json });
                   }
           }
           else {
             if (typeof ws_onreceive === 'function')
-              setTimeout(() => ws_onreceive(json), 1);
+              setTimeout((jsontosend) => ws_onreceive(jsontosend), 1, json);
           }
       }
       catch (ex) { }
