@@ -134,7 +134,7 @@
     "canvas": "^2.8.0",
     "color": "^4.0.1",
     "dayjs": "^1.10.7",
-    "fastify": "^3.21.5",
+    "fastify": "^3.21.6",
     "fastify-compress": "^3.6.0",
     "fastify-cookie": "^5.3.1",
     "fastify-etag": "^2.1.0",
@@ -150,14 +150,14 @@
     "interactjs": "^1.10.11",
     "jquery": "^3.6.0",
     "merge-deep": "^3.0.3",
-    "nanoid": "^3.1.25",
+    "nanoid": "^3.1.28",
     "platform-folders": "^0.5.4",
     "point-of-view": "^4.15.2",
     "pug": "^3.0.2",
     "rf24meshserialnode": "^0.9.4",
     "sweetalert2": "^11.1.7",
     "winston": "^3.3.3",
-    "yargs": "^17.2.0"
+    "yargs": "^17.2.1"
   },
   "devDependencies": {
     "@babel/core": "^7.15.5",
