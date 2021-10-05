@@ -14,7 +14,8 @@ global.runtimeConfig = require('./lib/runtimeConfig')
 global.config = require('./lib/config')
 global.logger = require('./lib/logger')
 global.rf24 = require('./lib/rf24')
-global.segments = require('./lib/segments')(global.rf24)
+global.wifi = require('./lib/wifi')
+global.segments = require('./lib/segments')(global.rf24, global.wifi)
 global.ws = require('./lib/webSocketHandler')
 global.layoutManager = require('./lib/layoutManager')
 global.http = require('./lib/http')
@@ -91,12 +92,27 @@ process.on('SIGUSR2', gracefullyClose)
 //sarud.on('event', (...arguments_) => { console.log(arguments_) })
 
 global.segments.InitializeEventsToDashboard()
+const sarud = segments.GetSegmentById(6)
+const m = sarud.master
+m.on('version', (version) => console.log(version))
+m.on('uptime', (uptime) => console.log(uptime))
+
+setInterval(() => {
+  console.log(m.GetUptimeSec())
+}, 3 * 1000)
 
 // setInterval(() => {
 //   console.log('Toggle signal')
-//   const sarud = segments.GetSegmentById(5)
+//   const sarud = segments.GetSegmentById(6)
 //   sarud.signal.ToggleSignal(5)
-// }, 5 * 1000)
+// }, 3 * 1000)
+
+// setInterval(() => {
+//   console.log('Reset')
+//   const sarud = segments.GetSegmentById(6)
+//   sarud.master.Reset()
+// }, 10 * 1000)
+
 // setInterval(() => {
 //   console.log('PLAY')
 //   const sarud = segments.GetSegmentById(5)

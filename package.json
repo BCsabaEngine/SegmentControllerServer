@@ -57,6 +57,7 @@
       "runtimeConfig": "readonly",
       "logger": "readonly",
       "rf24": "readonly",
+      "wifi": "readonly",
       "segments": "readonly",
       "ws": "readonly",
       "layoutManager": "readonly",
