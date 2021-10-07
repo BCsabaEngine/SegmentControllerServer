@@ -130,7 +130,7 @@
   "dependencies": {
     "@mgcrea/fastify-session": "^0.14.1",
     "bitset": "^5.1.1",
-    "bootstrap": "^5.1.1",
+    "bootstrap": "^5.1.2",
     "bootstrap-icons": "^1.5.0",
     "canvas": "^2.8.0",
     "color": "^4.0.1",
@@ -143,7 +143,7 @@
     "fastify-formbody": "^5.1.0",
     "fastify-helmet": "^5.3.2",
     "fastify-route-group": "^1.0.2",
-    "fastify-static": "^4.2.3",
+    "fastify-static": "^4.3.0",
     "fastify-websocket": "^4.0.0",
     "glob": "^7.2.0",
     "hotkeys-js": "^3.8.7",
@@ -151,7 +151,7 @@
     "interactjs": "^1.10.11",
     "jquery": "^3.6.0",
     "merge-deep": "^3.0.3",
-    "nanoid": "^3.1.28",
+    "nanoid": "^3.1.29",
     "platform-folders": "^0.5.4",
     "point-of-view": "^4.15.2",
     "pug": "^3.0.2",
@@ -161,8 +161,8 @@
     "yargs": "^17.2.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.15.5",
-    "@babel/eslint-parser": "^7.15.7",
+    "@babel/core": "^7.15.8",
+    "@babel/eslint-parser": "^7.15.8",
     "eslint": "^7.32.0",
     "eslint-plugin-const-case": "^1.2.2",
     "eslint-plugin-deprecate": "^0.7.0",
