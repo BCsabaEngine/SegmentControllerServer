@@ -92,14 +92,45 @@ process.on('SIGUSR2', gracefullyClose)
 //sarud.on('event', (...arguments_) => { console.log(arguments_) })
 
 global.segments.InitializeEventsToDashboard()
-const sarud = segments.GetSegmentById(6)
-const m = sarud.master
-m.on('version', (version) => console.log(version))
-m.on('uptime', (uptime) => console.log(uptime))
 
-setInterval(() => {
-  console.log(m.GetUptimeSec())
-}, 3 * 1000)
+const sg6 = segments.GetSegmentById(6)
+const sg6signal1 = sg6.signal1
+
+const sg5 = segments.GetSegmentById(5)
+const sg5key = sg5.keypad
+sg5key.on('buttonshortpress', (key) => {
+  switch (key) {
+    case 0:
+      sg6signal1.ToggleSignal(0)
+      break
+  }
+  console.log(key)
+})
+sg5key.on('buttonlongpress', (key) => {
+  switch (key) {
+    case 0:
+      sg6signal1.ToggleSignal(5)
+      break
+  }
+  console.log(key)
+})
+//master.on('version', (version) => console.log(version))
+//master.on('uptime', (uptime) => console.log(uptime))
+
+// setInterval(() => {
+//   //console.log(master.GetUptimeSec())
+//   console.log(sarud.GetMode())
+// }, 3 * 1000)
+
+// setInterval(() => {
+//   //console.log(master.GetUptimeSec())
+//   for (const id of global.segments.GetSegmentIds()) {
+//     const sg = global.segments.GetSegmentById(id)
+//     console.log(sg.GetMode())
+//   }
+// }, 3 * 1000)
+
+
 
 // setInterval(() => {
 //   console.log('Toggle signal')
