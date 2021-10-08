@@ -29,7 +29,7 @@ script(type='text/javascript').
         });
     }
 
-    function processEvent(segmentid, panelid, event, eventdata)
+    function processElementEvent(segmentid, panelid, event, eventdata)
     {
         for(const id in elements)
             if (elements[id].processEvent)

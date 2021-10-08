@@ -2,10 +2,12 @@ script(type='text/javascript').
   ws_channels =
   {
     layoutchange: function() { pagereload() },
-    dashboard: function(json) { 
-      //console.log(json)
-      processEvent(json.segmentid, json.panel, json.event, json.eventdata)
-    }
+    'dashboard-element': function(json) { 
+      processElementEvent(json.segmentid, json.panel, json.event, json.eventdata)
+    },
+    'network-change': function(json) { 
+      ToastSuccessHide.fire({ html: `${json.title}<br/><small>${json.message}</small>` })
+    },
   }
 
   function ws_onreceive(data) {
