@@ -30,7 +30,7 @@ html(lang='en')
             | 
             | Layout editor
         li
-          a.dropdown-item.disabled(href='#')
+          a.dropdown-item(href='#' onclick='shownetworkinfo()')
             i.bi.bi-hdd-network-fill
             | 
             | Segment network
@@ -57,6 +57,7 @@ html(lang='en')
   include elements/common.js.pug
   include bg.js.pug
   include ws.js.pug
+  include network.js.pug
   include elements/signal.js.pug
 
   script(type='text/javascript')

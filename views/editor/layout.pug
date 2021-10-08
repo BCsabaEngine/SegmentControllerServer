@@ -222,7 +222,7 @@ block content
         .done(function() { 
           if (displaytoast && downcountSuccessSave)
           {
-            ToastSuccessHide.fire({ html: 'Saved successfully<br/><small>(Will not appear next time)</small>' })
+            ToastSuccess.fire({ html: 'Saved successfully<br/><small>(Will not appear next time)</small>' })
             downcountSuccessSave--
           }
           $('#buttonsave').removeClass('btn-danger').addClass('btn-warning')

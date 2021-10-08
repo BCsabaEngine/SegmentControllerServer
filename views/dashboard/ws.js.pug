@@ -6,7 +6,7 @@ script(type='text/javascript').
       processElementEvent(json.segmentid, json.panel, json.event, json.eventdata)
     },
     'network-change': function(json) { 
-      ToastSuccessHide.fire({ html: `${json.title}<br/><small>${json.message}</small>` })
+      ToastInfo.fire({ html: `${json.title}<br/><small>${json.message}</small>` })
     },
   }
 

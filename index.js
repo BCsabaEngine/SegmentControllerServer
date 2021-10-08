@@ -94,25 +94,32 @@ process.on('SIGUSR2', gracefullyClose)
 global.segments.InitializeEventsToDashboard()
 
 const sg6 = segments.GetSegmentById(6)
-const sg6signal1 = sg6.signal1
+const sg6signal = sg6.signal
+const sg6ambient = sg6.ambientlight
 
 const sg5 = segments.GetSegmentById(5)
 const sg5key = sg5.keypad
 sg5key.on('buttonshortpress', (key) => {
   switch (key) {
     case 0:
-      sg6signal1.ToggleSignal(0)
+      sg6signal.ToggleSignal(0)
       break
   }
-  console.log(key)
 })
 sg5key.on('buttonlongpress', (key) => {
   switch (key) {
     case 0:
-      sg6signal1.ToggleSignal(5)
+      sg6signal.ToggleSignal(5)
       break
   }
-  console.log(key)
+})
+sg5key.on('switchchange', (sw, state) => {
+  switch (sw) {
+    case 4:
+      sg6ambient.SetNight(state)
+      break
+  }
+  //  console.log(key)
 })
 //master.on('version', (version) => console.log(version))
 //master.on('uptime', (uptime) => console.log(uptime))

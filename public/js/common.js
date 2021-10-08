@@ -55,16 +55,8 @@ const Toast = Swal.mixin({
     toast.addEventListener('mouseleave', Swal.resumeTimer)
   }
 })
-const ToastSuccess = Toast.mixin({ icon: 'success' })
-const ToastSuccessHide = Toast.mixin({
-  icon: 'success',
-  timer: 1500,
-})
+const ToastSuccess = Toast.mixin({ icon: 'success', timer: 1500 })
 const ToastInfo = Toast.mixin({ icon: 'info' })
-const ToastInfoHide = Toast.mixin({
-  icon: 'info',
-  timer: 1500,
-})
 const ToastError = Toast.mixin({ icon: 'error' })
 const ToastWarning = Toast.mixin({ icon: 'warning' })
 
