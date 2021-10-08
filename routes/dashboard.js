@@ -30,7 +30,7 @@ module.exports = (fastify) => {
         const panelindex = Number(request.params.panelindex)
         const index = Number(request.params.index)
 
-        const signal = global.segments.GetSegmentById(segmentid).getSignal(panelindex)
+        const signal = global.segments.AccessSegmentById(segmentid).getSignal(panelindex)
         if (signal)
           signal.ToggleSignal(index - 1)
         reply.send()
@@ -41,8 +41,8 @@ module.exports = (fastify) => {
         const index = request.params.index
         const state = request.params.state
 
-        if (global.segments.HasSegmentById(segmentid)) {
-          const signal = global.segments.GetSegmentById(segmentid).getSignal(panelindex)
+        if (global.segments.SegmentExists(segmentid)) {
+          const signal = global.segments.AccessSegmentById(segmentid).getSignal(panelindex)
           if (signal)
             signal.SetSignal(index, state)
         }

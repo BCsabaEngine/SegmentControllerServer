@@ -81,7 +81,6 @@ module.exports = (fastify) => {
       router.get('', async (request, reply) => {
         const layout = layoutManager.getLayout()
         const segment = layout.getSegmentById(request.params.id)
-        if (!segment) throw new Error(`Segment ${request.params.id} not found`)
 
         const usedSurfaceColors = {}
         for (const segment of layout.getAllSegments())
@@ -112,14 +111,12 @@ module.exports = (fastify) => {
       router.namespace('set', () => {
         router.post('baseColor', async (request) => {
           const segment = layoutManager.getLayout().getSegmentById(request.params.id)
-          if (!segment) throw new Error(`Segment ${request.params.id} not found`)
           segment.setBaseColor(request.body.baseColor)
           layoutManager.saveToFile()
           return JSON.empty
         })
         router.post('elements', async (request) => {
           const segment = layoutManager.getLayout().getSegmentById(request.params.id)
-          if (!segment) throw new Error(`Segment ${request.params.id} not found`)
           segment.setElements(JSON.tryParse(request.body.elements))
           layoutManager.saveToFile()
           return JSON.empty

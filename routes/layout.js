@@ -18,8 +18,6 @@ module.exports = (fastify) => {
 
       const layout = layoutManager.getLayout()
       const segment = layout.getSegmentById(id)
-      if (!segment)
-        throw new Error(`Segment (${request.params.id}) not found`)
 
       reply.type('image/png')
       return segment.getImage(layout)

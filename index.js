@@ -45,8 +45,7 @@ process.on('SIGUSR2', gracefullyClose)
 // let state = 0
 // setInterval(() => {
 //   for (const id of segments.GetSegmentIds()) {
-//     const seg = segments.GetSegmentById(id)
-//     if (seg.IsValid()) {
+//     const seg = segments.AccessSegmentById(id)
 //       //console.log(`Segment #${id} `)
 //       console.log(seg.turnout1.turnoutStates)
 //       //console.log(seg.keypad)
@@ -55,15 +54,13 @@ process.on('SIGUSR2', gracefullyClose)
 //       //console.log(seg.ambientlight1.effects)
 
 //       state = !state
-//     }
 //   }
 // }, 1000)
 
 // let state2 = 0
 // setInterval(() => {
 //   for (const id of segments.GetSegmentIds()) {
-//     const seg = segments.GetSegmentById(id)
-//     if (seg.IsValid()) {
+//     const seg = segments.AccessSegmentById(id)
 //       // const state = {
 //       //   bulb_a: state2 ? 3 : 0,
 //       //   bulb_b: state2 ? 0 : 2,
@@ -73,12 +70,11 @@ process.on('SIGUSR2', gracefullyClose)
 //       // seg.signal1.SetSignalPattern(0, state)
 
 //       seg.ambientlight1.ToggleEffect(0)
-//     }
 //   }
 //   state2 = !state2
 // }, 1500)
 
-//const sarud = segments.GetSegmentById(5)
+//const sarud = segments.AccessSegmentById(5)
 // sarud.on('online', () => { console.log('Sarud: ONLINE') })
 // sarud.signal.on('uptime', (uptime) => console.log(`Uptime: ${uptime}ms`))
 // sarud.signal.on('version', (versioninfo) => console.log(`Version: ${versioninfo}`))
@@ -93,11 +89,11 @@ process.on('SIGUSR2', gracefullyClose)
 
 global.segments.InitializeEventsToDashboard()
 
-const sg6 = segments.GetSegmentById(6)
+const sg6 = segments.AccessSegmentById(6)
 const sg6signal = sg6.signal
 const sg6ambient = sg6.ambientlight
 
-const sg5 = segments.GetSegmentById(5)
+const sg5 = segments.AccessSegmentById(5)
 const sg5key = sg5.keypad
 sg5key.on('buttonshortpress', (key) => {
   switch (key) {
@@ -126,14 +122,14 @@ sg5key.on('switchchange', (sw, state) => {
 
 // setInterval(() => {
 //   //console.log(master.GetUptimeSec())
-//   console.log(sarud.GetMode())
+//   console.log(sarud.GetModeAsString())
 // }, 3 * 1000)
 
 // setInterval(() => {
 //   //console.log(master.GetUptimeSec())
 //   for (const id of global.segments.GetSegmentIds()) {
-//     const sg = global.segments.GetSegmentById(id)
-//     console.log(sg.GetMode())
+//     const sg = global.segments.AccessSegmentById(id)
+//     console.log(sg.GetModeAsString())
 //   }
 // }, 3 * 1000)
 
@@ -141,36 +137,36 @@ sg5key.on('switchchange', (sw, state) => {
 
 // setInterval(() => {
 //   console.log('Toggle signal')
-//   const sarud = segments.GetSegmentById(6)
+//   const sarud = segments.AccessSegmentById(6)
 //   sarud.signal.ToggleSignal(5)
 // }, 3 * 1000)
 
 // setInterval(() => {
 //   console.log('Reset')
-//   const sarud = segments.GetSegmentById(6)
+//   const sarud = segments.AccessSegmentById(6)
 //   sarud.master.Reset()
 // }, 10 * 1000)
 
 // setInterval(() => {
 //   console.log('PLAY')
-//   const sarud = segments.GetSegmentById(5)
+//   const sarud = segments.AccessSegmentById(5)
 //   sarud.sound.Play(1)
 //   setTimeout(() => {
 //     console.log('STOP')
-//     const sarud = segments.GetSegmentById(5)
+//     const sarud = segments.AccessSegmentById(5)
 //     sarud.sound.Stop()
 //   }, 4 * 1000)
 // }, 10 * 1000)
 // setTimeout(() => {
 //   console.log('STOP')
-//   const sarud = segments.GetSegmentById(5)
+//   const sarud = segments.AccessSegmentById(5)
 //   sarud.sound.Stop()
 // }, 12 * 1000)
 
 
 // setInterval(() => {
 //   for (const id of segments.GetSegmentIds()) {
-//     const seg = segments.GetSegmentById(id)
+//     const seg = segments.AccessSegmentById(id)
 //     console.log(seg.signal1.signalStates[0])
 //   }
 // }, 10 * 1000)
