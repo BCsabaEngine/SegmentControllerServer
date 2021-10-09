@@ -1,4 +1,4 @@
-if !networkinfos.length
+if !Object.keys(networkinfos).length
     | No segmentcontrollers detected
 else
     div(style='text-align: left; width: 95%')
@@ -9,14 +9,16 @@ else
                         .card-header
                             = segment.mode
                         .card-body
-                            if segment.panels.length
+                            if Object.keys(segment.panels).length
                                 h6.card-subtitle.text-muted
                                     | Detected panels
                                 p.card-text
                                     ul
-                                    each panel in segment.panels
-                                        li
-                                            = panel
+                                    each panel, name in segment.panels
+                                        li(style='list-style-type: none')
+                                            = name
+                                            span.float-end.small
+                                                = panel.version
                             else
                                 h6.card-subtitle.text-muted
                                     | No panel infos

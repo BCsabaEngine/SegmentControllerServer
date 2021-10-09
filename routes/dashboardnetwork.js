@@ -12,14 +12,13 @@ module.exports = (fastify) => {
                     panels: segment.GetValidPanels(),
                 }
         }
-
         return reply.noCache().view('dashboardnetwork/show', {
             title: 'Network',
             networkinfos,
         })
     })
 
-    fastify.post('/network/reboot', async (request, reply) => {
+    fastify.post('/network/reboot', async (request) => {
         const segmentid = Number(request.body.id)
         const segment = global.segments.GetSegmentById(segmentid)
         segment.Reset(false)
