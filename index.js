@@ -89,6 +89,10 @@ process.on('SIGUSR2', gracefullyClose)
 
 global.segments.InitializeEventsToDashboard()
 
+//const cid = global.layoutManager.getLayout().addNewRuleCode('XXX')
+//global.layoutManager.saveToFile()
+//global.layout.up
+
 const sg6 = segments.AccessSegmentById(6)
 const sg6signal = sg6.signal
 const sg6ambient = sg6.ambientlight
